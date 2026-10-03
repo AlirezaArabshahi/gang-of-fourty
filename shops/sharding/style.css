@@ -142,3 +142,46 @@ ul {
 .skip-link:focus {
   top: var(--space-md);
 }
+
+/* topbar */
+.topbar {
+  background: var(--navy);
+  color: var(--faint);
+  font-size: 12px;
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  min-height: 38px;
+}
+
+.topbar__note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--faint);
+}
+
+.topbar__note svg {
+  width: 15px;
+  height: 15px;
+  fill: var(--lime);
+  flex-shrink: 0;
+}
+
+.topbar__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.topbar__links a {
+  transition: color 0.2s var(--ease);
+}
+
+.topbar__links a:hover {
+  color: var(--lime);
+}
