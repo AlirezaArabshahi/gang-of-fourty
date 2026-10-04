@@ -1,40 +1,48 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>شاردینگ مارکت: خرید از نزدیک‌ترین سوپرمارکت‌های اطراف شما</title>
-    <!-- <meta name="author" content="Alireza Arabshahi">
-    <meta name="description" content="به‌زودی: بهترین میوه و سبزی محله!"> -->
-    <meta name="description" content="خرید آنلاین و ارسال سریع محصولات سوپرمارکتی با تخفیف از شاردینگ مارکت">
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <a href="#main-content" class="skip-link">
-      پرش به محتوای اصلی
-    </a>
-    <!-- topbar -->
-    <div class="topbar">
-      <div class="container topbar__inner">
-        <p class="topbar__note">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M1 3h15v13H1V3zm16 5h4l3 3v5h-7V8zM5.5 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm13 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-          </svg>
-          ارسال رایگان برای سفارش‌های بالای ۵۰۰٬۰۰۰ تومان
-        </p>
-        <nav class="topbar__links" aria-label="لینک‌های کمکی">
-          <a href="#">پیگیری سفارش</a>
-          <a href="#">سؤالات متداول</a>
-          <a href="#">تماس با پشتیبانی</a>
-        </nav>
-      </div>
-    </div>
-    <header class="header">
-      <div class="container header__inner">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>شاردینگ مارکت | فروشگاه آنلاین مواد غذایی</title>
+  <meta name="description" content="خرید آنلاین و ارسال سریع محصولات سوپرمارکتی با تخفیف از شاردینگ مارکت">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-        <a href="/" class="brand" aria-label="شاردینگ مارکت — صفحه اصلی">
-          <span class="brand__mark" aria-hidden="true">
-         <svg class="logo" viewBox="0 0 240 240">
+  <input type="checkbox" id="menu-toggle" class="menu-toggle" hidden>
+
+  <a href="#main-content" class="skip-link">پرش به محتوای اصلی</a>
+
+  <!-- topbar -->
+  <div class="topbar">
+    <div class="container topbar__inner">
+      <p class="topbar__note">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M1 3h15v13H1V3zm16 5h4l3 3v5h-7V8zM5.5 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm13 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+        </svg>
+        ارسال رایگان برای سفارش‌های بالای ۵۰۰٬۰۰۰ تومان
+      </p>
+      <nav class="topbar__links" aria-label="لینک‌های کمکی">
+        <a href="#">پیگیری سفارش</a>
+        <a href="#">سؤالات متداول</a>
+        <a href="#">تماس با پشتیبانی</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- header -->
+  <header class="header">
+    <div class="container header__inner">
+
+      <label for="menu-toggle" class="menu-btn" aria-label="باز کردن منو">
+        <svg class="menu-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+        </svg>
+      </label>
+
+      <a href="/" class="brand" aria-label="شاردینگ مارکت — صفحه اصلی">
+        <span class="brand__mark" aria-hidden="true">
+          <svg class="logo" viewBox="0 0 240 240">
             <g class="logo__shard" style="--i: 0; --dx:  18px; --dy: -31px;">
               <path class="logo__wedge" d="M 120 120 L 120 24 A 96 96 0 0 1 203.14 72 Z"/>
               <circle class="logo__topping" cx="137" cy="73" r="11"/>
@@ -66,61 +74,108 @@
               <circle class="logo__topping" cx="94" cy="49" r="11"/>
             </g>
           </svg>
-          </span>
-          <span class="brand__text">
-            <span class="brand__name">شاردینگ مارکت</span>
-            <span class="brand__tagline">فروشگاه آنلاین مواد غذایی</span>
-          </span>
+        </span>
+        <span class="brand__text">
+          <span class="brand__name">شاردینگ مارکت</span>
+          <span class="brand__tagline">فروشگاه آنلاین مواد غذایی</span>
+        </span>
+      </a>
+
+      <form class="search" role="search">
+        <label for="search-input" class="visually-hidden">جستجو در محصولات</label>
+        <button type="submit" class="search__submit" aria-label="جستجو">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+          </svg>
+        </button>
+        <input
+          id="search-input"
+          class="search__input"
+          type="search"
+          placeholder="جستجوی محصول، برند یا دسته‌بندی…"
+          autocomplete="off">
+      </form>
+
+      <div class="actions">
+        <a href="#" class="action action--location">
+          <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 14.5 9 2.5 2.5 0 0 1 12 11.5z"/>
+          </svg>
+          <span class="action__label">موقعیت</span>
         </a>
-
-        <form class="search" role="search">
-          <label for="search-input" class="visually-hidden">جستجو در محصولات</label>
-          <button type="submit" class="search__submit" aria-label="جستجو">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
-            </svg>
-          </button>
-          <input
-            id="search-input"
-            class="search__input"
-            type="search"
-            placeholder="جستجوی محصول، برند یا دسته‌بندی…"
-            autocomplete="off">
-        </form>
-
-        <div class="actions">
-          <a href="#" class="action">
-            <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 14.5 9 2.5 2.5 0 0 1 12 11.5z"/>
-            </svg>
-            <span class="action__label">موقعیت</span>
-          </a>
-          <a href="#" class="action">
-            <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3 6 6 0 0 1 12 5.09 6 6 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-            <span class="action__label">علاقه‌مندی</span>
-            <span class="badge" aria-label="۵ مورد">۵</span>
-          </a>
-          <a href="#" class="action">
-            <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-            <span class="action__label">حساب من</span>
-          </a>
-          <a href="#" class="action action--cart">
-            <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M7 18a2 2 0 1 0 2 2 2 2 0 0 0-2-2zM1 2v2h2l3.6 7.59-1.35 2.45A1.96 1.96 0 0 0 5 15a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12.9-1.63h7.45a2 2 0 0 0 1.75-1.03l3.58-6.49A1 1 0 0 0 19.88 4H5.21l-.94-2H1zm16 16a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/>
-            </svg>
-            <span class="action__label">سبد خرید</span>
-            <span class="badge" aria-label="۰ مورد">۰</span>
-          </a>
-        </div>
-
+        <a href="#" class="action action--favorites">
+          <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3 6 6 0 0 1 12 5.09 6 6 0 0 1 16.5 3 5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          <span class="action__label">علاقه‌مندی</span>
+          <span class="badge" aria-label="۵ مورد">۵</span>
+        </a>
+        <a href="#" class="action action--account">
+          <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          <span class="action__label">حساب من</span>
+        </a>
+        <a href="#" class="action action--cart">
+          <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 18a2 2 0 1 0 2 2 2 2 0 0 0-2-2zM1 2v2h2l3.6 7.59-1.35 2.45A1.96 1.96 0 0 0 5 15a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12.9-1.63h7.45a2 2 0 0 0 1.75-1.03l3.58-6.49A1 1 0 0 0 19.88 4H5.21l-.94-2H1zm16 16a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/>
+          </svg>
+          <span class="action__label">سبد خرید</span>
+          <span class="badge" aria-label="۰ مورد">۰</span>
+        </a>
       </div>
-    </header>
-    <main id="main-content" tabindex="-1">
-      محتوای اصلی
-    </main>
-  </body>
+
+    </div>
+  </header>
+
+  <!-- mobile menu -->
+  <div class="mobile-menu__overlay"></div>
+
+  <div class="mobile-menu">
+    <div class="mobile-menu__head">
+      <label for="menu-toggle" class="mobile-menu__close" aria-label="بستن منو">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </label>
+      <span class="mobile-menu__title">منو</span>
+      <span class="mobile-menu__logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C7 2 3 6 3 11c0 3 1.5 5.5 3.5 7L7 22h10l.5-4c2-1.5 3.5-4 3.5-7 0-5-4-9-9-9z"/>
+        </svg>
+      </span>
+    </div>
+
+    <div class="mobile-menu__body">
+      <a href="#deals" class="mobile-menu__banner">
+        <span class="mobile-menu__banner-title">همه تخفیف‌ها</span>
+        <span class="mobile-menu__banner-desc">با خرید از شاردینگ، در هزینه‌های روزانه صرفه‌جویی کنید</span>
+        <span class="mobile-menu__banner-cta">همین حالا خرید کنید</span>
+      </a>
+
+      <ul class="mobile-menu__list">
+        <li><a href="#main-content">خانه</a></li>
+        <li><a href="#fruits">میوه و سبزیجات</a></li>
+        <li><a href="#dairy">لبنیات و تخم‌مرغ</a></li>
+        <li><a href="#grocery">خواروبار</a></li>
+        <li><a href="#beverages">نوشیدنی</a></li>
+        <li><a href="#hygiene">شوینده و بهداشتی</a></li>
+        <li><a href="#deals">تخفیف‌ها و پیشنهادها</a></li>
+      </ul>
+
+      <div class="mobile-menu__apps">
+        <span class="mobile-menu__apps-title">خرید راحت‌تر با اپلیکیشن</span>
+        <div class="mobile-menu__apps-buttons">
+          <a href="#" class="mobile-menu__app">App Store</a>
+          <a href="#" class="mobile-menu__app">Google Play</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main-content" tabindex="-1">
+    محتوای اصلی
+  </main>
+
+</body>
 </html>
