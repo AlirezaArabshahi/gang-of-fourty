@@ -686,7 +686,7 @@ ul { list-style: none; }
 .dept {
   position: relative;
   flex-shrink: 0;
-  padding-bottom: 8px;
+  /* padding-bottom: 8px; */
 }
 
 .dept-btn {
@@ -1596,5 +1596,153 @@ ul { list-style: none; }
     margin-top: var(--space-sm);
     padding: 8px 14px;
     font-size: 0.78rem;
+  }
+}
+
+
+/* footer */
+.footer {
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-lg);
+  padding: var(--space-lg) 0 var(--space-md);
+}
+
+.footer__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border);
+}
+
+/* برند */
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.footer__about {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 420px;
+}
+
+/* لینک‌ها */
+.footer__links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.footer__title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: var(--space-sm);
+}
+
+.footer__title--mt {
+  margin-top: var(--space-md);
+}
+
+.footer__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer__list a,
+.footer__list li {
+  font-size: 0.8rem;
+  color: var(--muted);
+  transition: color 0.2s var(--ease);
+}
+
+.footer__list a:hover {
+  color: var(--navy);
+}
+
+.footer__hours {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+/* پایین */
+.footer__bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: center;
+  text-align: center;
+  padding-top: var(--space-md);
+}
+
+.footer__copy {
+  font-size: 0.75rem;
+  color: var(--faint);
+}
+
+.footer__top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  transition:
+    border-color 0.2s var(--ease),
+    color 0.2s var(--ease),
+    background 0.2s var(--ease);
+}
+
+.footer__top:hover {
+  border-color: var(--lime);
+  color: var(--navy);
+  background: var(--lime-soft);
+}
+
+.footer__top svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  transform: rotate(-90deg);   /* فلش به سمت بالا */
+}
+
+/* تبلت به بالا */
+@media (min-width: 640px) {
+  .footer {
+    padding: var(--space-lg) 0;
+  }
+
+  .footer__bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: start;
+  }
+}
+
+/* دسکتاپ */
+@media (min-width: 768px) {
+  .footer__main {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: var(--space-lg);
+  }
+
+  .footer__brand {
+    flex: 1 1 auto;
+    max-width: 420px;
+  }
+
+  .footer__links {
+    flex: 0 0 auto;
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+    gap: var(--space-lg);
   }
 }
