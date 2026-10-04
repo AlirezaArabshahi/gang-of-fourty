@@ -121,6 +121,20 @@ ul {
   border-radius: var(--radius-sm);
 }
 
+/* utilities */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
 /* skip link */
 .skip-link {
   position: absolute;
@@ -184,4 +198,217 @@ ul {
 
 .topbar__links a:hover {
   color: var(--lime);
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  min-height: 78px;
+}
+
+/* --- لوگو --- */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.brand__mark {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  transition: transform 0.25s var(--ease);
+}
+
+.brand:hover .brand__mark {
+  transform: translateY(-1px) scale(1.03);
+}
+
+.logo {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.logo__wedge {
+  fill: var(--dough);
+  stroke: var(--navy);
+  stroke-width: 9;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.logo__topping {
+  fill: var(--navy);
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  white-space: nowrap;
+}
+
+.brand__name {
+  font-size: 1.18rem;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: -0.4px;
+  line-height: 1.3;
+}
+
+.brand__tagline {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* --- جستجو --- */
+.search {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  height: 46px;
+  background: var(--bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  padding: 0 6px 0 14px;
+  transition:
+    background 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    box-shadow 0.2s var(--ease);
+}
+
+.search:focus-within {
+  background: var(--white);
+  border-color: var(--lime);
+  box-shadow: 0 0 0 4px rgba(181, 196, 0, 0.18);
+}
+
+.search__submit {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s var(--ease);
+}
+
+.search__submit:hover {
+  background: var(--lime-soft);
+}
+
+.search__submit svg {
+  width: 19px;
+  height: 19px;
+  fill: var(--faint);
+  transition: fill 0.2s var(--ease);
+}
+
+.search:focus-within .search__submit svg,
+.search__submit:hover svg {
+  fill: var(--navy);
+}
+
+.search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  padding: 0 10px;
+  font-size: 0.9rem;
+  outline: none;
+  color: var(--text);
+}
+
+.search__input::placeholder {
+  color: var(--faint);
+}
+
+/* --- اکشن‌ها --- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+.action {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 9px 11px;
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition:
+    background 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+
+.action:hover {
+  background: var(--lime-soft);
+  color: var(--navy);
+}
+
+.action__icon {
+  width: 21px;
+  height: 21px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.action--cart {
+  border: 1px solid var(--border);
+  padding-inline: 13px;
+}
+
+.action--cart:hover {
+  border-color: var(--lime);
+}
+
+.badge {
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  background: var(--lime);
+  color: var(--navy);
+  font-size: 0.66rem;
+  font-weight: 800;
+  line-height: 1;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--white);
 }
