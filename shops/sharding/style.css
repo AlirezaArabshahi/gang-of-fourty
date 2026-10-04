@@ -51,13 +51,12 @@
   --space-md: 16px;
   --space-lg: 24px;
 
-  --radius-sm: 8px;
-  --radius: 10px;
-  --radius-lg: 16px;
+  --radius-sm: 6px;
+  --radius: 8px;
   --radius-full: 999px;
 
   --shadow: 0 2px 8px -2px rgba(18, 22, 31, 0.08);
-  --shadow-lg: 0 12px 32px -12px rgba(18, 22, 31, 0.20);
+  --shadow-lg: 0 8px 24px -8px rgba(18, 22, 31, 0.18);
 
   --container: 1200px;
 
@@ -214,7 +213,6 @@ ul { list-style: none; }
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  border-radius: var(--radius-sm);
   color: var(--navy);
   cursor: pointer;
   transition: background 0.2s var(--ease);
@@ -337,7 +335,6 @@ ul { list-style: none; }
   flex-shrink: 0;
   border: none;
   background: transparent;
-  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.2s var(--ease);
 }
@@ -383,7 +380,6 @@ ul { list-style: none; }
   align-items: center;
   gap: var(--space-sm);
   padding: 9px 11px;
-  border-radius: var(--radius);
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 500;
@@ -433,6 +429,7 @@ ul { list-style: none; }
 .action--favorites { display: none; }
 
 .action__label { display: none; }
+
 /* mobile menu */
 .mobile-menu__overlay {
   position: fixed;
@@ -495,7 +492,6 @@ ul { list-style: none; }
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.2s var(--ease);
 }
@@ -540,10 +536,9 @@ ul { list-style: none; }
   flex-direction: column;
   gap: var(--space-sm);
   padding: var(--space-md);
-  border-radius: var(--radius);
   background: var(--navy);
-  color: var(--white);
   border-inline-start: 4px solid var(--lime);
+  color: var(--white);
 }
 
 .mobile-menu__banner-title {
@@ -564,7 +559,6 @@ ul { list-style: none; }
   padding: 8px 16px;
   background: var(--lime);
   color: var(--navy);
-  border-radius: var(--radius-sm);
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -608,7 +602,6 @@ ul { list-style: none; }
   padding: 8px 16px;
   background: var(--navy);
   color: var(--white);
-  border-radius: var(--radius-sm);
   font-size: 0.78rem;
   font-weight: 700;
   transition: background 0.2s var(--ease);
@@ -628,7 +621,8 @@ ul { list-style: none; }
 
   .menu-btn,
   .menu-toggle,
-  .mobile-menu {
+  .mobile-menu,
+  .mobile-menu__overlay {
     display: none;
   }
 
@@ -681,6 +675,303 @@ ul { list-style: none; }
   border-top: 1px solid var(--border);
 }
 
+.header-nav__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  min-height: 54px;
+}
+
+/* dept button */
+.dept {
+  position: relative;
+  flex-shrink: 0;
+  padding-bottom: 8px;
+}
+
+.dept-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 38px;
+  padding: 0 18px;
+  border: none;
+  background: var(--lime);
+  color: var(--navy);
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s var(--ease);
+}
+
+.dept:hover .dept-btn,
+.dept:focus-within .dept-btn {
+  background: #a8b800;
+}
+
+.dept-btn svg {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+/* dept panel */
+.dept-panel {
+  position: absolute;
+  top: 100%;
+  inset-inline-start: 0;
+  width: 860px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  z-index: 1100;
+
+  display: grid;
+  grid-template-columns: 200px 1fr 200px;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.2s var(--ease),
+    transform 0.2s var(--ease),
+    visibility 0s 0.2s;
+}
+
+.dept:hover .dept-panel,
+.dept:focus-within .dept-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    opacity 0.2s var(--ease),
+    transform 0.2s var(--ease),
+    visibility 0s 0s;
+}
+
+/* dept menu — ستون ۱ */
+.dept-menu {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-sm) 0;
+  border-inline-end: 1px solid var(--border);
+}
+
+.dept-menu__link {
+  display: block;
+  padding: 11px 18px;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition:
+    background 0.15s var(--ease),
+    color 0.15s var(--ease);
+}
+
+/* highlight آیتم فعال */
+.dept-menu__item--fruits:hover .dept-menu__link,
+.dept-menu__item--dairy:hover .dept-menu__link,
+.dept-menu__item--grocery:hover .dept-menu__link,
+.dept-menu__item--beverages:hover .dept-menu__link,
+.dept-menu__item--hygiene:hover .dept-menu__link,
+.dept-menu__item--deals:hover .dept-menu__link,
+.dept-menu__link:focus-visible {
+  background: var(--lime-soft);
+  color: var(--navy);
+  font-weight: 700;
+}
+
+/* dept content — ستون ۲ */
+.dept-content {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 20px 24px;
+  position: relative;
+  min-height: 300px;
+}
+
+.dept-sub {
+  position: absolute;
+  inset: 20px 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s var(--ease);
+}
+
+.dept-sub__cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 20px;
+}
+
+.dept-sub__title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--lime);
+}
+
+.dept-sub__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.dept-sub__list a {
+  display: block;
+  padding: 5px 4px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  transition: color 0.15s var(--ease);
+}
+
+.dept-sub__list a:hover {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+/* dept promos — ستون ۳ */
+.dept-promos {
+  grid-column: 3;
+  grid-row: 1;
+  padding: 20px;
+  position: relative;
+  border-inline-start: 1px solid var(--border);
+}
+
+.dept-promo {
+  position: absolute;
+  inset: 20px;
+  display: none;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 16px;
+  background: var(--navy);
+  border-inline-start: 4px solid var(--lime);
+  color: var(--white);
+}
+
+.dept-promo__title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--lime);
+}
+
+.dept-promo__desc {
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--faint);
+}
+
+/* حالت پیش‌فرض: میوه */
+.dept-sub--fruits { opacity: 1; visibility: visible; }
+.dept-promo--fruits { display: flex; }
+
+/* اتصال hover/focus به محتوا — فقط ۶ خط */
+.dept-panel:has(.dept-menu__item--fruits:hover) .dept-sub--fruits,
+.dept-panel:has(.dept-menu__item--fruits:focus-within) .dept-sub--fruits,
+.dept-panel:has(.dept-menu__item--dairy:hover) .dept-sub--dairy,
+.dept-panel:has(.dept-menu__item--dairy:focus-within) .dept-sub--dairy,
+.dept-panel:has(.dept-menu__item--grocery:hover) .dept-sub--grocery,
+.dept-panel:has(.dept-menu__item--grocery:focus-within) .dept-sub--grocery,
+.dept-panel:has(.dept-menu__item--beverages:hover) .dept-sub--beverages,
+.dept-panel:has(.dept-menu__item--beverages:focus-within) .dept-sub--beverages,
+.dept-panel:has(.dept-menu__item--hygiene:hover) .dept-sub--hygiene,
+.dept-panel:has(.dept-menu__item--hygiene:focus-within) .dept-sub--hygiene,
+.dept-panel:has(.dept-menu__item--deals:hover) .dept-sub--deals,
+.dept-panel:has(.dept-menu__item--deals:focus-within) .dept-sub--deals {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dept-panel:has(.dept-menu__item--fruits:hover) .dept-promo--fruits,
+.dept-panel:has(.dept-menu__item--fruits:focus-within) .dept-promo--fruits,
+.dept-panel:has(.dept-menu__item--dairy:hover) .dept-promo--dairy,
+.dept-panel:has(.dept-menu__item--dairy:focus-within) .dept-promo--dairy,
+.dept-panel:has(.dept-menu__item--grocery:hover) .dept-promo--grocery,
+.dept-panel:has(.dept-menu__item--grocery:focus-within) .dept-promo--grocery,
+.dept-panel:has(.dept-menu__item--beverages:hover) .dept-promo--beverages,
+.dept-panel:has(.dept-menu__item--beverages:focus-within) .dept-promo--beverages,
+.dept-panel:has(.dept-menu__item--hygiene:hover) .dept-promo--hygiene,
+.dept-panel:has(.dept-menu__item--hygiene:focus-within) .dept-promo--hygiene,
+.dept-panel:has(.dept-menu__item--deals:hover) .dept-promo--deals,
+.dept-panel:has(.dept-menu__item--deals:focus-within) .dept-promo--deals {
+  display: flex;
+}
+
+/* مخفی کردن پیش‌فرض وقتی آیتم دیگه فعاله */
+.dept-panel:has(.dept-menu__item:not(.dept-menu__item--fruits):hover) .dept-sub--fruits,
+.dept-panel:has(.dept-menu__item:not(.dept-menu__item--fruits):hover) .dept-promo--fruits {
+  opacity: 0;
+  visibility: hidden;
+  display: none;
+}
+
+/* nav */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav::-webkit-scrollbar { display: none; }
+
+.nav a {
+  display: block;
+  padding: 7px 12px;
+  color: var(--muted);
+  font-size: 0.87rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+
+.nav a:hover {
+  background: var(--lime-soft);
+  color: var(--navy);
+}
+
+.nav a.is-active {
+  color: var(--navy);
+  font-weight: 800;
+}
+
+/* nav deal */
+.nav-deal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  color: var(--lime);
+  background: var(--navy);
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 8px 14px;
+  transition:
+    background 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+
+.nav-deal:hover {
+  background: var(--navy-2);
+}
+
+.nav-deal svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
 @media (min-width: 768px) {
   .header-nav { display: block; }
 }
@@ -717,3 +1008,5 @@ ul { list-style: none; }
   .logo__topping { opacity: 1; transform: none; }
   .logo__shard { transform: none; }
 }
+
+
