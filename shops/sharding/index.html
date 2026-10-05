@@ -80,20 +80,22 @@
         </span>
       </a>
 
-      <form class="search" role="search">
-        <label for="search-input" class="visually-hidden">جستجو در محصولات</label>
-        <button type="submit" class="search__submit" aria-label="جستجو">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
-          </svg>
-        </button>
-        <input
-          id="search-input"
-          class="search__input"
-          type="search"
-          placeholder="جستجوی محصول، برند یا دسته‌بندی…"
-          autocomplete="off">
-      </form>
+<form class="search" role="search">
+  <label for="search-input" class="visually-hidden">جستجو در محصولات</label>
+  
+  <span class="search__icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+    </svg>
+  </span>
+
+  <input
+    id="search-input"
+    class="search__input"
+    type="search"
+    placeholder="جستجوی محصول، برند یا دسته‌بندی…"
+    autocomplete="off">
+</form>
 
       <div class="actions">
         <a href="#" class="action action--location">
@@ -122,298 +124,281 @@
     <nav class="header-nav" aria-label="ناوبری اصلی">
       <div class="container header-nav__inner">
 
-        <div class="dept">
-          <button class="dept-btn" type="button" aria-expanded="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-            </svg>
-            <span>همه دسته‌بندی‌ها</span>
-          </button>
+<div class="dept">
+  <input type="checkbox" id="dept-toggle" class="dept-toggle">
 
-          <div class="dept-panel">
-            <ul class="dept-menu">
 
-              <!-- ========== FRUITS ========== -->
-              <li class="dept-menu__item dept-menu__item--fruits">
-                <a href="#fruits" class="dept-menu__link">میوه و سبزیجات</a>
+  <label for="dept-toggle" class="dept-btn">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+    </svg>
+    <span>همه دسته‌بندی‌ها</span>
+  </label>
 
-                <div class="dept-sub dept-sub--fruits">
-                  <div class="dept-sub__cols">
-                    <div>
-                      <h4 class="dept-sub__title">میوه تازه</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#fruits">سیب</a></li>
-                        <li><a href="#fruits">موز</a></li>
-                        <li><a href="#fruits">پرتقال</a></li>
-                        <li><a href="#fruits">انگور</a></li>
-                        <li><a href="#fruits">کیوی</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">سبزیجات</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#fruits">کاهو</a></li>
-                        <li><a href="#fruits">اسفناج</a></li>
-                        <li><a href="#fruits">جعفری</a></li>
-                        <li><a href="#fruits">ریحان</a></li>
-                        <li><a href="#fruits">تره</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">صیفی‌جات</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#fruits">گوجه</a></li>
-                        <li><a href="#fruits">خیار</a></li>
-                        <li><a href="#fruits">فلفل دلمه</a></li>
-                        <li><a href="#fruits">بادمجان</a></li>
-                        <li><a href="#fruits">کدو</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <a href="#fruits" class="dept-promo dept-promo--fruits">
-                  <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-fruits.webp" alt="" loading="lazy" width="400" height="600">
-                  </span>
-                  <span class="dept-promo__body">
-                    <span class="dept-promo__title">تازه از مزرعه</span>
-                    <span class="dept-promo__desc">تا ۳۰٪ تخفیف روی میوه‌های فصل</span>
-                  </span>
-                </a>
-              </li>
-
-              <!-- ========== DAIRY ========== -->
-              <li class="dept-menu__item dept-menu__item--dairy">
-                <a href="#dairy" class="dept-menu__link">لبنیات و تخم‌مرغ</a>
-
-                <div class="dept-sub dept-sub--dairy">
-                  <div class="dept-sub__cols">
-                    <div>
-                      <h4 class="dept-sub__title">شیر و خامه</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#dairy">شیر پرچرب</a></li>
-                        <li><a href="#dairy">شیر کم‌چرب</a></li>
-                        <li><a href="#dairy">خامه صبحانه</a></li>
-                        <li><a href="#dairy">خامه قنادی</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">پنیر</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#dairy">پنیر سفید</a></li>
-                        <li><a href="#dairy">پنیر پیتزا</a></li>
-                        <li><a href="#dairy">پنیر خامه‌ای</a></li>
-                        <li><a href="#dairy">پنیر لیقوان</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">ماست و تخم‌مرغ</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#dairy">ماست پرچرب</a></li>
-                        <li><a href="#dairy">ماست کم‌چرب</a></li>
-                        <li><a href="#dairy">دوغ سنتی</a></li>
-                        <li><a href="#dairy">تخم‌مرغ محلی</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <a href="#dairy" class="dept-promo dept-promo--dairy">
-                  <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-dairy.webp" alt="" loading="lazy" width="400" height="600">
-                  </span>
-                  <span class="dept-promo__body">
-                    <span class="dept-promo__title">لبنیات و تخم‌مرغ</span>
-                    <span class="dept-promo__desc">ارسال روزانه از دامداری‌های محلی</span>
-                  </span>
-                </a>
-              </li>
-
-              <!-- ========== GROCERY ========== -->
-              <li class="dept-menu__item dept-menu__item--grocery">
-                <a href="#grocery" class="dept-menu__link">خواروبار</a>
-
-                <div class="dept-sub dept-sub--grocery">
-                  <div class="dept-sub__cols">
-                    <div>
-                      <h4 class="dept-sub__title">برنج و حبوبات</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#grocery">برنج هاشمی</a></li>
-                        <li><a href="#grocery">برنج طارم</a></li>
-                        <li><a href="#grocery">لوبیا چیتی</a></li>
-                        <li><a href="#grocery">عدس</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">روغن و سرکه</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#grocery">روغن زیتون</a></li>
-                        <li><a href="#grocery">روغن آفتابگردان</a></li>
-                        <li><a href="#grocery">سرکه سیب</a></li>
-                        <li><a href="#grocery">سرکه بالزامیک</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">ماکارونی و ادویه</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#grocery">ماکارونی رشته</a></li>
-                        <li><a href="#grocery">ماکارونی فرمی</a></li>
-                        <li><a href="#grocery">زردچوبه</a></li>
-                        <li><a href="#grocery">فلفل سیاه</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <a href="#grocery" class="dept-promo dept-promo--grocery">
-                  <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-grocery.webp" alt="" loading="lazy" width="400" height="600">
-                  </span>
-                  <span class="dept-promo__body">
-                    <span class="dept-promo__title">خرید عمده</span>
-                    <span class="dept-promo__desc">تخفیف ویژه روی بسته‌های خانواده</span>
-                  </span>
-                </a>
-              </li>
-
-              <!-- ========== BEVERAGES ========== -->
-              <li class="dept-menu__item dept-menu__item--beverages">
-                <a href="#beverages" class="dept-menu__link">نوشیدنی</a>
-
-                <div class="dept-sub dept-sub--beverages">
-                  <div class="dept-sub__cols">
-                    <div>
-                      <h4 class="dept-sub__title">آبمیوه</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#beverages">آب‌پرتقال</a></li>
-                        <li><a href="#beverages">آب‌سیب</a></li>
-                        <li><a href="#beverages">آب‌انار</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">چای و قهوه</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#beverages">چای سیاه</a></li>
-                        <li><a href="#beverages">چای سبز</a></li>
-                        <li><a href="#beverages">قهوه ترک</a></li>
-                        <li><a href="#beverages">قهوه اسپرسو</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">نوشابه و آب</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#beverages">نوشابه خانواده</a></li>
-                        <li><a href="#beverages">آب معدنی</a></li>
-                        <li><a href="#beverages">دمنوش گیاهی</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <a href="#beverages" class="dept-promo dept-promo--beverages">
-                  <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-beverages.webp" alt="" loading="lazy" width="400" height="600">
-                  </span>
-                  <span class="dept-promo__body">
-                    <span class="dept-promo__title">خنک و تازه</span>
-                    <span class="dept-promo__desc">نوشیدنی‌های سرد با تخفیف ویژه</span>
-                  </span>
-                </a>
-              </li>
-
-              <!-- ========== HYGIENE ========== -->
-              <li class="dept-menu__item dept-menu__item--hygiene">
-                <a href="#hygiene" class="dept-menu__link">شوینده و بهداشتی</a>
-
-                <div class="dept-sub dept-sub--hygiene">
-                  <div class="dept-sub__cols">
-                    <div>
-                      <h4 class="dept-sub__title">شوینده ظرف</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#hygiene">مایع ظرفشویی</a></li>
-                        <li><a href="#hygiene">اسفنج</a></li>
-                        <li><a href="#hygiene">دستکش</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">شوینده لباس</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#hygiene">پودر ماشین</a></li>
-                        <li><a href="#hygiene">مایع دستشویی</a></li>
-                        <li><a href="#hygiene">نرم‌کننده</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">بهداشت شخصی</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#hygiene">شامپو</a></li>
-                        <li><a href="#hygiene">صابون</a></li>
-                        <li><a href="#hygiene">خمیردندان</a></li>
-                        <li><a href="#hygiene">دستمال کاغذی</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <a href="#hygiene" class="dept-promo dept-promo--hygiene">
-                  <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-hygiene.webp" alt="" loading="lazy" width="400" height="600">
-                  </span>
-                  <span class="dept-promo__body">
-                    <span class="dept-promo__title">خانه تمیز</span>
-                    <span class="dept-promo__desc">ست کامل شوینده با قیمت ویژه</span>
-                  </span>
-                </a>
-              </li>
-
-              <!-- ========== DEALS ========== -->
-              <li class="dept-menu__item dept-menu__item--deals">
-                <a href="#deals" class="dept-menu__link">تخفیف‌ها و پیشنهادها</a>
-
-                <div class="dept-sub dept-sub--deals">
-                  <div class="dept-sub__cols">
-                    <div>
-                      <h4 class="dept-sub__title">پیشنهاد روز</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#deals">تخفیف میوه</a></li>
-                        <li><a href="#deals">تخفیف لبنیات</a></li>
-                        <li><a href="#deals">تخفیف نوشیدنی</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">پیشنهاد هفته</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#deals">جعبه میوه</a></li>
-                        <li><a href="#deals">سبد صبحانه</a></li>
-                        <li><a href="#deals">بسته خانواده</a></li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 class="dept-sub__title">کوپن‌ها</h4>
-                      <ul class="dept-sub__list">
-                        <li><a href="#deals">کوپن تخفیف</a></li>
-                        <li><a href="#deals">ارسال رایگان</a></li>
-                        <li><a href="#deals">هدیه خرید</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                <a href="#deals" class="dept-promo dept-promo--deals">
-                  <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-deals.webp" alt="" loading="lazy" width="400" height="600">
-                  </span>
-                  <span class="dept-promo__body">
-                    <span class="dept-promo__title">تا ۴۰٪ تخفیف</span>
-                    <span class="dept-promo__desc">فرصت محدود — همین حالا خرید کنید</span>
-                  </span>
-                </a>
-              </li>
-
-            </ul>
+  <div class="dept-panel">
+    <ul class="dept-menu">
+      <li class="dept-menu__item dept-menu__item--fruits">
+        <a href="#fruits" class="dept-menu__link">میوه و سبزیجات</a>
+        <div class="dept-sub dept-sub--fruits">
+          <div class="dept-sub__cols">
+            <div>
+              <h4 class="dept-sub__title">میوه تازه</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#fruits">سیب</a></li>
+                <li><a href="#fruits">موز</a></li>
+                <li><a href="#fruits">پرتقال</a></li>
+                <li><a href="#fruits">انگور</a></li>
+                <li><a href="#fruits">کیوی</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">سبزیجات</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#fruits">کاهو</a></li>
+                <li><a href="#fruits">اسفناج</a></li>
+                <li><a href="#fruits">جعفری</a></li>
+                <li><a href="#fruits">ریحان</a></li>
+                <li><a href="#fruits">تره</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">صیفی‌جات</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#fruits">گوجه</a></li>
+                <li><a href="#fruits">خیار</a></li>
+                <li><a href="#fruits">فلفل دلمه</a></li>
+                <li><a href="#fruits">بادمجان</a></li>
+                <li><a href="#fruits">کدو</a></li>
+              </ul>
+            </div>
           </div>
         </div>
+        <a href="#fruits" class="dept-promo dept-promo--fruits">
+          <span class="dept-promo__media" aria-hidden="true">
+            <img src="assets/promo-fruits.webp" alt="" loading="lazy" width="400" height="600">
+          </span>
+          <span class="dept-promo__body">
+            <span class="dept-promo__title">تازه از مزرعه</span>
+            <span class="dept-promo__desc">تا ۳۰٪ تخفیف روی میوه‌های فصل</span>
+          </span>
+        </a>
+      </li>
+
+      <li class="dept-menu__item dept-menu__item--dairy">
+        <a href="#dairy" class="dept-menu__link">لبنیات و تخم‌مرغ</a>
+        <div class="dept-sub dept-sub--dairy">
+          <div class="dept-sub__cols">
+            <div>
+              <h4 class="dept-sub__title">شیر و خامه</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#dairy">شیر پرچرب</a></li>
+                <li><a href="#dairy">شیر کم‌چرب</a></li>
+                <li><a href="#dairy">خامه صبحانه</a></li>
+                <li><a href="#dairy">خامه قنادی</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">پنیر</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#dairy">پنیر سفید</a></li>
+                <li><a href="#dairy">پنیر پیتزا</a></li>
+                <li><a href="#dairy">پنیر خامه‌ای</a></li>
+                <li><a href="#dairy">پنیر لیقوان</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">ماست و تخم‌مرغ</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#dairy">ماست پرچرب</a></li>
+                <li><a href="#dairy">ماست کم‌چرب</a></li>
+                <li><a href="#dairy">دوغ سنتی</a></li>
+                <li><a href="#dairy">تخم‌مرغ محلی</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <a href="#dairy" class="dept-promo dept-promo--dairy">
+          <span class="dept-promo__media" aria-hidden="true">
+            <img src="assets/promo-dairy.webp" alt="" loading="lazy" width="400" height="600">
+          </span>
+          <span class="dept-promo__body">
+            <span class="dept-promo__title">لبنیات و تخم‌مرغ</span>
+            <span class="dept-promo__desc">ارسال روزانه از دامداری‌های محلی</span>
+          </span>
+        </a>
+      </li>
+
+      <li class="dept-menu__item dept-menu__item--grocery">
+        <a href="#grocery" class="dept-menu__link">خواروبار</a>
+        <div class="dept-sub dept-sub--grocery">
+          <div class="dept-sub__cols">
+            <div>
+              <h4 class="dept-sub__title">برنج و حبوبات</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#grocery">برنج هاشمی</a></li>
+                <li><a href="#grocery">برنج طارم</a></li>
+                <li><a href="#grocery">لوبیا چیتی</a></li>
+                <li><a href="#grocery">عدس</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">روغن و سرکه</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#grocery">روغن زیتون</a></li>
+                <li><a href="#grocery">روغن آفتابگردان</a></li>
+                <li><a href="#grocery">سرکه سیب</a></li>
+                <li><a href="#grocery">سرکه بالزامیک</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">ماکارونی و ادویه</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#grocery">ماکارونی رشته</a></li>
+                <li><a href="#grocery">ماکارونی فرمی</a></li>
+                <li><a href="#grocery">زردچوبه</a></li>
+                <li><a href="#grocery">فلفل سیاه</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <a href="#grocery" class="dept-promo dept-promo--grocery">
+          <span class="dept-promo__media" aria-hidden="true">
+            <img src="assets/promo-grocery.webp" alt="" loading="lazy" width="400" height="600">
+          </span>
+          <span class="dept-promo__body">
+            <span class="dept-promo__title">خرید عمده</span>
+            <span class="dept-promo__desc">تخفیف ویژه روی بسته‌های خانواده</span>
+          </span>
+        </a>
+      </li>
+
+      <li class="dept-menu__item dept-menu__item--beverages">
+        <a href="#beverages" class="dept-menu__link">نوشیدنی</a>
+        <div class="dept-sub dept-sub--beverages">
+          <div class="dept-sub__cols">
+            <div>
+              <h4 class="dept-sub__title">آبمیوه</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#beverages">آب‌پرتقال</a></li>
+                <li><a href="#beverages">آب‌سیب</a></li>
+                <li><a href="#beverages">آب‌انار</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">چای و قهوه</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#beverages">چای سیاه</a></li>
+                <li><a href="#beverages">چای سبز</a></li>
+                <li><a href="#beverages">قهوه ترک</a></li>
+                <li><a href="#beverages">قهوه اسپرسو</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">نوشابه و آب</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#beverages">نوشابه خانواده</a></li>
+                <li><a href="#beverages">آب معدنی</a></li>
+                <li><a href="#beverages">دمنوش گیاهی</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <a href="#beverages" class="dept-promo dept-promo--beverages">
+          <span class="dept-promo__media" aria-hidden="true">
+            <img src="assets/promo-beverages.webp" alt="" loading="lazy" width="400" height="600">
+          </span>
+          <span class="dept-promo__body">
+            <span class="dept-promo__title">خنک و تازه</span>
+            <span class="dept-promo__desc">نوشیدنی‌های سرد با تخفیف ویژه</span>
+          </span>
+        </a>
+      </li>
+
+      <li class="dept-menu__item dept-menu__item--hygiene">
+        <a href="#hygiene" class="dept-menu__link">شوینده و بهداشتی</a>
+        <div class="dept-sub dept-sub--hygiene">
+          <div class="dept-sub__cols">
+            <div>
+              <h4 class="dept-sub__title">شوینده ظرف</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#hygiene">مایع ظرفشویی</a></li>
+                <li><a href="#hygiene">اسفنج</a></li>
+                <li><a href="#hygiene">دستکش</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">شوینده لباس</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#hygiene">پودر ماشین</a></li>
+                <li><a href="#hygiene">مایع دستشویی</a></li>
+                <li><a href="#hygiene">نرم‌کننده</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">بهداشت شخصی</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#hygiene">شامپو</a></li>
+                <li><a href="#hygiene">صابون</a></li>
+                <li><a href="#hygiene">خمیردندان</a></li>
+                <li><a href="#hygiene">دستمال کاغذی</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <a href="#hygiene" class="dept-promo dept-promo--hygiene">
+          <span class="dept-promo__media" aria-hidden="true">
+            <img src="assets/promo-hygiene.webp" alt="" loading="lazy" width="400" height="600">
+          </span>
+          <span class="dept-promo__body">
+            <span class="dept-promo__title">خانه تمیز</span>
+            <span class="dept-promo__desc">ست کامل شوینده با قیمت ویژه</span>
+          </span>
+        </a>
+      </li>
+
+      <li class="dept-menu__item dept-menu__item--deals">
+        <a href="#deals" class="dept-menu__link">تخفیف‌ها و پیشنهادها</a>
+        <div class="dept-sub dept-sub--deals">
+          <div class="dept-sub__cols">
+            <div>
+              <h4 class="dept-sub__title">پیشنهاد روز</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#deals">تخفیف میوه</a></li>
+                <li><a href="#deals">تخفیف لبنیات</a></li>
+                <li><a href="#deals">تخفیف نوشیدنی</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">پیشنهاد هفته</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#deals">جعبه میوه</a></li>
+                <li><a href="#deals">سبد صبحانه</a></li>
+                <li><a href="#deals">بسته خانواده</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 class="dept-sub__title">کوپن‌ها</h4>
+              <ul class="dept-sub__list">
+                <li><a href="#deals">کوپن تخفیف</a></li>
+                <li><a href="#deals">ارسال رایگان</a></li>
+                <li><a href="#deals">هدیه خرید</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <a href="#deals" class="dept-promo dept-promo--deals">
+          <span class="dept-promo__media" aria-hidden="true">
+            <img src="assets/promo-deals.webp" alt="" loading="lazy" width="400" height="600">
+          </span>
+          <span class="dept-promo__body">
+            <span class="dept-promo__title">تا ۴۰٪ تخفیف</span>
+            <span class="dept-promo__desc">فرصت محدود — همین حالا خرید کنید</span>
+          </span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
 
         <ul class="nav">
           <li><a href="#main-content" class="is-active" aria-current="page">خانه</a></li>

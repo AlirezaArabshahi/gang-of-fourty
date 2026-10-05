@@ -46,7 +46,7 @@ html {
 
 body {
   font-family: "Vazirmatn", "IRANSansX", "IRANSans", "Segoe UI", Tahoma, sans-serif;
-  direction: rtl;
+  /* direction: rtl; */
   font-size: 14px;
   line-height: 1.7;
   color: var(--text);
@@ -110,8 +110,8 @@ ul {
     0 0 0 4px var(--lime);          
 }
 
-main:focus,
-main:focus-visible {
+input:focus-visible,
+textarea:focus-visible {
   outline: none;
   box-shadow: none;
 }
