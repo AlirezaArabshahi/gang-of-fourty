@@ -95,12 +95,17 @@ ul {
 }
 
 :focus-visible {
-  outline: 2px solid transparent;    /* ← outline نامرئی برای دسترسی‌پذیری */
+  outline: 2px solid transparent;  
   outline-offset: 2px;
   box-shadow:
-    0 0 0 2px var(--white),          /* ← هاله سفید داخلی (جداکننده) */
-    0 0 0 4px var(--lime);           /* ← حلقه لیمویی خارجی */
-  border-radius: 4px;
+    0 0 0 2px var(--white),         
+    0 0 0 4px var(--lime);          
+}
+
+main:focus,
+main:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 [id] {
@@ -119,20 +124,44 @@ ul {
   border: 0;
 }
 
+/* =====================================================
+   SKIP LINK — GOV.UK style
+   ===================================================== */
 .skip-link {
-  position: absolute;
-  top: -100px;
-  inset-inline-start: var(--sp-md);
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
   z-index: 9999;
-  padding: var(--sp-sm) var(--sp-lg);
-  background: var(--navy);
-  color: var(--lime);
-  font-weight: 800;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  transition: top 0.25s var(--ease);
+
+  transform: translateY(-100%);
+  transition: transform 0.2s var(--ease);
+
+  /* نوار تمام‌عرض */
+  display: block;
+  background: var(--lime);
+  color: var(--navy);
+  text-decoration: none;         /* underline رو از نوار بردار */
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.skip-link:focus {
-  top: var(--sp-md);
+/* متن داخلی: هم‌راستا با container */
+.skip-link .container {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .skip-link .container {
+    min-height: 38px;
+  }
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: none;
 }
