@@ -208,25 +208,6 @@
   z-index: 3;
 }
 
-.dept-promo__icon {
-  position: absolute;
-  top: 20px;
-  inset-inline-end: 20px;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  background: var(--lime);
-  color: var(--navy);
-}
-
-.dept-promo__icon svg {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-}
-
 .dept-promo__body {
   position: relative;
   z-index: 2;
