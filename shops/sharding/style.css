@@ -1,9 +1,6 @@
 @import url("styles/fonts.css");
-/* ----- TOKENS + RESET + BASE ----- */
 @import url("styles/base.css");
-/* ----- LAYOUT (topbar, header, nav, footer, mobile-menu) ----- */
 @import url("styles/layout.css");
-/* ----- HERO (video + carousel) ----- */
 @import url("styles/hero.css");
 @import url("styles/categories.css");
 @import url("styles/mega-menu.css");

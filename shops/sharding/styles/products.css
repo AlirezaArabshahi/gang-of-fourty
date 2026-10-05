@@ -1,4 +1,3 @@
-
 .products {
   padding: var(--sp-md) 0;
 }
@@ -170,13 +169,13 @@
   font-weight: 500;
   color: var(--faint);
   white-space: nowrap;
-  text-decoration: none;  
+  text-decoration: none;
   flex-shrink: 0;
 }
 .product__current {
    font-size: 0.92rem;
-  font-weight: 800;    
-  color: var(--navy);      
+  font-weight: 800;
+  color: var(--navy);
   white-space: nowrap;
 }
 

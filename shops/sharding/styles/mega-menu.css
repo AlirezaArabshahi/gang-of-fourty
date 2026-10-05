@@ -1,12 +1,8 @@
-/* =====================================================
-   MEGA MENU
-   ===================================================== */
 .dept {
   position: relative;
   flex-shrink: 0;
 }
 
-/* چک‌باکس مخفی (قابل فوکوس با Tab) */
 .dept-toggle {
   position: absolute;
   width: 1px;
@@ -15,7 +11,6 @@
   pointer-events: none;
 }
 
-/* نمایش فوکوس روی لیبل وقتی چک‌باکس فوکوس دارد */
 .dept-toggle:focus-visible + .dept-btn {
   outline: 2px solid var(--navy);
   outline-offset: 2px;
@@ -46,9 +41,6 @@
   fill: currentColor;
 }
 
-/* -----------------------------------------------------
-   پنل مگا منو (حالت بسته)
-   ----------------------------------------------------- */
 .dept-panel {
   position: absolute;
   top: 100%;
@@ -71,7 +63,6 @@
     visibility 0s 0s;
 }
 
-/* باز شدن پنل با تیک چک‌باکس */
 .dept-toggle:checked ~ .dept-panel {
   opacity: 1;
   visibility: visible;
@@ -83,7 +74,6 @@
     visibility 0s 0s;
 }
 
-/* باز شدن پنل با هاور (اختیاری) */
 .dept:hover .dept-panel {
   opacity: 1;
   visibility: visible;
@@ -91,7 +81,6 @@
   pointer-events: auto;
 }
 
-/* فاصله بین دکمه و پنل برای هاور */
 .dept::after {
   content: "";
   position: absolute;
@@ -103,9 +92,6 @@
   z-index: 1099;
 }
 
-/* -----------------------------------------------------
-   منوی اصلی (ستون راست)
-   ----------------------------------------------------- */
 .dept-menu {
   width: 220px;
   min-height: 400px;
@@ -136,9 +122,6 @@
   font-weight: 700;
 }
 
-/* -----------------------------------------------------
-   زیرمنو و پرومو (حالت پیش‌فرض: مخفی)
-   ----------------------------------------------------- */
 .dept-sub {
   position: absolute;
   top: 0;
@@ -172,9 +155,6 @@
   transition: opacity 0.15s var(--ease), visibility 0s 0s;
 }
 
-/* -----------------------------------------------------
-   نمایش زیرمنو با هاور یا فوکوس روی آیتم
-   ----------------------------------------------------- */
 .dept-menu__item:hover > .dept-sub,
 .dept-menu__item:focus-within > .dept-sub {
   visibility: visible;
@@ -187,16 +167,12 @@
   opacity: 1;
 }
 
-/* -----------------------------------------------------
-   نمایش پیش‌فرض زیرمنوی آیتم اول
-   ----------------------------------------------------- */
 .dept-menu__item--fruits > .dept-sub,
 .dept-menu__item--fruits > .dept-promo {
   visibility: visible;
   opacity: 1;
 }
 
-/* وقتی روی آیتم دیگری هاور/فوکوس است، زیرمنوی آیتم اول مخفی شود */
 .dept-menu:hover > .dept-menu__item--fruits:not(:hover) > .dept-sub,
 .dept-menu:focus-within > .dept-menu__item--fruits:not(:focus-within) > .dept-sub,
 .dept-menu:hover > .dept-menu__item--fruits:not(:hover) > .dept-promo,
@@ -205,9 +181,6 @@
   opacity: 0;
 }
 
-/* -----------------------------------------------------
-   استایل‌های داخلی زیرمنو
-   ----------------------------------------------------- */
 .dept-sub__cols {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -242,9 +215,6 @@
   font-weight: 700;
 }
 
-/* -----------------------------------------------------
-   پروموشن (تصویر سمت چپ)
-   ----------------------------------------------------- */
 .dept-promo__media {
   position: absolute;
   inset: 0;
@@ -309,9 +279,6 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* =====================================================
-   بستن خودکار پنل وقتی فوکوس و ماوس خارج شد
-   ===================================================== */
 .dept:not(:focus-within):not(:hover) .dept-panel {
   opacity: 0;
   visibility: hidden;

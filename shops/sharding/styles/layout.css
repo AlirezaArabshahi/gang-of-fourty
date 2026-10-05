@@ -77,7 +77,6 @@
   fill: currentColor;
 }
 
-
 .brand {
   order: 2;
   display: flex;
@@ -157,16 +156,12 @@
              calc(var(--i) * 0.08s + 2.1s) both;
 }
 
-
-/* =====================================================
-   SEARCH (فرم جستجو) - نسخه اصلاح شده نهایی
-   ===================================================== */
 .search {
   position: relative;
   order: 4;
   flex-basis: 100%;
   display: flex;
-  align-items: center; 
+  align-items: center;
   height: 42px;
   background: var(--bg);
   border: 1px solid transparent;
@@ -182,7 +177,6 @@
   border-color: var(--lime);
   box-shadow: var(--lime-ring);
 }
-
 
 .search__icon {
   display: grid;
@@ -208,8 +202,8 @@
 .search__input {
   flex: 1 1 auto;
   min-width: 0;
-  height: 36px; /* ارتفاع ثابت */
-  line-height: 36px; /* دقیقاً برابر با ارتفاع برای جلوگیری از بیرون زدن کرسر */
+  height: 36px;
+  line-height: 36px;
   border: none;
   background: transparent;
   padding: 0 10px;
@@ -218,17 +212,15 @@
   color: var(--text);
 }
 
-/* حذف دکمه پیش‌فرض پاک کردن در وب‌کیت */
 .search__input::-webkit-search-cancel-button {
   -webkit-appearance: none;
 }
 
 .search__input::placeholder {
   color: var(--faint);
-  line-height: normal; /* جلوگیری از به ارث بردن line-height بزرگ */
+  line-height: normal;
 }
 
-/* actions */
 .actions {
   order: 3;
   display: flex;
@@ -297,7 +289,6 @@
 .action__label {
   display: none;
 }
-
 
 .mobile-menu__overlay {
   position: fixed;
@@ -481,7 +472,6 @@
   background: var(--navy-2);
 }
 
-
 .header-nav {
   display: none;
   border-top: 1px solid var(--border);
@@ -493,7 +483,6 @@
   gap: var(--sp-lg);
   min-height: 54px;
 }
-
 
 .nav {
   display: flex;
@@ -511,7 +500,7 @@
 }
 
 .nav a {
-  display: inline-flex; /* تغییر از block به inline-flex برای گرفتن ارتفاع دقیق */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 7px 12px;
@@ -519,7 +508,7 @@
   font-size: 0.87rem;
   font-weight: 500;
   white-space: nowrap;
-  border-radius: 2px; /* برای زیبایی فوکوس */
+  border-radius: 2px;
   transition:
     background 0.2s var(--ease),
     color 0.2s var(--ease),
@@ -527,8 +516,8 @@
 }
 
 .nav li {
-  margin: 4px 0; /* حداقل ۴ پیکسل فاصله بالا و پایین */
-  flex-shrink: 0; /* جلوگیری از فشرده شدن liها */
+  margin: 4px 0;
+  flex-shrink: 0;
 }
 
 .nav a:hover {
@@ -537,17 +526,15 @@
 }
 
 .nav a:focus-visible {
-  outline: 2px solid var(--lime); /* خط دور خود لینک */
+  outline: 2px solid var(--lime);
   outline-offset: 2px;
-  box-shadow: none; /* حذف box-shadow پیش‌فرض */
+  box-shadow: none;
 }
 
 .nav a.is-active {
   color: var(--navy);
   font-weight: 800;
 }
-
-
 
 .footer {
   background: var(--white);
@@ -657,7 +644,6 @@
   height: 14px;
   fill: currentColor;
 }
-
 
 @media (min-width: 768px) {
   .mobile-menu,
