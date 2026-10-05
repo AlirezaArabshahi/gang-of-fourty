@@ -1,20 +1,26 @@
 /* =====================================================
    PRODUCTS
    ===================================================== */
+
 .products {
   padding: var(--sp-md) 0;
 }
 
+/* outer container: بدون padding تا بنر به لبه‌ها بچسبه */
 .products__inner {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-md);
+  gap: 0;
   background: var(--white);
   border: 1px solid var(--border);
-  padding: var(--sp-md);
+  border-radius: var(--radius);
+  overflow: hidden;
+  padding: 0;
 }
 
+/* بخش اصلی محصولات: padding اینجاست */
 .products__main {
+  padding: var(--sp-md);
   min-width: 0;
 }
 
@@ -76,6 +82,7 @@
   scroll-snap-stop: always;
 }
 
+/* ⭐️ کارت محصول — بورد دار، hover نرم */
 .product {
   display: flex;
   flex-direction: column;
@@ -86,16 +93,16 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   transition:
-    transform 0.25s var(--ease),
+    border-color 0.25s var(--ease),
     box-shadow 0.25s var(--ease),
-    border-color 0.25s var(--ease);
+    transform 0.25s var(--ease);
 }
 
 .product:hover,
 .product:focus-within {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
   border-color: var(--lime);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .product__link {
@@ -211,6 +218,7 @@
   fill: currentColor;
 }
 
+/* ⭐️ بنر — چسبیده به لبه‌ها، با خط جداکننده از محصولات */
 .products__banner {
   display: flex;
   align-items: center;
@@ -219,13 +227,14 @@
   padding: var(--sp-md);
   background: linear-gradient(135deg, var(--navy-2) 0%, var(--navy) 100%);
   border-inline-start: 4px solid var(--lime);
+  border-top: 1px solid var(--border);
   color: var(--white);
-  border-radius: var(--radius);
-  transition: transform 0.2s var(--ease);
+  border-radius: 0;
+  transition: background 0.2s var(--ease);
 }
 
 .products__banner:hover {
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
 }
 
 .products__banner-content {

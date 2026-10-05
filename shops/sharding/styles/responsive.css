@@ -88,7 +88,7 @@
     padding: var(--sp-lg) 0;
   }
 
-  .products__inner {
+  .products__main {
     padding: var(--sp-md);
   }
 
@@ -260,10 +260,18 @@
     font-size: 0.85rem;
   }
 
+  /* ⭐️ گرید دو ستونه: محصولات + بنر چسبیده به لبه‌ها */
   .products__inner {
     display: grid;
-    grid-template-columns: 1fr 220px;
-    gap: var(--sp-md);
+    grid-template-columns: 1fr 260px;
+    gap: 0;
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .products__main {
+    padding: var(--sp-md);
+    border-inline-end: 1px solid var(--border);
   }
 
   .products__item {
@@ -275,6 +283,7 @@
     align-items: flex-start;
     justify-content: flex-end;
     padding: var(--sp-md);
+    border-top: 0;
   }
 
   .products__banner-title {
