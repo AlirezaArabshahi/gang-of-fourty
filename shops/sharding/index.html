@@ -34,7 +34,8 @@
   <header class="header">
     <div class="container header__inner">
 
-      <label for="menu-toggle" class="menu-btn" aria-label="باز کردن منو">
+      <label for="menu-toggle" class="menu-btn">
+        <span class="visually-hidden">باز کردن منو</span>
         <svg class="menu-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
         </svg>
@@ -116,7 +117,9 @@
             <path d="M7 18a2 2 0 1 0 2 2 2 2 0 0 0-2-2zM1 2v2h2l3.6 7.59-1.35 2.45A1.96 1.96 0 0 0 5 15a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12.9-1.63h7.45a2 2 0 0 0 1.75-1.03l3.58-6.49A1 1 0 0 0 19.88 4H5.21l-.94-2H1zm16 16a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/>
           </svg>
           <span class="action__label">سبد خرید</span>
-          <span class="badge" aria-label="۰ مورد">۰</span>
+          <span class="badge">
+            <span class="visually-hidden">۰ مورد</span>۰
+          </span>
         </a>
       </div>
 
@@ -418,7 +421,8 @@
 
   <div class="mobile-menu">
     <div class="mobile-menu__head">
-      <label for="menu-toggle" class="mobile-menu__close" aria-label="بستن منو">
+      <label for="menu-toggle" class="mobile-menu__close">
+        <span class="visually-hidden">بستن منو</span>
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
         </svg>
@@ -528,6 +532,7 @@
   <main id="main-content" tabindex="-1">
 
     <section class="categories" aria-labelledby="categories-title">
+      <h2 id="categories-title" class="visually-hidden">دسته‌بندی محصولات</h2>
       <div class="container">
 
         <ul class="categories__list" tabindex="0" aria-label="دسته‌بندی محصولات">
@@ -689,6 +694,7 @@
     </section>
 
     <section class="products" id="fruits" aria-labelledby="fruits-title">
+      <h2 id="fruits-title" class="visually-hidden">میوه و سبزیجات</h2>
       <div class="container">
         <div class="products__inner">
 
@@ -701,7 +707,7 @@
                     <span class="product__img">
                       <img src="assets/p-strawberry.webp" alt="توت‌فرنگی" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">توت‌فرنگی — ۵۰۰ گرم</span>
+                    <h3 class="product__name">توت‌فرنگی — ۵۰۰ گرم</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -722,7 +728,7 @@
                     <span class="product__img">
                       <img src="assets/p-apple.webp" alt="سیب سرخ" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">سیب سرخ — ۱ کیلو</span>
+                    <h3 class="product__name">سیب سرخ — ۱ کیلو</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -744,7 +750,7 @@
                       <img src="assets/p-banana.webp" alt="موز" loading="lazy" width="200" height="150">
                       <span class="product__badge-stock">ناموجود</span>
                     </span>
-                    <span class="product__name">موز — ۱ کیلو</span>
+                    <h3 class="product__name">موز — ۱ کیلو</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -765,7 +771,7 @@
                     <span class="product__img">
                       <img src="assets/p-grape.webp" alt="انگور" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">انگور بی‌دانه — ۵۰۰ گرم</span>
+                    <h3 class="product__name">انگور بی‌دانه — ۵۰۰ گرم</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -789,7 +795,7 @@
                       <img src="assets/p-orange.webp" alt="پرتقال" loading="lazy" width="200" height="150">
                       <span class="product__badge-stock">ناموجود</span>
                     </span>
-                    <span class="product__name">پرتقال شمال — ۲ کیلو</span>
+                    <h3 class="product__name">پرتقال شمال — ۲ کیلو</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -810,7 +816,7 @@
                     <span class="product__img">
                       <img src="assets/p-kiwi.webp" alt="کیوی" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">کیوی — ۵۰۰ گرم</span>
+                    <h3 class="product__name">کیوی — ۵۰۰ گرم</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -831,7 +837,7 @@
                     <span class="product__img">
                       <img src="assets/p-mango.webp" alt="انبه" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">انبه — ۱ کیلو</span>
+                    <h3 class="product__name">انبه — ۱ کیلو</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -855,6 +861,7 @@
     </section>
 
     <section class="products" id="dairy" aria-labelledby="dairy-title">
+      <h2 id="dairy-title" class="visually-hidden">لبنیات و تخم‌مرغ</h2>
       <div class="container">
         <div class="products__inner">
 
@@ -867,7 +874,7 @@
                     <span class="product__img">
                       <img src="assets/p-milk.webp" alt="شیر پرچرب" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">شیر پرچرب — ۱ لیتر</span>
+                    <h3 class="product__name">شیر پرچرب — ۱ لیتر</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -886,7 +893,7 @@
                     <span class="product__img">
                       <img src="assets/p-yogurt.webp" alt="ماست پرچرب" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">ماست پرچرب — ۲ کیلو</span>
+                    <h3 class="product__name">ماست پرچرب — ۲ کیلو</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -907,7 +914,7 @@
                     <span class="product__img">
                       <img src="assets/p-cheese.webp" alt="پنیر سفید" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">پنیر سفید — ۴۰۰ گرم</span>
+                    <h3 class="product__name">پنیر سفید — ۴۰۰ گرم</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -926,7 +933,7 @@
                     <span class="product__img">
                       <img src="assets/p-butter.webp" alt="کره حیوانی" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">کره حیوانی — ۱۰۰ گرم</span>
+                    <h3 class="product__name">کره حیوانی — ۱۰۰ گرم</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -945,7 +952,7 @@
                     <span class="product__img">
                       <img src="assets/p-cream.webp" alt="خامه صبحانه" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">خامه صبحانه — ۲۰۰ گرم</span>
+                    <h3 class="product__name">خامه صبحانه — ۲۰۰ گرم</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -964,7 +971,7 @@
                     <span class="product__img">
                       <img src="assets/p-egg.webp" alt="تخم‌مرغ محلی" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">تخم‌مرغ — ۹ عدد</span>
+                    <h3 class="product__name">تخم‌مرغ — ۹ عدد</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
@@ -985,7 +992,7 @@
                     <span class="product__img">
                       <img src="assets/p-dough.webp" alt="دوغ سنتی" loading="lazy" width="200" height="150">
                     </span>
-                    <span class="product__name">دوغ سنتی — ۱.۵ لیتر</span>
+                    <h3 class="product__name">دوغ سنتی — ۱.۵ لیتر</h3>
                   </a>
                   <div class="product__footer">
                     <span class="product__price">
