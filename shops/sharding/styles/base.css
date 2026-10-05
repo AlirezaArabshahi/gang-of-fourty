@@ -1,12 +1,12 @@
-/* =====================================================
-   TOKENS
-   ===================================================== */
+
 :root {
   --navy: #0F1319;
   --navy-2: #1A2030;
   --lime: #B5C400;
+  --lime-ring: rgba(181, 196, 0, 0.18);
   --lime-dark: #8A9700;
   --lime-soft: #F6F8DC;
+  --lime-hover: #A8B800;
   --text: #12161F;
   --muted: #59617A;
   --faint: #A5AAB8;
@@ -21,8 +21,8 @@
   --sp-md: 16px;
   --sp-lg: 24px;
 
-  --radius: 8px;
-  --radius-full: 999px;
+  --radius: 0;      
+  --radius-full: 999px; 
 
   --shadow: 0 2px 8px -2px rgba(18, 22, 31, 0.08);
   --shadow-lg: 0 8px 24px -8px rgba(18, 22, 31, 0.18);
@@ -31,9 +31,6 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* =====================================================
-   RESET
-   ===================================================== */
 *,
 *::before,
 *::after {
@@ -84,9 +81,7 @@ ul {
   list-style: none;
 }
 
-/* =====================================================
-   BASE UTILITIES
-   ===================================================== */
+
 .container {
   width: 100%;
   max-width: var(--container);
@@ -121,8 +116,24 @@ main:focus-visible {
   box-shadow: none;
 }
 
+.dept-btn:focus-visible,
+.product__add:focus-visible,
+.hero-video__cta:focus-visible,
+.mobile-menu__banner-cta:focus-visible,
+.skip-link:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--white),
+    0 0 0 4px var(--navy);
+}
+
 [id] {
-  scroll-margin-top: 140px;
+  scroll-margin-top: 90px;
+}
+
+@media (min-width: 768px) {
+  [id] {
+    scroll-margin-top: 140px;
+  }
 }
 
 .visually-hidden {
@@ -137,9 +148,7 @@ main:focus-visible {
   border: 0;
 }
 
-/* =====================================================
-   SKIP LINK — GOV.UK style
-   ===================================================== */
+
 .skip-link {
   position: fixed;
   top: 0;
@@ -149,16 +158,15 @@ main:focus-visible {
   transform: translateY(-100%);
   transition: transform 0.2s var(--ease);
 
-  /* نوار تمام‌عرض */
+
   display: block;
   background: var(--lime);
   color: var(--navy);
-  text-decoration: none;         /* underline رو از نوار بردار */
+  text-decoration: none;        
 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* متن داخلی: هم‌راستا با container */
 .skip-link .container {
   display: flex;
   align-items: center;

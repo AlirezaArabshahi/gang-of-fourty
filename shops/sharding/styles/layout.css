@@ -1,6 +1,4 @@
-/* =====================================================
-   TOPBAR
-   ===================================================== */
+
 .topbar {
   background: var(--navy);
   color: var(--faint);
@@ -33,9 +31,6 @@
   display: none;
 }
 
-/* =====================================================
-   HEADER
-   ===================================================== */
 .header {
   position: sticky;
   top: 0;
@@ -83,7 +78,7 @@
   fill: currentColor;
 }
 
-/* brand */
+
 .brand {
   order: 2;
   display: flex;
@@ -126,7 +121,6 @@
   display: none;
 }
 
-/* logo */
 .logo {
   width: 100%;
   height: 100%;
@@ -164,7 +158,7 @@
              calc(var(--i) * 0.08s + 2.1s) both;
 }
 
-/* search */
+
 .search {
   order: 4;
   flex-basis: 100%;
@@ -183,7 +177,7 @@
 .search:focus-within {
   background: var(--white);
   border-color: var(--lime);
-  box-shadow: 0 0 0 4px rgba(181, 196, 0, 0.18);
+  box-shadow: var(--lime-ring);
 }
 
 .search__submit {
@@ -299,9 +293,7 @@
   display: none;
 }
 
-/* =====================================================
-   MOBILE MENU
-   ===================================================== */
+
 .mobile-menu__overlay {
   position: fixed;
   inset: 0;
@@ -408,7 +400,7 @@
   flex-direction: column;
   gap: var(--sp-sm);
   padding: var(--sp-md);
-  background: var(--lime-soft);
+  background: var(--navy);
   border-inline-start: 4px solid var(--lime);
   color: var(--white);
 }
@@ -422,7 +414,7 @@
 .mobile-menu__banner-desc {
   font-size: 0.82rem;
   line-height: 1.6;
-  color: var(--faint);
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .mobile-menu__banner-cta {
@@ -484,9 +476,7 @@
   background: var(--navy-2);
 }
 
-/* =====================================================
-   HEADER NAV
-   ===================================================== */
+
 .header-nav {
   display: none;
   border-top: 1px solid var(--border);
@@ -499,9 +489,7 @@
   min-height: 54px;
 }
 
-/* =====================================================
-   NAV
-   ===================================================== */
+
 .nav {
   display: flex;
   align-items: center;
@@ -539,9 +527,7 @@
 }
 
 
-/* =====================================================
-   FOOTER
-   ===================================================== */
+
 .footer {
   background: var(--white);
   border-top: 1px solid var(--border);

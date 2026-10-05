@@ -1,6 +1,4 @@
-/* =====================================================
-   TABLET (≥640px)
-   ===================================================== */
+
 @media (min-width: 640px) {
   .topbar__inner {
     justify-content: space-between;
@@ -99,7 +97,7 @@
   }
 
   .products__item {
-    flex: 0 0 calc((100% - var(--sp-sm) * 3) / 4);
+    flex: 0 0 calc((100% - var(--sp-sm) * 5) / 6);  
   }
 
   .products__title {
@@ -111,7 +109,17 @@
   }
 
   .product__current {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  .product__old {
+    font-size: 0.74rem;
+  }
+
+  .product__discount {
+    font-size: 0.7rem;
+    padding: 2px 7px;
   }
 
   .product__add {
@@ -130,9 +138,7 @@
   }
 }
 
-/* =====================================================
-   DESKTOP (≥768px)
-   ===================================================== */
+
 @media (min-width: 768px) {
   .header__inner {
     flex-wrap: nowrap;
@@ -261,46 +267,22 @@
     font-size: 0.85rem;
   }
 
-  /* ⭐️ گرید دو ستونه: محصولات + بنر چسبیده به لبه‌ها */
-  .products__inner {
-    display: grid;
-    grid-template-columns: 1fr 260px;
-    gap: 0;
-    padding: 0;
-    align-items: stretch;
-  }
+.products__inner {
+  display: block;    
+  padding: 0;
+  background: var(--white);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
 
   .products__main {
     padding: var(--sp-md);
-    border-inline-end: 1px solid var(--border);
   }
 
   .products__item {
     flex: 0 0 calc((100% - var(--sp-sm) * 4) / 5);
   }
 
-  .products__banner {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-end;
-    padding: var(--sp-md);
-    border-top: 0;
-  }
-
-  .products__banner-title {
-    font-size: 1.05rem;
-  }
-
-  .products__banner-desc {
-    font-size: 0.78rem;
-  }
-
-  .products__banner-cta {
-    align-self: flex-start;
-    margin-top: var(--sp-sm);
-    padding: 8px 14px;
-    font-size: 0.78rem;
-  }
 
   .footer__main {
     flex-direction: row;

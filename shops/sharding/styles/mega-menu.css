@@ -1,6 +1,4 @@
-/* =====================================================
-   MEGA MENU
-   ===================================================== */
+
 .dept {
   position: relative;
   flex-shrink: 0;
@@ -23,7 +21,7 @@
 
 .dept:hover .dept-btn,
 .dept:focus-within .dept-btn {
-  background: #a8b800;
+  background: var(--lime-hover);
 }
 
 .dept-btn svg {
@@ -230,7 +228,6 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* ---- state switching ---- */
 .dept-menu__item:hover > .dept-sub {
   display: grid;
 }

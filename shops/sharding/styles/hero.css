@@ -149,3 +149,34 @@
   object-fit: cover;
   display: block;
 }
+
+.carousel-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.carousel-nav__btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  transition:
+    background 0.2s var(--ease),
+    color 0.2s var(--ease),
+    border-color 0.2s var(--ease);
+}
+
+.carousel-nav__btn:hover,
+.carousel-nav__btn:focus-visible {
+  background: var(--lime-soft);
+  color: var(--navy);
+  border-color: var(--lime);
+}
+
+.carousel-nav__btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
