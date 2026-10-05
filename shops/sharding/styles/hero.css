@@ -1,6 +1,4 @@
-/* =====================================================
-   HERO
-   ===================================================== */
+
 .hero {
   padding: var(--sp-md) 0;
 }
@@ -46,15 +44,6 @@
   color: var(--white);
 }
 
-.hero-video__badge {
-  display: inline-block;
-  padding: 4px 12px;
-  background: var(--lime);
-  color: var(--navy);
-  font-size: 0.72rem;
-  font-weight: 800;
-}
-
 .hero-video__title {
   font-size: 1.3rem;
   font-weight: 800;
@@ -94,11 +83,10 @@
   transform: scaleX(-1);
 }
 
-/* =====================================================
-   HERO CAROUSEL
-   ===================================================== */
+
 .hero-carousel {
   margin-top: var(--sp-md);
+  position: relative;
 }
 
 .hero-carousel__head {
@@ -113,16 +101,50 @@
   font-size: 1rem;
   font-weight: 800;
   color: var(--navy);
+  position: relative;
+  padding-inline-start: 12px;
 }
 
+.hero-carousel__title::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 18px;
+  background: var(--lime);
+}
+
+/* ---- track ---- */
 .hero-carousel__track {
   display: flex;
-  gap: var(--sp-sm);
+  gap: 12px;
   overflow-x: auto;
+  overflow-y: hidden;
+  touch-action: pan-x;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   scrollbar-width: none;
-  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+
+  padding: 4px 4px 12px;
+  margin-inline: -4px;
+
+  -webkit-mask-image: linear-gradient(
+    to left,
+    transparent 0,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to left,
+    transparent 0,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
 }
 
 .hero-carousel__track::-webkit-scrollbar {
@@ -130,17 +152,41 @@
 }
 
 .hero-carousel__slide {
-  flex: 0 0 calc((100% - var(--sp-sm)) / 2);
-  scroll-snap-align: start;
+  flex: 0 0 85%;
+  scroll-snap-align: center;
   scroll-snap-stop: always;
+
+  opacity: 0.7;
+  transform: scale(0.94);
+
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.4s var(--ease);
+}
+
+.hero-carousel__slide:hover,
+.hero-carousel__slide:focus-within {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .hero-banner {
   display: block;
   width: 100%;
-  aspect-ratio: 800 / 500;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
+  /* border-radius: 8px; */
   background: var(--bg);
+  border: 1px solid var(--border);
+  transition:
+    box-shadow 0.3s var(--ease),
+    border-color 0.3s var(--ease);
+}
+
+.hero-carousel__slide:hover .hero-banner,
+.hero-carousel__slide:focus-within .hero-banner {
+  border-color: var(--lime);
+  box-shadow: 0 10px 28px -12px rgba(181, 196, 0, 0.5);
 }
 
 .hero-banner img {
@@ -148,35 +194,4 @@
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-.carousel-nav {
-  display: flex;
-  gap: 4px;
-}
-
-.carousel-nav__btn {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  transition:
-    background 0.2s var(--ease),
-    color 0.2s var(--ease),
-    border-color 0.2s var(--ease);
-}
-
-.carousel-nav__btn:hover,
-.carousel-nav__btn:focus-visible {
-  background: var(--lime-soft);
-  color: var(--navy);
-  border-color: var(--lime);
-}
-
-.carousel-nav__btn svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
 }
