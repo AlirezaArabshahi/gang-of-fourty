@@ -530,15 +530,6 @@
     <section class="categories" aria-labelledby="categories-title">
       <div class="container">
 
-        <div class="categories__head">
-          <h2 id="categories-title" class="categories__title">خرید از دسته‌بندی‌ها</h2>
-          <a href="#" class="categories__all" aria-label="مشاهده همه دسته‌بندی‌ها">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M10.48 7.09a1 1 0 0 1 1.41 0l4.41 4.4a1 1 0 0 1 0 1.42l-4.41 4.4a1 1 0 1 1-1.41-1.41L13.78 12.7H4.6a1 1 0 1 1 0-2h9.18L10.48 8.5a1 1 0 0 1 0-1.41z"/>
-            </svg>
-          </a>
-        </div>
-
         <ul class="categories__list" tabindex="0" aria-label="دسته‌بندی محصولات">
           <li>
             <a href="#fruits" class="category">
@@ -702,15 +693,6 @@
         <div class="products__inner">
 
           <div class="products__main">
-            <div class="products__head">
-              <h2 id="fruits-title" class="products__title">میوه و سبزیجات</h2>
-              <a href="#" class="products__all">
-                مشاهده همه
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M10.48 7.09a1 1 0 0 1 1.41 0l4.41 4.4a1 1 0 0 1 0 1.42l-4.41 4.4a1 1 0 1 1-1.41-1.41L13.78 12.7H4.6a1 1 0 1 1 0-2h9.18L10.48 8.5a1 1 0 0 1 0-1.41z"/>
-                </svg>
-              </a>
-            </div>
 
             <ul class="products__grid" tabindex="0" aria-label="محصولات میوه و سبزیجات">
               <li class="products__item">
@@ -756,10 +738,11 @@
                 </article>
               </li>
               <li class="products__item">
-                <article class="product">
+                <article class="product product--out-of-stock">
                   <a href="#" class="product__link">
                     <span class="product__img">
                       <img src="assets/p-banana.webp" alt="موز" loading="lazy" width="200" height="150">
+                      <span class="product__badge-stock">ناموجود</span>
                     </span>
                     <span class="product__name">موز — ۱ کیلو</span>
                   </a>
@@ -768,7 +751,7 @@
                       <span class="product__current">۴۵٬۰۰۰</span>
                       <span class="product__unit">تومان</span>
                     </span>
-                    <button type="button" class="product__add" aria-label="افزودن موز به سبد خرید">
+                    <button type="button" class="product__add" aria-label="افزودن موز به سبد خرید" disabled>
                       <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                       </svg>
@@ -800,10 +783,11 @@
                 </article>
               </li>
               <li class="products__item">
-                <article class="product">
+                <article class="product product--out-of-stock">
                   <a href="#" class="product__link">
                     <span class="product__img">
                       <img src="assets/p-orange.webp" alt="پرتقال" loading="lazy" width="200" height="150">
+                      <span class="product__badge-stock">ناموجود</span>
                     </span>
                     <span class="product__name">پرتقال شمال — ۲ کیلو</span>
                   </a>
@@ -812,7 +796,7 @@
                       <span class="product__current">۹۸٬۰۰۰</span>
                       <span class="product__unit">تومان</span>
                     </span>
-                    <button type="button" class="product__add" aria-label="افزودن پرتقال شمال به سبد خرید">
+                    <button type="button" class="product__add" aria-label="افزودن پرتقال شمال به سبد خرید" disabled>
                       <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                       </svg>
@@ -875,15 +859,6 @@
         <div class="products__inner">
 
           <div class="products__main">
-            <div class="products__head">
-              <h2 id="dairy-title" class="products__title">لبنیات و تخم‌مرغ</h2>
-              <a href="#" class="products__all">
-                مشاهده همه
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M10.48 7.09a1 1 0 0 1 1.41 0l4.41 4.4a1 1 0 0 1 0 1.42l-4.41 4.4a1 1 0 1 1-1.41-1.41L13.78 12.7H4.6a1 1 0 1 1 0-2h9.18L10.48 8.5a1 1 0 0 1 0-1.41z"/>
-                </svg>
-              </a>
-            </div>
 
             <ul class="products__grid" tabindex="0" aria-label="محصولات لبنیات">
               <li class="products__item">

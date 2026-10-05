@@ -122,7 +122,6 @@
   touch-action: pan-x;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
-  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 
   padding: 4px 4px 12px;
@@ -144,9 +143,7 @@
   );
 }
 
-.hero-carousel__track::-webkit-scrollbar {
-  display: none;
-}
+
 
 .hero-carousel__slide {
   flex: 0 0 85%;
