@@ -95,8 +95,11 @@ ul {
 }
 
 :focus-visible {
-  outline: 2px solid var(--navy);
+  outline: 2px solid transparent;    /* ← outline نامرئی برای دسترسی‌پذیری */
   outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px var(--white),          /* ← هاله سفید داخلی (جداکننده) */
+    0 0 0 4px var(--lime);           /* ← حلقه لیمویی خارجی */
   border-radius: 4px;
 }
 
