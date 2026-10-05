@@ -285,3 +285,10 @@
   pointer-events: none;
   transform: translateY(-8px);
 }
+
+@media (min-width: 768px) {
+  .dept-panel {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 400px;
+  }
+}

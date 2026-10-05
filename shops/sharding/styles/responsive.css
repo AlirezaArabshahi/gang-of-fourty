@@ -1,3 +1,43 @@
+
+@media (max-width: 767px) {
+  .hero-video__media {
+    display: none;
+  }
+
+  .hero-video {
+    background-image: url("../assets/hero-poster.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .hero-carousel__track,
+  .categories__list {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .hero-carousel__slide,
+  .category,
+  .products__item {
+    scroll-snap-stop: normal;
+  }
+
+  .footer .logo__wedge {
+    animation: none;
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+  }
+  .footer .logo__topping {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .footer .logo__shard {
+    animation: none;
+  }
+}
+
 @media (min-width: 640px) {
   .topbar__inner {
     justify-content: space-between;

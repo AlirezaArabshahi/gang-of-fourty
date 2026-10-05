@@ -5,11 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>شاردینگ مارکت | سوپرمارکت فوری محله شما</title>
   <meta name="description" content="خرید آنلاین و ارسال سریع محصولات سوپرمارکتی با تخفیف از شاردینگ مارکت">
-  <link rel="stylesheet" href="style.css">
+
+  <link rel="preload" href="assets/fonts/Vazirmatn-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/Vazirmatn-Bold.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="styles/fonts.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/hero.css">
+  <link rel="stylesheet" href="styles/categories.css">
+  <link rel="stylesheet" href="styles/mega-menu.css">
+  <link rel="stylesheet" href="styles/products.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <link rel="stylesheet" href="styles/responsive.css">
 </head>
 <body>
 
-  <input type="checkbox" id="menu-toggle" class="menu-toggle" hidden>
+  <input type="checkbox" id="menu-toggle" class="menu-toggle" hidden aria-hidden="true">
 
   <a href="#main-content" class="skip-link">
     <span class="container">پرش به محتوای اصلی</span>
@@ -178,7 +190,7 @@
                 </div>
                 <a href="#fruits" class="dept-promo dept-promo--fruits">
                   <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-fruits.webp" alt="" loading="lazy" width="400" height="600">
+                    <img src="assets/promo-fruits.webp" alt="" loading="lazy" decoding="async" width="400" height="600">
                   </span>
                   <span class="dept-promo__body">
                     <span class="dept-promo__title">تازه از مزرعه</span>
@@ -222,7 +234,7 @@
                 </div>
                 <a href="#dairy" class="dept-promo dept-promo--dairy">
                   <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-dairy.webp" alt="" loading="lazy" width="400" height="600">
+                    <img src="assets/promo-dairy.webp" alt="" loading="lazy" decoding="async" width="400" height="600">
                   </span>
                   <span class="dept-promo__body">
                     <span class="dept-promo__title">لبنیات و تخم‌مرغ</span>
@@ -266,7 +278,7 @@
                 </div>
                 <a href="#grocery" class="dept-promo dept-promo--grocery">
                   <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-grocery.webp" alt="" loading="lazy" width="400" height="600">
+                    <img src="assets/promo-grocery.webp" alt="" loading="lazy" decoding="async" width="400" height="600">
                   </span>
                   <span class="dept-promo__body">
                     <span class="dept-promo__title">خرید عمده</span>
@@ -308,7 +320,7 @@
                 </div>
                 <a href="#beverages" class="dept-promo dept-promo--beverages">
                   <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-beverages.webp" alt="" loading="lazy" width="400" height="600">
+                    <img src="assets/promo-beverages.webp" alt="" loading="lazy" decoding="async" width="400" height="600">
                   </span>
                   <span class="dept-promo__body">
                     <span class="dept-promo__title">خنک و تازه</span>
@@ -350,7 +362,7 @@
                 </div>
                 <a href="#hygiene" class="dept-promo dept-promo--hygiene">
                   <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-hygiene.webp" alt="" loading="lazy" width="400" height="600">
+                    <img src="assets/promo-hygiene.webp" alt="" loading="lazy" decoding="async" width="400" height="600">
                   </span>
                   <span class="dept-promo__body">
                     <span class="dept-promo__title">خانه تمیز</span>
@@ -391,7 +403,7 @@
                 </div>
                 <a href="#deals" class="dept-promo dept-promo--deals">
                   <span class="dept-promo__media" aria-hidden="true">
-                    <img src="assets/promo-deals.webp" alt="" loading="lazy" width="400" height="600">
+                    <img src="assets/promo-deals.webp" alt="" loading="lazy" decoding="async" width="400" height="600">
                   </span>
                   <span class="dept-promo__body">
                     <span class="dept-promo__title">تا ۴۰٪ تخفیف</span>
@@ -476,7 +488,9 @@
           loop
           muted
           playsinline
+          preload="none"
           poster="assets/hero-poster.webp"
+          fetchpriority="high"
           aria-hidden="true">
           <source src="assets/hero.mp4" type="video/mp4">
         </video>
@@ -500,27 +514,31 @@
         <ul class="hero-carousel__track" tabindex="0" aria-label="کاروسل پیشنهادهای ویژه">
           <li class="hero-carousel__slide is-active">
             <a href="#fruits" class="hero-banner">
-              <img src="assets/banner-1.webp" alt="میوه‌های فصل با ۳۰٪ تخفیف" width="800" height="500">
+              <img src="assets/banner-1.webp"
+                  alt="میوه‌های فصل با ۳۰٪ تخفیف"
+                  width="800" height="500"
+                  fetchpriority="high"
+                  decoding="async">
             </a>
           </li>
           <li class="hero-carousel__slide">
             <a href="#dairy" class="hero-banner">
-              <img src="assets/banner-2.webp" alt="لبنیات و تخم‌مرغ" loading="lazy" width="800" height="500">
+              <img src="assets/banner-2.webp" alt="لبنیات و تخم‌مرغ" loading="lazy" decoding="async" width="800" height="500">
             </a>
           </li>
           <li class="hero-carousel__slide">
             <a href="#grocery" class="hero-banner">
-              <img src="assets/banner-3.webp" alt="خواروبار با تخفیف ویژه" loading="lazy" width="800" height="500">
+              <img src="assets/banner-3.webp" alt="خواروبار با تخفیف ویژه" loading="lazy" decoding="async" width="800" height="500">
             </a>
           </li>
           <li class="hero-carousel__slide">
             <a href="#beverages" class="hero-banner">
-              <img src="assets/banner-4.webp" alt="نوشیدنی‌های خنک" loading="lazy" width="800" height="500">
+              <img src="assets/banner-4.webp" alt="نوشیدنی‌های خنک" loading="lazy" decoding="async" width="800" height="500">
             </a>
           </li>
           <li class="hero-carousel__slide">
             <a href="#deals" class="hero-banner">
-              <img src="assets/banner-5.webp" alt="پیشنهاد ویژه هفته" loading="lazy" width="800" height="500">
+              <img src="assets/banner-5.webp" alt="پیشنهاد ویژه هفته" loading="lazy" decoding="async" width="800" height="500">
             </a>
           </li>
         </ul>
@@ -542,7 +560,7 @@
           <li>
             <a href="#fruits" class="category">
               <span class="category__img">
-                <img src="assets/cat-fruits.webp" alt="میوه و سبزیجات" loading="lazy" width="200" height="200">
+                <img src="assets/cat-fruits.webp" alt="میوه و سبزیجات" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">میوه و سبزیجات</span>
             </a>
@@ -550,7 +568,7 @@
           <li>
             <a href="#dairy" class="category">
               <span class="category__img">
-                <img src="assets/cat-dairy.webp" alt="لبنیات و بستنی" loading="lazy" width="200" height="200">
+                <img src="assets/cat-dairy.webp" alt="لبنیات و بستنی" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">لبنیات و بستنی</span>
             </a>
@@ -558,7 +576,7 @@
           <li>
             <a href="#grocery" class="category">
               <span class="category__img">
-                <img src="assets/cat-grocery.webp" alt="خواربار و نان" loading="lazy" width="200" height="200">
+                <img src="assets/cat-grocery.webp" alt="خواربار و نان" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">خواربار و نان</span>
             </a>
@@ -566,7 +584,7 @@
           <li>
             <a href="#beverages" class="category">
               <span class="category__img">
-                <img src="assets/cat-beverages.webp" alt="نوشیدنی" loading="lazy" width="200" height="200">
+                <img src="assets/cat-beverages.webp" alt="نوشیدنی" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">نوشیدنی</span>
             </a>
@@ -574,7 +592,7 @@
           <li>
             <a href="#hygiene" class="category">
               <span class="category__img">
-                <img src="assets/cat-hygiene.webp" alt="آرایشی و بهداشتی" loading="lazy" width="200" height="200">
+                <img src="assets/cat-hygiene.webp" alt="آرایشی و بهداشتی" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">آرایشی و بهداشتی</span>
             </a>
@@ -582,7 +600,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-snacks.webp" alt="تنقلات" loading="lazy" width="200" height="200">
+                <img src="assets/cat-snacks.webp" alt="تنقلات" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">تنقلات</span>
             </a>
@@ -590,7 +608,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-breakfast.webp" alt="صبحانه" loading="lazy" width="200" height="200">
+                <img src="assets/cat-breakfast.webp" alt="صبحانه" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">صبحانه</span>
             </a>
@@ -598,7 +616,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-nuts.webp" alt="خشکبار و شیرینی" loading="lazy" width="200" height="200">
+                <img src="assets/cat-nuts.webp" alt="خشکبار و شیرینی" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">خشکبار و شیرینی</span>
             </a>
@@ -606,7 +624,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-meat.webp" alt="پروتئین و تخم‌مرغ" loading="lazy" width="200" height="200">
+                <img src="assets/cat-meat.webp" alt="پروتئین و تخم‌مرغ" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">پروتئین و تخم‌مرغ</span>
             </a>
@@ -614,7 +632,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-canned.webp" alt="کنسرو و غذای آماده" loading="lazy" width="200" height="200">
+                <img src="assets/cat-canned.webp" alt="کنسرو و غذای آماده" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">کنسرو و غذای آماده</span>
             </a>
@@ -622,7 +640,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-spice.webp" alt="چاشنی و افزودنی" loading="lazy" width="200" height="200">
+                <img src="assets/cat-spice.webp" alt="چاشنی و افزودنی" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">چاشنی و افزودنی</span>
             </a>
@@ -630,7 +648,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-kalabarg.webp" alt="محصولات کالابرگی" loading="lazy" width="200" height="200">
+                <img src="assets/cat-kalabarg.webp" alt="محصولات کالابرگی" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">محصولات کالابرگی</span>
             </a>
@@ -638,7 +656,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-baby.webp" alt="کودک و نوزاد" loading="lazy" width="200" height="200">
+                <img src="assets/cat-baby.webp" alt="کودک و نوزاد" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">کودک و نوزاد</span>
             </a>
@@ -646,7 +664,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-pet.webp" alt="پت شاپ" loading="lazy" width="200" height="200">
+                <img src="assets/cat-pet.webp" alt="پت شاپ" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">پت شاپ</span>
             </a>
@@ -654,7 +672,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-tissue.webp" alt="دستمال و شوینده" loading="lazy" width="200" height="200">
+                <img src="assets/cat-tissue.webp" alt="دستمال و شوینده" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">دستمال و شوینده</span>
             </a>
@@ -662,7 +680,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-home.webp" alt="خانه و سبک زندگی" loading="lazy" width="200" height="200">
+                <img src="assets/cat-home.webp" alt="خانه و سبک زندگی" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">خانه و سبک زندگی</span>
             </a>
@@ -670,7 +688,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-digital.webp" alt="لوازم برقی" loading="lazy" width="200" height="200">
+                <img src="assets/cat-digital.webp" alt="لوازم برقی" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">لوازم برقی</span>
             </a>
@@ -678,7 +696,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-fashion.webp" alt="مد و پوشاک" loading="lazy" width="200" height="200">
+                <img src="assets/cat-fashion.webp" alt="مد و پوشاک" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">مد و پوشاک</span>
             </a>
@@ -686,7 +704,7 @@
           <li>
             <a href="#deals" class="category">
               <span class="category__img">
-                <img src="assets/cat-smoking.webp" alt="دخانیات" loading="lazy" width="200" height="200">
+                <img src="assets/cat-smoking.webp" alt="دخانیات" loading="lazy" decoding="async" width="200" height="200">
               </span>
               <span class="category__name">دخانیات</span>
             </a>
@@ -711,7 +729,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-strawberry.webp" alt="توت‌فرنگی" loading="lazy" width="200" height="150">
+                      <img src="assets/p-strawberry.webp" alt="توت‌فرنگی" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">توت‌فرنگی — ۵۰۰ گرم</h3>
                   </a>
@@ -732,7 +750,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-apple.webp" alt="سیب سرخ" loading="lazy" width="200" height="150">
+                      <img src="assets/p-apple.webp" alt="سیب سرخ" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">سیب سرخ — ۱ کیلو</h3>
                   </a>
@@ -753,7 +771,7 @@
                 <article class="product product--out-of-stock">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-banana.webp" alt="موز" loading="lazy" width="200" height="150">
+                      <img src="assets/p-banana.webp" alt="موز" loading="lazy" decoding="async" width="200" height="150">
                       <span class="product__badge-stock">ناموجود</span>
                     </span>
                     <h3 class="product__name">موز — ۱ کیلو</h3>
@@ -775,7 +793,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-grape.webp" alt="انگور" loading="lazy" width="200" height="150">
+                      <img src="assets/p-grape.webp" alt="انگور" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">انگور بی‌دانه — ۵۰۰ گرم</h3>
                   </a>
@@ -798,7 +816,7 @@
                 <article class="product product--out-of-stock">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-orange.webp" alt="پرتقال" loading="lazy" width="200" height="150">
+                      <img src="assets/p-orange.webp" alt="پرتقال" loading="lazy" decoding="async" width="200" height="150">
                       <span class="product__badge-stock">ناموجود</span>
                     </span>
                     <h3 class="product__name">پرتقال شمال — ۲ کیلو</h3>
@@ -820,7 +838,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-kiwi.webp" alt="کیوی" loading="lazy" width="200" height="150">
+                      <img src="assets/p-kiwi.webp" alt="کیوی" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">کیوی — ۵۰۰ گرم</h3>
                   </a>
@@ -841,7 +859,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-mango.webp" alt="انبه" loading="lazy" width="200" height="150">
+                      <img src="assets/p-mango.webp" alt="انبه" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">انبه — ۱ کیلو</h3>
                   </a>
@@ -881,7 +899,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-milk.webp" alt="شیر پرچرب" loading="lazy" width="200" height="150">
+                      <img src="assets/p-milk.webp" alt="شیر پرچرب" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">شیر پرچرب — ۱ لیتر</h3>
                   </a>
@@ -900,7 +918,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-yogurt.webp" alt="ماست پرچرب" loading="lazy" width="200" height="150">
+                      <img src="assets/p-yogurt.webp" alt="ماست پرچرب" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">ماست پرچرب — ۲ کیلو</h3>
                   </a>
@@ -921,7 +939,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-cheese.webp" alt="پنیر سفید" loading="lazy" width="200" height="150">
+                      <img src="assets/p-cheese.webp" alt="پنیر سفید" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">پنیر سفید — ۴۰۰ گرم</h3>
                   </a>
@@ -940,7 +958,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-butter.webp" alt="کره حیوانی" loading="lazy" width="200" height="150">
+                      <img src="assets/p-butter.webp" alt="کره حیوانی" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">کره حیوانی — ۱۰۰ گرم</h3>
                   </a>
@@ -959,7 +977,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-cream.webp" alt="خامه صبحانه" loading="lazy" width="200" height="150">
+                      <img src="assets/p-cream.webp" alt="خامه صبحانه" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">خامه صبحانه — ۲۰۰ گرم</h3>
                   </a>
@@ -978,7 +996,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-egg.webp" alt="تخم‌مرغ محلی" loading="lazy" width="200" height="150">
+                      <img src="assets/p-egg.webp" alt="تخم‌مرغ محلی" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">تخم‌مرغ — ۹ عدد</h3>
                   </a>
@@ -999,7 +1017,7 @@
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
-                      <img src="assets/p-dough.webp" alt="دوغ سنتی" loading="lazy" width="200" height="150">
+                      <img src="assets/p-dough.webp" alt="دوغ سنتی" loading="lazy" decoding="async" width="200" height="150">
                     </span>
                     <h3 class="product__name">دوغ سنتی — ۱.۵ لیتر</h3>
                   </a>
