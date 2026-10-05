@@ -94,6 +94,19 @@ ul {
   padding: 0 var(--sp-md);
 }
 
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 var(--sp-lg);
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0;
+  }
+}
+
 :focus-visible {
   outline: 2px solid transparent;  
   outline-offset: 2px;

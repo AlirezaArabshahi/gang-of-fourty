@@ -173,7 +173,6 @@
   height: 42px;
   background: var(--bg);
   border: 1px solid transparent;
-  border-radius: var(--radius);
   padding: 0 6px 0 12px;
   transition:
     background 0.2s var(--ease),
@@ -292,8 +291,7 @@
   border: 2px solid var(--white);
 }
 
-.action--location,
-.action--favorites {
+.action--location {
   display: none;
 }
 
@@ -405,13 +403,12 @@
   flex-direction: column;
   gap: var(--sp-md);
 }
-
 .mobile-menu__banner {
   display: flex;
   flex-direction: column;
   gap: var(--sp-sm);
   padding: var(--sp-md);
-  background: var(--navy);
+  background: var(--lime-soft);
   border-inline-start: 4px solid var(--lime);
   color: var(--white);
 }
@@ -541,28 +538,6 @@
   font-weight: 800;
 }
 
-.nav-deal {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  color: var(--lime);
-  background: var(--navy);
-  font-size: 0.85rem;
-  font-weight: 800;
-  padding: 8px 14px;
-  transition: background 0.2s var(--ease);
-}
-
-.nav-deal:hover {
-  background: var(--navy-2);
-}
-
-.nav-deal svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
 
 /* =====================================================
    FOOTER
@@ -658,7 +633,6 @@
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 700;
-  border-radius: var(--radius);
   transition:
     border-color 0.2s var(--ease),
     color 0.2s var(--ease),

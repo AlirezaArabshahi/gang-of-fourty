@@ -95,6 +95,7 @@
   .products__grid {
     padding-inline: 0;
     margin-inline: 0;
+    padding: 10px;
   }
 
   .products__item {

@@ -4,7 +4,7 @@
 .dept {
   position: relative;
   flex-shrink: 0;
-  padding-bottom: 8px;
+
 }
 
 .dept-btn {
