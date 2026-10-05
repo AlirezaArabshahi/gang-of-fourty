@@ -657,3 +657,13 @@
   height: 14px;
   fill: currentColor;
 }
+
+
+@media (min-width: 768px) {
+  .mobile-menu,
+  .mobile-menu__overlay {
+    display: none;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
