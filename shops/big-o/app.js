@@ -40,8 +40,9 @@ function filterProductsByCategoryID(id,products) {
 }
 
 
-
-
+// Entry point: loads the data, picks the dairy products
+// and renders them. Errors are caught here, because this is
+// the one place that knows about the page.
 async function init() {
    try {
     const {categories , products} = await getData();
