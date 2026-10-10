@@ -765,3 +765,45 @@ address { font-style: normal; color: var(--secondary-color); line-height: 2; mar
   color: var(--secondary-color);
 }
 .footer-bottom a { color: var(--accent-text); text-decoration: none; }
+
+.product-emoji {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  margin: 0 0 12px;
+  border-radius: 14px;
+  background: var(--muted-bg);
+  font-size: 4rem;
+}
+
+.product-card.out { opacity: .55; }
+
+.product-card.out:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.sold-out {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 12px;
+  width: fit-content;
+  margin-inline: auto;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: var(--primary-color);
+  color: var(--bg-color);
+  font-size: 13px;
+}
+
+.add-btn:disabled {
+  background: var(--border-color);
+  color: var(--secondary-color);
+  cursor: not-allowed;
+}
+
+.product-emoji img {
+  height: 100%;
+  margin: 0;
+}
