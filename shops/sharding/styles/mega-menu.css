@@ -26,6 +26,7 @@
   color: var(--navy);
   font-size: 0.85rem;
   font-weight: 800;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 0.2s var(--ease);
 }
@@ -50,9 +51,9 @@
   min-height: 400px;
   background: var(--white);
   border: 1px solid var(--border);
+  border-radius: 0 0 var(--radius) var(--radius);
   box-shadow: var(--shadow-lg);
   z-index: 1100;
-
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px);
@@ -81,6 +82,7 @@
   pointer-events: auto;
 }
 
+/* Bridge gap so hover doesn't drop */
 .dept::after {
   content: "";
   position: absolute;
@@ -98,6 +100,7 @@
   padding: 8px 0;
   background: var(--bg);
   border-inline-end: 1px solid var(--border);
+  border-radius: 0 0 0 var(--radius);
 }
 
 .dept-menu__item {
@@ -150,6 +153,7 @@
   color: var(--white);
   isolation: isolate;
   padding: 20px;
+  border-radius: 0 0 var(--radius) 0;
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.15s var(--ease), visibility 0s 0s;
@@ -167,6 +171,7 @@
   opacity: 1;
 }
 
+/* Default open first item */
 .dept-menu__item--fruits > .dept-sub,
 .dept-menu__item--fruits > .dept-promo {
   visibility: visible;
@@ -207,12 +212,14 @@
   padding: 5px 4px;
   color: var(--muted);
   font-size: 0.8rem;
-  transition: color 0.15s var(--ease);
+  border-radius: 2px;
+  transition: color 0.15s var(--ease), background 0.15s var(--ease);
 }
 
 .dept-sub__list a:hover {
   color: var(--navy);
   font-weight: 700;
+  background: var(--lime-soft);
 }
 
 .dept-promo__media {

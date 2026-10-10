@@ -1,4 +1,5 @@
 :root {
+  /* Brand */
   --navy: #0F1319;
   --navy-2: #1A2030;
   --lime: #B5C400;
@@ -6,6 +7,9 @@
   --lime-dark: #8A9700;
   --lime-soft: #F6F8DC;
   --lime-hover: #A8B800;
+  --on-lime: #0F1319;
+
+  /* Surfaces & text */
   --text: #12161F;
   --muted: #59617A;
   --faint: #A5AAB8;
@@ -16,30 +20,34 @@
   --bg: #F6F7F9;
   --red: #CB1400;
   --dough: #F5EBD8;
-  --on-lime: #0F1319;
 
+  /* Spacing */
   --sp-xs: 4px;
   --sp-sm: 8px;
   --sp-md: 16px;
   --sp-lg: 24px;
+  --sp-xl: 32px;
 
-  --radius: 0;
+  /* Shape */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
   --radius-full: 999px;
 
+  /* Elevation */
   --shadow: 0 2px 8px -2px rgba(18, 22, 31, 0.08);
+  --shadow-md: 0 4px 16px -4px rgba(18, 22, 31, 0.12);
   --shadow-lg: 0 8px 24px -8px rgba(18, 22, 31, 0.18);
+  --shadow-lime: 0 10px 28px -12px rgba(181, 196, 0, 0.45);
 
+  /* Layout */
   --container: 1200px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --header-h: 90px;
 
-    --categories-bg: light-dark(
-    linear-gradient(135deg, #F6F8DC 0%, #F5F8D6 45%, #FFFFFF 100%),
-    #14181F
-  );
-  --categories-border: light-dark(
-    rgba(181, 196, 0, 0.25),
-    rgba(181, 196, 0, 0.10)
-  );
+  /* Categories section (overridden by theme) */
+  --categories-bg: linear-gradient(135deg, #F6F8DC 0%, #F5F8D6 45%, #FFFFFF 100%);
+  --categories-border: rgba(181, 196, 0, 0.25);
 }
 
 *,
@@ -107,10 +115,17 @@ ul {
 
 @media (min-width: 768px) {
   .container {
+    padding: 0 var(--sp-lg);
+  }
+}
+
+@media (min-width: 1240px) {
+  .container {
     padding: 0;
   }
 }
 
+/* Focus */
 :focus-visible {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -136,7 +151,7 @@ textarea:focus-visible {
 }
 
 [id] {
-  scroll-margin-top: 90px;
+  scroll-margin-top: var(--header-h);
 }
 
 @media (min-width: 768px) {
@@ -157,20 +172,18 @@ textarea:focus-visible {
   border: 0;
 }
 
+/* Skip link */
 .skip-link {
   position: fixed;
   top: 0;
   inset-inline: 0;
   z-index: 9999;
-
   transform: translateY(-100%);
   transition: transform 0.2s var(--ease);
-
   display: block;
   background: var(--lime);
   color: var(--on-lime);
   text-decoration: none;
-
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -194,13 +207,17 @@ textarea:focus-visible {
   outline: none;
 }
 
-.products {
+/* Performance hints */
+.products,
+.footer {
   content-visibility: auto;
+}
+
+.products {
   contain-intrinsic-size: auto 520px;
 }
 
 .footer {
-  content-visibility: auto;
   contain-intrinsic-size: auto 420px;
 }
 
