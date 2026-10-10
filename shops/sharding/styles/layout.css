@@ -383,17 +383,22 @@
 }
 
 .mobile-menu__logo {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  color: var(--lime-dark);
+  display: none; /* replaced by theme switch in menu head */
 }
 
-.mobile-menu__logo svg {
-  width: 100%;
-  height: 100%;
-  fill: currentColor;
+.mobile-menu__theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.mobile-menu__theme .theme-switch__btn {
+  width: 32px;
+  height: 32px;
 }
 
 .mobile-menu__body {
@@ -411,7 +416,7 @@
   background: var(--navy);
   border-inline-start: 4px solid var(--lime);
   border-radius: var(--radius);
-  color: var(--white);
+  color: #fff;
 }
 
 .mobile-menu__banner-title {
@@ -423,7 +428,33 @@
 .mobile-menu__banner-desc {
   font-size: 0.82rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* Dark mode: navy becomes light via tokens — force dark surface for promo banner */
+:root:has(#theme-dark:checked) .mobile-menu__banner,
+:root:has(#theme-auto:checked) .mobile-menu__banner {
+  background: #0F1319;
+  color: #fff;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:has(#theme-auto:checked) .mobile-menu__banner {
+    background: var(--navy);
+  }
+}
+
+:root:has(#theme-dark:checked) .mobile-menu__banner-title {
+  color: #B5C400;
+}
+
+:root:has(#theme-dark:checked) .mobile-menu__banner-desc {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+:root:has(#theme-dark:checked) .mobile-menu__banner-cta {
+  background: #B5C400;
+  color: #0F1319;
 }
 
 .mobile-menu__banner-cta {

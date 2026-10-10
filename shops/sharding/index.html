@@ -23,14 +23,14 @@
     <link rel="stylesheet" href="styles/theme.css">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">
+    <span class="container">پرش به محتوای اصلی</span>
+  </a>
+
   <input type="radio" name="theme" id="theme-auto"  class="theme-radio" hidden checked>
   <input type="radio" name="theme" id="theme-light" class="theme-radio" hidden>
   <input type="radio" name="theme" id="theme-dark"  class="theme-radio" hidden>
   <input type="checkbox" id="menu-toggle" class="menu-toggle" hidden aria-hidden="true">
-
-  <a href="#main-content" class="skip-link">
-    <span class="container">پرش به محتوای اصلی</span>
-  </a>
 
   <div class="topbar">
     <div class="container topbar__inner">
@@ -473,11 +473,28 @@
         </svg>
       </label>
       <span class="mobile-menu__title">منو</span>
-      <span class="mobile-menu__logo" aria-hidden="true">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 2C7 2 3 6 3 11c0 3 1.5 5.5 3.5 7L7 22h10l.5-4c2-1.5 3.5-4 3.5-7 0-5-4-9-9-9z"/>
-        </svg>
-      </span>
+      <div class="mobile-menu__theme theme-switch" role="radiogroup" aria-label="انتخاب پوسته">
+        <label for="theme-auto" class="theme-switch__btn theme-switch__btn--auto" title="پیروی از سیستم">
+          <span class="visually-hidden">پیروی از تنظیمات سیستم</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="2" y="4" width="20" height="14" rx="2"/>
+            <path d="M8 20h8M12 18v2"/>
+          </svg>
+        </label>
+        <label for="theme-light" class="theme-switch__btn theme-switch__btn--light" title="حالت روشن">
+          <span class="visually-hidden">حالت روشن</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"/>
+          </svg>
+        </label>
+        <label for="theme-dark" class="theme-switch__btn theme-switch__btn--dark" title="حالت تاریک">
+          <span class="visually-hidden">حالت تاریک</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/>
+          </svg>
+        </label>
+      </div>
     </div>
 
     <div class="mobile-menu__body">
@@ -543,10 +560,18 @@
       <div class="hero-carousel">
         <div class="hero-carousel__head">
           <h2 class="hero-carousel__title">پیشنهادهای ویژه امروز</h2>
+          <nav class="carousel-nav" aria-label="ناوبری کاروسل پیشنهادها">
+            <a href="#banner-start" class="carousel-nav__btn carousel-nav__btn--start" aria-label="رفتن به ابتدای پیشنهادها">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+            </a>
+            <a href="#banner-end" class="carousel-nav__btn carousel-nav__btn--end" aria-label="رفتن به انتهای پیشنهادها">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+            </a>
+          </nav>
         </div>
 
         <ul class="hero-carousel__track" tabindex="0" aria-label="کاروسل پیشنهادهای ویژه">
-          <li class="hero-carousel__slide is-active">
+          <li class="hero-carousel__slide is-active" id="banner-start">
             <a href="#fruits" class="hero-banner">
               <img src="assets/banner-1.webp"
                   alt="میوه‌های فصل با ۳۰٪ تخفیف"
@@ -570,7 +595,7 @@
               <img src="assets/banner-4.webp" alt="نوشیدنی‌های خنک" loading="lazy" decoding="async" width="800" height="500">
             </a>
           </li>
-          <li class="hero-carousel__slide">
+          <li class="hero-carousel__slide" id="banner-end">
             <a href="#deals" class="hero-banner">
               <img src="assets/banner-5.webp" alt="پیشنهاد ویژه هفته" loading="lazy" decoding="async" width="800" height="500">
             </a>
@@ -588,11 +613,19 @@
 
         <div class="categories__head">
           <h2 id="categories-title" class="categories__title">خرید از دسته‌بندی‌ها</h2>
+          <nav class="carousel-nav" aria-label="ناوبری دسته‌بندی‌ها">
+            <a href="#cat-start" class="carousel-nav__btn carousel-nav__btn--start" aria-label="رفتن به ابتدای دسته‌بندی‌ها">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+            </a>
+            <a href="#cat-end" class="carousel-nav__btn carousel-nav__btn--end" aria-label="رفتن به انتهای دسته‌بندی‌ها">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+            </a>
+          </nav>
         </div>
 
         <ul class="categories__list" tabindex="0" aria-label="دسته‌بندی محصولات">
           <li>
-            <a href="#fruits" class="category">
+            <a href="#fruits" class="category" id="cat-start">
               <span class="category__img">
                 <img src="assets/cat-fruits.webp" alt="میوه و سبزیجات" loading="lazy" decoding="async" width="200" height="200">
               </span>
@@ -736,7 +769,7 @@
             </a>
           </li>
           <li>
-            <a href="#deals" class="category">
+            <a href="#deals" class="category" id="cat-end">
               <span class="category__img">
                 <img src="assets/cat-smoking.webp" alt="دخانیات" loading="lazy" decoding="async" width="200" height="200">
               </span>
@@ -756,10 +789,18 @@
 
             <div class="products__head">
               <h2 id="fruits-title" class="products__title">میوه و سبزیجات</h2>
+              <nav class="carousel-nav" aria-label="ناوبری کاروسل میوه">
+                <a href="#fruits-start" class="carousel-nav__btn carousel-nav__btn--start" aria-label="رفتن به ابتدای کاروسل میوه">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                </a>
+                <a href="#fruits-end" class="carousel-nav__btn carousel-nav__btn--end" aria-label="رفتن به انتهای کاروسل میوه">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                </a>
+              </nav>
             </div>
 
             <ul class="products__grid" tabindex="0" aria-label="محصولات میوه و سبزیجات">
-              <li class="products__item">
+              <li class="products__item" id="fruits-start">
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
@@ -889,7 +930,7 @@
                   </div>
                 </article>
               </li>
-              <li class="products__item">
+              <li class="products__item" id="fruits-end">
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
@@ -926,10 +967,18 @@
 
             <div class="products__head">
               <h2 id="dairy-title" class="products__title">لبنیات و تخم‌مرغ</h2>
+              <nav class="carousel-nav" aria-label="ناوبری کاروسل لبنیات">
+                <a href="#dairy-start" class="carousel-nav__btn carousel-nav__btn--start" aria-label="رفتن به ابتدای کاروسل لبنیات">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                </a>
+                <a href="#dairy-end" class="carousel-nav__btn carousel-nav__btn--end" aria-label="رفتن به انتهای کاروسل لبنیات">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                </a>
+              </nav>
             </div>
 
             <ul class="products__grid" tabindex="0" aria-label="محصولات لبنیات">
-              <li class="products__item">
+              <li class="products__item" id="dairy-start">
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
@@ -1047,7 +1096,7 @@
                   </div>
                 </article>
               </li>
-              <li class="products__item">
+              <li class="products__item" id="dairy-end">
                 <article class="product">
                   <a href="#" class="product__link">
                     <span class="product__img">
