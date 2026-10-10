@@ -1,0 +1,38 @@
+name: Deploy ShardMarket
+
+on:
+  push:
+    branches:
+      - 'feat/sharding-*'
+    paths:
+      - 'shops/sharding/**'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-shardmarket
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy to VPS
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          rsync -avz --delete \
+            shops/sharding/ \
+            "$SSH_USER@$SSH_HOST:/var/www/shardmarket/"
