@@ -100,9 +100,7 @@
     font-size: 1.15rem;
   }
 
-  .hero-carousel__title::before {
-    height: 20px;
-  }
+ 
 
   .hero-carousel__slide {
     flex: 0 0 calc((100% - 24px) / 2.6);
@@ -288,14 +286,9 @@
     font-size: 1.35rem;
   }
 
-  .hero-carousel__title::before {
-    height: 24px;
-  }
-
   .hero-carousel__track {
     gap: 16px;
     padding: 6px 6px 16px;
-    margin-inline: -6px;
 
     scroll-snap-type: x proximity;
     scroll-behavior: smooth;

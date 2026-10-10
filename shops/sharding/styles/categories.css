@@ -89,16 +89,6 @@
   line-height: 1.3;
 }
 
-.categories__title::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 20px;
-  background: var(--lime);
-}
 
 .categories__list {
   display: flex;
@@ -220,9 +210,6 @@
     font-size: 1.25rem;
   }
 
-  .categories__title::before {
-    height: 22px;
-  }
 
   .category {
     flex: 0 0 108px;
@@ -260,9 +247,6 @@
     font-size: 1.35rem;
   }
 
-  .categories__title::before {
-    height: 24px;
-  }
 
   .categories__list {
     padding: 6px 0 16px;

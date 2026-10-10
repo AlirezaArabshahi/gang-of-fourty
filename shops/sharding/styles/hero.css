@@ -100,19 +100,8 @@
   font-weight: 800;
   color: var(--navy);
   position: relative;
-  padding-inline-start: 12px;
 }
 
-.hero-carousel__title::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 18px;
-  background: var(--lime);
-}
 
 .hero-carousel__track {
   display: flex;
@@ -125,7 +114,6 @@
   -webkit-overflow-scrolling: touch;
 
   padding: 4px 4px 12px;
-  margin-inline: -4px;
 
   -webkit-mask-image: linear-gradient(
     to left,
