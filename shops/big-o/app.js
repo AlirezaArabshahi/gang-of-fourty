@@ -90,10 +90,20 @@ function createProductCard(product) {
 }
 
 
-// Render list of product cards in the tag that you want
-// data: products json data (an array), queryId: id of html tag that you want(a string).
+// Renders a list of product cards inside the carousel with the given id.
+// The first and last cards get ids (first-<id>, last-<id>) so the arrows can jump to them.
+// data: array of products, queryId: id of the section (a string).
 function renderProducts(data, queryId) {
-    const productList = data.map(item => createProductCard(item));
+    const productList = data.map((item, index) => {
+        const productCard = createProductCard(item);
+        if (index === 0) {
+            productCard.id = `first-${queryId}`;
+        }
+        if (index === data.length - 1) {
+            productCard.id = `last-${queryId}`;
+        }
+        return productCard;
+    })
     const htmlTag = document.querySelector(`#${queryId}`);
     htmlTag.querySelector("ul").append(...productList);
 }
