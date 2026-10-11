@@ -2,6 +2,7 @@ import { BASEURL } from '../config.js';
 import { showError, renderSkeletons } from '../components/skeleton.js';
 import { makeCard } from '../components/productcard.js';
 import { el } from '../utils/dom.js';
+import { formatPrice } from '../utils/format.js';
 
 const toFa = (n) => String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹' [d]);
 
@@ -69,7 +70,6 @@ const createPromos = (p) => {
 
     return promos;
 };
-
 
 const getAndShowHeroBanner = async() => {
     const heroGrid = document.querySelector('.hero-grid');
@@ -281,7 +281,6 @@ const createWorkingHours = (p) => {
     return section;
 };
 
-
 const createContactRow = (label, value, href) => {
     const row = el("div", "footer-contact-row");
 
@@ -299,9 +298,30 @@ const createContactRow = (label, value, href) => {
     return row;
 };
 
+
+const createAboutDesc = ({ about, deliveryFee, freeDeliveryOver, currency }) => {
+    const p = el("p", "footer-about-desc");
+
+    const fee = el("bdi");
+    fee.textContent = formatPrice(deliveryFee);
+
+    const threshold = el("bdi");
+    threshold.textContent = formatPrice(freeDeliveryOver / 1000);
+
+    p.append(
+        `${about} هزینه ارسال `,
+        fee,
+        ` ${currency} است و برای خریدهای بالای `,
+        threshold,
+        ` هزار ${currency}، ارسال رایگان است.`
+    );
+    return p;
+};
+
 const getndShowFooterInfos = async() => {
     const footerCols = document.querySelector(".footer-cols")
     const footerContact = document.querySelector(".footer-contact")
+    const footerAbout = document.querySelector(".footer-about")
     if (!footerCols) return false;
 
     showError(footerCols, 'در حال بارگیری ...');
@@ -311,10 +331,11 @@ const getndShowFooterInfos = async() => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
+        footerAbout.append(createAboutDesc(data));
         footerContact.append(
             createContactRow("تلفن", data.phone),
-            createContactRow("آدرس", data.address))
-
+            createContactRow("آدرس", data.address)
+        )
         footerCols.textContent = ''
 
         footerCols.append(
