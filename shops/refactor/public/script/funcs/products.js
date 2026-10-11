@@ -137,6 +137,7 @@ const getProductsWithDetails = async() => {
 
 const getAndShowOfferProducts = async() => {
     const track = document.querySelector('.products-track-off');
+    const searches = document.querySelectorAll('#q-mobile, #q-desktop')
     if (!track) return;
 
     renderSkeletons(track);
@@ -144,6 +145,11 @@ const getAndShowOfferProducts = async() => {
 
     try {
         const products = await getProductsWithDetails()
+
+        searches.forEach(input => {
+            input.placeholder = `جست و جو در میان ${products.length} کالا`
+        })
+
         const filtered = products.filter((p) => p.categoryId === 2);
         if (filtered.length === 0) {
             showError(track, 'محصولی برای نمایش وجود ندارد.');
