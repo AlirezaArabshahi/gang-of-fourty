@@ -74,8 +74,6 @@ const createPromos = (p) => {
 const getAndShowHeroBanner = async() => {
     const heroGrid = document.querySelector('.hero-grid');
     if (!heroGrid) return false;
-
-    renderSkeletons(heroGrid);
     showError(heroGrid, 'در حال بارگیری ...');
 
     try {
@@ -211,8 +209,128 @@ const getAndShowAllProducts = () => {
     })
 }
 
+const createQuickLinks = (p) => {
+    const nav = el("nav");
+    nav.setAttribute("aria-labelledby", "f-quick");
+
+    const title = el("h2", "footer-col-title");
+    title.id = "f-quick";
+    title.textContent = "دسترسی‌های سریع";
+
+    const list = el("ul", "footer-col-list");
+
+    p.forEach(({ href, label }) => {
+        const li = el("li");
+        const a = el("a");
+        a.href = href;
+        a.textContent = label;
+        li.append(a);
+        list.append(li);
+    });
+
+    nav.append(title, list);
+    return nav;
+};
+
+
+const createHelpLinks = (links) => {
+    const nav = el("nav");
+    nav.setAttribute("aria-labelledby", "f-help");
+
+    const title = el("h2", "footer-col-title");
+    title.id = "f-help";
+    title.textContent = "راهنمای مشتریان";
+
+    const list = el("ul", "footer-col-list");
+
+    links.forEach(({ label, href }) => {
+        const li = el("li");
+        const a = el("a");
+        a.href = href;
+        a.textContent = label;
+        li.append(a);
+        list.append(li);
+    });
+
+    nav.append(title, list);
+    return nav;
+};
+
+
+const createWorkingHours = (p) => {
+    const section = el("section");
+    section.setAttribute("aria-labelledby", "f-hours");
+
+    const title = el("h2", "footer-col-title");
+    title.id = "f-hours";
+    title.textContent = "ساعت کاری";
+
+    const list = el("ul", "footer-col-list");
+    p.forEach(({ days, time }) => {
+        const li = el("li");
+        li.append(document.createTextNode(days));
+
+        const bdi = el("bdi");
+        bdi.textContent = time;
+        li.append(bdi);
+
+        list.append(li);
+    });
+
+    section.append(title, list);
+    return section;
+};
+
+
+const createContactRow = (label, value, href) => {
+    const row = el("div", "footer-contact-row");
+
+    const labelSpan = el("span", "footer-contact-label");
+    labelSpan.textContent = `${label}:`;
+
+    const valueEl = el(href ? "a" : "span", "footer-contact-value");
+    if (href) valueEl.href = href;
+
+    const bdi = el("bdi");
+    bdi.textContent = value;
+    valueEl.append(bdi);
+
+    row.append(labelSpan, valueEl);
+    return row;
+};
+
+const getndShowFooterInfos = async() => {
+    const footerCols = document.querySelector(".footer-cols")
+    const footerContact = document.querySelector(".footer-contact")
+    if (!footerCols) return false;
+
+    showError(footerCols, 'در حال بارگیری ...');
+
+    try {
+        const response = await fetch(`${BASEURL}/shop.json`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        footerContact.append(
+            createContactRow("تلفن", data.phone),
+            createContactRow("آدرس", data.address))
+
+        footerCols.textContent = ''
+
+        footerCols.append(
+            createQuickLinks(data.menu),
+            createHelpLinks(data.help),
+            createWorkingHours(data.schedule)
+        )
+        return true
+
+    } catch (err) {
+        showError(heroGrid, 'خطا در بارگیری.');
+        return false;
+    }
+}
 
 
 
 
-export { getAndShowOfferProducts, getAndShowAllProducts, getAndShowHeroBanner };
+export { getAndShowOfferProducts, getAndShowAllProducts, getAndShowHeroBanner, getndShowFooterInfos };
