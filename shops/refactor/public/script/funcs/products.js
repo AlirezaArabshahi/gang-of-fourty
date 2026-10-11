@@ -153,7 +153,6 @@ const getAndShowOfferProducts = async() => {
         track.textContent = '';
         cards.forEach((card) => track.append(card));
     } catch (err) {
-        console.error('خطا در بارگیری کارت‌ها:', err);
         showError(track, 'خطا در بارگیری.');
         return false;
     }
