@@ -1,19 +1,55 @@
-const API_URL = './api/products.json';
+const API = {
+  products: './api/products.json',
+  stock: './api/stock.json',
+  offers: './api/offers.json',
+};
+
 const MIN_SKELETON_MS = 700;
 
 function formatPrice(price) {
   return new Intl.NumberFormat('fa-IR').format(price);
 }
 
-function createProductCard(product, isFirst, isLast, sectionId) {
+function formatPercent(percent) {
+  return new Intl.NumberFormat('fa-IR').format(percent) + '٪';
+}
+
+function buildOfferMap(offers) {
+  const map = new Map();
+  for (const offer of offers) {
+    map.set(offer.productId, offer);
+  }
+  return map;
+}
+
+function buildStockMap(stockData) {
+  const map = new Map();
+  const items = stockData.items || {};
+  for (const [id, qty] of Object.entries(items)) {
+    map.set(Number(id), qty);
+  }
+  return map;
+}
+
+function createProductCard(product, options = {}) {
+  const {
+    isFirst = false,
+    isLast = false,
+    sectionId = '',
+    offer = null,
+    stock = 1,
+  } = options;
+
+  const outOfStock = stock === 0;
+  const hasDiscount = offer != null && offer.percent > 0;
+
   const li = document.createElement('li');
   li.className = 'products__item';
-
-  if (isFirst) li.id = `${sectionId}-start`;
-  if (isLast)  li.id = `${sectionId}-end`;
+  if (isFirst && sectionId) li.id = `${sectionId}-start`;
+  if (isLast && sectionId) li.id = `${sectionId}-end`;
 
   const article = document.createElement('article');
-  article.className = 'product';
+  article.className = outOfStock ? 'product product--out-of-stock' : 'product';
 
   const link = document.createElement('a');
   link.href = '#';
@@ -51,6 +87,20 @@ function createProductCard(product, isFirst, isLast, sectionId) {
     imgWrap.appendChild(emoji);
   }
 
+  if (outOfStock) {
+    const badge = document.createElement('span');
+    badge.className = 'product__badge-stock';
+    badge.textContent = 'ناموجود';
+    imgWrap.appendChild(badge);
+  }
+
+  if (hasDiscount && !outOfStock) {
+    const discountBadge = document.createElement('span');
+    discountBadge.className = 'product__discount';
+    discountBadge.textContent = formatPercent(offer.percent);
+    imgWrap.appendChild(discountBadge);
+  }
+
   const name = document.createElement('h3');
   name.className = 'product__name';
   name.textContent = `${product.name} — ${product.unit}`;
@@ -63,20 +113,47 @@ function createProductCard(product, isFirst, isLast, sectionId) {
   const priceWrap = document.createElement('span');
   priceWrap.className = 'product__price';
 
-  const current = document.createElement('span');
-  current.className = 'product__current';
-  current.textContent = formatPrice(product.price);
+  if (hasDiscount && !outOfStock) {
+    const discounted = Math.round(product.price * (1 - offer.percent / 100));
 
-  const unit = document.createElement('span');
-  unit.className = 'product__unit';
-  unit.textContent = 'تومان';
+    const oldPrice = document.createElement('span');
+    oldPrice.className = 'product__old';
+    oldPrice.textContent = formatPrice(product.price);
 
-  priceWrap.append(current, unit);
+    const current = document.createElement('span');
+    current.className = 'product__current';
+    current.textContent = formatPrice(discounted);
+
+    const unit = document.createElement('span');
+    unit.className = 'product__unit';
+    unit.textContent = 'تومان';
+
+    priceWrap.append(current, unit, oldPrice);
+  } else {
+    const current = document.createElement('span');
+    current.className = 'product__current';
+    current.textContent = formatPrice(product.price);
+
+    const unit = document.createElement('span');
+    unit.className = 'product__unit';
+    unit.textContent = 'تومان';
+
+    priceWrap.append(current, unit);
+  }
 
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.className = 'product__add';
-  addBtn.setAttribute('aria-label', `افزودن ${product.name} به سبد خرید`);
+  addBtn.setAttribute(
+    'aria-label',
+    outOfStock
+      ? `${product.name} ناموجود است`
+      : `افزودن ${product.name} به سبد خرید`
+  );
+
+  if (outOfStock) {
+    addBtn.disabled = true;
+  }
 
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
@@ -118,15 +195,13 @@ function showError(statusEl, gridEl, message) {
   statusEl.append(icon, title, text);
 }
 
-function renderCarousel(products, categoryId, gridId, statusId, sectionId) {
+function renderCarousel(list, gridId, statusId, sectionId, offerMap, stockMap) {
   const grid = document.getElementById(gridId);
   const status = document.getElementById(statusId);
   if (!grid || !status) return;
 
-  const filtered = products.filter((p) => p.categoryId === categoryId);
-
-  if (filtered.length === 0) {
-    showError(status, grid, 'در حال حاضر محصولی در این دسته ثبت نشده است.');
+  if (list.length === 0) {
+    showError(status, grid, 'در حال حاضر محصولی برای نمایش نیست.');
     return;
   }
 
@@ -136,13 +211,14 @@ function renderCarousel(products, categoryId, gridId, statusId, sectionId) {
   grid.style.minHeight = '';
   grid.replaceChildren();
 
-  filtered.forEach((product, index) => {
-    const card = createProductCard(
-      product,
-      index === 0,
-      index === filtered.length - 1,
-      sectionId
-    );
+  list.forEach((product, index) => {
+    const card = createProductCard(product, {
+      isFirst: index === 0,
+      isLast: index === list.length - 1,
+      sectionId,
+      offer: offerMap.get(product.id) || null,
+      stock: stockMap.has(product.id) ? stockMap.get(product.id) : 1,
+    });
     grid.appendChild(card);
   });
 }
@@ -151,33 +227,68 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function fetchJson(url) {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} — ${url}`);
+  }
+  return res.json();
+}
+
 async function init() {
-  const sections = [
-    { gridId: 'fruits-grid', statusId: 'fruits-status', categoryId: 1, sectionId: 'fruits' },
-    { gridId: 'dairy-grid',  statusId: 'dairy-status',  categoryId: 2, sectionId: 'dairy'  },
+  const errorTargets = [
+    { gridId: 'offers-grid', statusId: 'offers-status' },
+    { gridId: 'fruits-grid', statusId: 'fruits-status' },
+    { gridId: 'dairy-grid', statusId: 'dairy-status' },
   ];
 
   try {
-    const [res] = await Promise.all([
-      fetch(API_URL),
-      wait(MIN_SKELETON_MS),
-    ]);
+    const [products, stockData, offers] = await Promise.all([
+      fetchJson(API.products),
+      fetchJson(API.stock),
+      fetchJson(API.offers),
+      wait(MIN_SKELETON_MS).then(() => null),
+    ]).then(([p, s, o]) => [p, s, o]);
 
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
+    const offerMap = buildOfferMap(offers);
+    const stockMap = buildStockMap(stockData);
 
-    const products = await res.json();
+    const offerProducts = offers
+      .map((off) => products.find((p) => p.id === off.productId))
+      .filter(Boolean);
 
-    sections.forEach(({ gridId, statusId, categoryId, sectionId }) => {
-      renderCarousel(products, categoryId, gridId, statusId, sectionId);
-    });
+    renderCarousel(
+      offerProducts,
+      'offers-grid',
+      'offers-status',
+      'offers',
+      offerMap,
+      stockMap
+    );
 
+    renderCarousel(
+      products.filter((p) => p.categoryId === 1),
+      'fruits-grid',
+      'fruits-status',
+      'fruits',
+      offerMap,
+      stockMap
+    );
+
+    renderCarousel(
+      products.filter((p) => p.categoryId === 2),
+      'dairy-grid',
+      'dairy-status',
+      'dairy',
+      offerMap,
+      stockMap
+    );
   } catch (err) {
-    console.error('خطا در دریافت محصولات:', err);
-    const msg = 'لطفاً اتصال اینترنت را بررسی کنید و صفحه را رفرش کنید.';
+    console.error('خطا در دریافت داده:', err);
+    const msg =
+      'لطفاً اتصال اینترنت را بررسی کنید و صفحه را دوباره بارگذاری کنید.';
 
-    sections.forEach(({ gridId, statusId }) => {
+    errorTargets.forEach(({ gridId, statusId }) => {
       const grid = document.getElementById(gridId);
       const status = document.getElementById(statusId);
       if (grid && status) showError(status, grid, msg);
