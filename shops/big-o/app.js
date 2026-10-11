@@ -90,6 +90,16 @@ function createProductCard(product) {
 }
 
 
+// Render list of product cards in the tag that you want
+// data: products json data (an array), queryId: id of html tag that you want(a string).
+function renderProducts(data, queryId) {
+    const productList = data.map(item => createProductCard(item));
+    const htmlTag = document.querySelector(`#${queryId}`);
+    htmlTag.querySelector("ul").append(...productList);
+}
+
+
+
 // Entry point: loads the data, picks the dairy products
 // and renders them. Errors are caught here, because this is
 // the one place that knows about the page.
@@ -100,6 +110,9 @@ async function init() {
         //Get "لبنیات" products
         const categoryId = getCategoryID("لبنیات", categories);
         const filteredProducts = filterProductsByCategoryID(categoryId, products);
+
+        // Render the dairy carousel
+        renderProducts(filteredProducts, "dairy");
 
     } catch (error) {
         console.error(error);
