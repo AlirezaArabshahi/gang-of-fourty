@@ -461,6 +461,7 @@ html[dir="ltr"] .carousel-arrows img {
   width: 100%;
   background-color: var(--cardBadge);
   border-radius: 1rem;
+  cursor: default;
 }
 
 .product-carousel li:nth-child(1) { --cardBadge: var(--tint-red); }
