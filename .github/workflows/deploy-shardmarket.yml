@@ -3,7 +3,7 @@ name: Deploy ShardMarket
 on:
   push:
     branches:
-      - 'feat/sharding-*'
+      - 'feat/sharding**-deploy'
     paths:
       - 'shops/sharding/**'
   workflow_dispatch:
