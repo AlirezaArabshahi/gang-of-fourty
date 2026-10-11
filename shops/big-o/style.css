@@ -452,11 +452,13 @@ html[dir="ltr"] .carousel-arrows img {
   font-size: 0.75rem;
 }
 
-.product-card img{
+.product-img{
+  font-size: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   aspect-ratio: 1/1;
   width: 100%;
-  object-fit: contain;
-  padding: 1rem;
   background-color: var(--cardBadge);
   border-radius: 1rem;
 }
