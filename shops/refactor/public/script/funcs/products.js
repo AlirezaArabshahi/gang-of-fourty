@@ -99,19 +99,25 @@ const getAndShowHeroBanner = async() => {
 
 
 const getProductsWithDetails = async() => {
-    const responses = await Promise.all([
-        fetch(`${BASEURL}/products.json`).then(r => r.json()),
-        fetch(`${BASEURL}/stock.json`).then(r => r.json()),
-        fetch(`${BASEURL}/offers.json`).then(r => r.json()),
+    const [productsRes, stocksRes, offersRes] = await Promise.all([
+        fetch(`${BASEURL}/products.json`),
+        fetch(`${BASEURL}/stock.json`),
+        fetch(`${BASEURL}/offers.json`),
     ])
 
-    if (responses.some(r => !r.ok)) {
-        throw new Error('fetch failed')
+    if (!productsRes.ok || !stocksRes.ok || !offersRes.ok) {
+        throw new Error(
+            `fetch failed: products=${productsRes.status}, ` +
+            `stock=${stocksRes.status}, offers=${offersRes.status}`
+        );
     }
 
-    const [products, stocks, offers] = await Promise.all(
-        responses.map(r => r.json())
-    )
+    const [products, stocks, offers] = await Promise.all([
+        productsRes.json(),
+        stocksRes.json(),
+        offersRes.json(),
+    ]);
+
 
     const finalProduct = products.map((p) => {
         const offerItem = offers.find((o) => o.productId == p.id)
@@ -146,8 +152,10 @@ const getAndShowOfferProducts = async() => {
         const cards = filtered.map(makeCard);
         track.textContent = '';
         cards.forEach((card) => track.append(card));
-    } catch {
-        showError(track, 'اتصال اینترنت برقرار نیست.');
+    } catch (err) {
+        console.error('خطا در بارگیری کارت‌ها:', err);
+        showError(track, 'خطا در بارگیری.');
+        return false;
     }
 }
 
