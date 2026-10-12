@@ -15,7 +15,6 @@
 
   /* Layout */
   --container: 1200px;
-  --header-h: 90px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -124,13 +123,14 @@ textarea:focus-visible {
     0 0 0 4px var(--navy);
 }
 
+/* Extra offset so section titles sit comfortably below the sticky header */
 [id] {
-  scroll-margin-top: var(--header-h);
+  scroll-margin-top: 190px; 
 }
 
 @media (min-width: 768px) {
   [id] {
-    scroll-margin-top: 140px;
+    scroll-margin-top: 250px; 
   }
 }
 

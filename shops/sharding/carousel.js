@@ -28,7 +28,6 @@
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.carousel-nav__btn');
     if (!btn) return;
-    e.preventDefault();
 
     const track = getTrack(btn);
     if (!track) return;
