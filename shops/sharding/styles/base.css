@@ -243,10 +243,20 @@ textarea:focus-visible {
   contain-intrinsic-size: auto 420px;
 }
 
+/* ─── Section vertical rhythm ───
+   All top-level sections use a single margin-block token.
+   Do NOT add padding-block to these sections — padding inside a section
+   would add to the margin and break the rhythm. Inner containers handle
+   their own visual padding. */
+
+:root {
+  --section-gap: clamp(var(--sp-md), 2.5vw, var(--sp-lg));
+}
+
 .hero,
 .categories,
 .products {
-  margin-block: clamp(var(--sp-md), 2vw, var(--sp-lg));
+  margin-block: var(--section-gap);
 }
 
 @media (max-width: 767px) {

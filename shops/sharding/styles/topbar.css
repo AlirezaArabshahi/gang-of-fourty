@@ -1,0 +1,33 @@
+/* ─── Topbar ─── */
+
+.topbar {
+  background: var(--navy);
+  color: var(--faint);
+  font-size: 12px;
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+}
+
+.topbar__note {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  color: var(--faint);
+  text-align: center;
+}
+
+.topbar__note svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--lime);
+  flex-shrink: 0;
+}
+
+.topbar__links {
+  display: none;
+}

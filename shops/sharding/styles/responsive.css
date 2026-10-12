@@ -1,22 +1,9 @@
 @media (max-width: 767px) {
-  .hero-video__media {
-    display: none;
-  }
-
-  .hero-video {
-    background-image: url("../assets/hero-poster.webp");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-
-  .hero-carousel__track,
   .categories__list {
     -webkit-mask-image: none;
     mask-image: none;
   }
 
-  .hero-carousel__slide,
   .category,
   .products__item {
     scroll-snap-stop: normal;
@@ -80,10 +67,7 @@
     min-height: 78px;
   }
 
-  .menu-btn,
-  .menu-toggle,
-  .mobile-menu,
-  .mobile-menu__overlay {
+  .menu-btn {
     display: none;
   }
 
@@ -122,8 +106,7 @@
     margin-inline-start: auto;
   }
 
-  .action--location,
-  .action--favorites {
+  .action--location {
     display: flex;
   }
 
