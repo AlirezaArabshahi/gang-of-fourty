@@ -388,6 +388,11 @@ header {
     scroll-snap-align: start;        /* ← هر کارت از اولش چفت بشه */
     flex-shrink: 0;
 }
+.product-emoji{
+    display: block;
+    font-size: 80px;
+    text-align: center;
+}
 .product{
     position: relative;
     flex-shrink: 0;
