@@ -223,6 +223,34 @@ function renderCarousel(list, gridId, statusId, sectionId, offerMap, stockMap) {
   });
 }
 
+function startCountdown() {
+  const el = document.getElementById('offers-timer');
+  if (!el) return;
+
+  const hEl = el.querySelector('[data-h]');
+  const mEl = el.querySelector('[data-m]');
+  const sEl = el.querySelector('[data-s]');
+  if (!hEl || !mEl || !sEl) return;
+
+  const fmt = new Intl.NumberFormat('fa-IR', { minimumIntegerDigits: 2 });
+
+  const tick = () => {
+    const now = new Date();
+    const end = new Date(now);
+    end.setHours(24, 0, 0, 0);
+    const diff = Math.max(0, end - now);
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    hEl.textContent = fmt.format(h);
+    mEl.textContent = fmt.format(m);
+    sEl.textContent = fmt.format(s);
+  };
+
+  tick();
+  setInterval(tick, 1000);
+}
+
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -253,9 +281,14 @@ async function init() {
     const offerMap = buildOfferMap(offers);
     const stockMap = buildStockMap(stockData);
 
-    const offerProducts = offers
+    const offerProducts = [...offers]
+      .sort((a, b) => b.percent - a.percent)
       .map((off) => products.find((p) => p.id === off.productId))
-      .filter(Boolean);
+      .filter(Boolean)
+      .filter((p) => {
+        const qty = stockMap.has(p.id) ? stockMap.get(p.id) : 1;
+        return qty !== 0;
+      });
 
     renderCarousel(
       offerProducts,
@@ -283,6 +316,8 @@ async function init() {
       offerMap,
       stockMap
     );
+
+    startCountdown();
   } catch (err) {
     console.error('خطا در دریافت داده:', err);
     const msg =

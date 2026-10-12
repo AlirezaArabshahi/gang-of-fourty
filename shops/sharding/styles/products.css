@@ -441,3 +441,125 @@
   max-width: 32ch;
   color: var(--muted);
 }
+
+
+#offers {
+  padding-block-start: clamp(var(--sp-lg), 3vw, var(--sp-xl));
+}
+
+#offers .products__inner {
+  background: #5a1e28;
+  border: 1px solid #5a1e28;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+#offers .products__main {
+  padding: 0;
+}
+
+#offers .products__head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-md);
+  margin: 0;
+  padding: clamp(16px, 2.2vw, 22px) var(--sp-md);
+
+  background-color: #5a1e28;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-opacity='0.08'%3E%3Ccircle cx='24' cy='24' r='5.5'/%3E%3Ccircle cx='48' cy='48' r='5.5'/%3E%3Cline x1='52' y1='20' x2='20' y2='52'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 72px 72px;
+  color: #fff;
+}
+
+#offers .products__title {
+  position: relative;
+  padding-inline-start: 14px;
+  font-size: var(--text-lg);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.3;
+}
+
+#offers .products__title::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  translate: 0 -50%;
+  width: 4px;
+  height: 1.2em;
+  background: #FFD84D;
+  border-radius: 2px;
+}
+
+/* فلش‌ها روی بدنه شرابی */
+#offers .carousel-nav__btn {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: #fff;
+}
+
+#offers .carousel-nav__btn:hover,
+#offers .carousel-nav__btn:focus-visible {
+  background: #fff;
+  border-color: #fff;
+  color: #5a1e28;
+}
+
+#offers .products__grid {
+  padding-block-end: 8px;
+  padding-inline: var(--sp-md);
+  margin-inline: 0;
+  scroll-padding-inline: var(--sp-md);
+
+  background-color: #5a1e28;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-opacity='0.08'%3E%3Ccircle cx='24' cy='24' r='5.5'/%3E%3Ccircle cx='48' cy='48' r='5.5'/%3E%3Cline x1='52' y1='20' x2='20' y2='52'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 72px 72px;
+}
+
+#offers .products__item:first-child {
+  scroll-margin-inline-start: var(--sp-md);
+}
+
+#offers .product__discount {
+  background: #e11d48;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.35);
+}
+
+#offers .product:hover,
+#offers .product:focus-within {
+  border-color: var(--lime);
+  box-shadow: var(--shadow-lime);
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product,
+  .product__img img,
+  .product__add,
+  .carousel-nav__btn {
+    transition: none;
+    animation: none;
+  }
+
+  .product:hover,
+  .product:focus-within {
+    transform: none;
+  }
+
+  .product:hover .product__img img {
+    transform: none;
+  }
+
+  .products__grid {
+    scroll-behavior: auto;
+  }
+
+  .product--skeleton .product__img {
+    animation: none;
+    background: light-dark(#eef0f3, #1a1f2b);
+  }
+}

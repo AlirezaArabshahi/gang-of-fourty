@@ -18,39 +18,18 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  background-color: #FFFFFF;
   background-image:
-    radial-gradient(
-      circle at 100% 0%,
-      rgba(181, 196, 0, 0.28) 0%,
-      rgba(181, 196, 0, 0.1) 35%,
-      transparent 70%
-    ),
-    radial-gradient(
-      circle at 0% 100%,
-      rgba(181, 196, 0, 0.22) 0%,
-      rgba(181, 196, 0, 0.06) 40%,
-      transparent 65%
-    );
+    radial-gradient(closest-side, transparent 0%, transparent 75%, #B6CC66 76%, #B6CC66 85%, #EDFFDB 86%, #EDFFDB 94%, #FFFFFF 95%, #FFFFFF 103%, #D9E6A7 104%, #D9E6A7 112%, #798B3C 113%, #798B3C 121%, #FFFFFF 122%, #FFFFFF 130%, #E0EAD7 131%, #E0EAD7 140%),
+    radial-gradient(closest-side, transparent 0%, transparent 75%, #B6CC66 76%, #B6CC66 85%, #EDFFDB 86%, #EDFFDB 94%, #FFFFFF 95%, #FFFFFF 103%, #D9E6A7 104%, #D9E6A7 112%, #798B3C 113%, #798B3C 121%, #FFFFFF 122%, #FFFFFF 130%, #E0EAD7 131%, #E0EAD7 140%);
+  background-size: 110px 110px;
+  background-position: 0 0, 55px 55px;
+  opacity: 0.12;
   pointer-events: none;
 }
 
 .categories > .container::after {
-  content: "";
-  position: absolute;
-  top: -30%;
-  inset-inline-start: -8%;
-  width: min(400px, 50vw);
-  height: min(400px, 50vw);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(181, 196, 0, 0.3) 0%,
-    rgba(181, 196, 0, 0.1) 45%,
-    transparent 70%
-  );
-  filter: blur(10px);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .categories__head {
@@ -110,8 +89,6 @@
 }
 
 .categories__list > li {
-  /* keep list semantics; flex item is the child .category via display:contents
-     but ids for scroll targets must live on .category (has a box) */
   display: contents;
 }
 
@@ -215,12 +192,9 @@
   }
 }
 
-
-/* Categories head can host carousel-nav */
 .categories__head .carousel-nav {
   margin-inline-start: auto;
 }
-
 
 .category:target {
   border-color: var(--lime);

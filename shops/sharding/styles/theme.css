@@ -200,17 +200,6 @@ body .categories > .container {
   border-bottom-color: var(--categories-border);
 }
 
-:root:has(#theme-dark:checked) body .categories > .container::before,
-:root:has(#theme-dark:checked) body .categories > .container::after {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:has(#theme-auto:checked) body .categories > .container::before,
-  :root:has(#theme-auto:checked) body .categories > .container::after {
-    display: none;
-  }
-}
 
 /* Dark scrollbar */
 :root:has(#theme-dark:checked) .hero-carousel__track,
