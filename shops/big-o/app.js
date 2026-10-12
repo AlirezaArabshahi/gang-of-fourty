@@ -103,20 +103,47 @@ function renderProducts(data, queryId) {
             productCard.id = `last-${queryId}`;
         }
         return productCard;
-    })
+    });
     const htmlTag = document.querySelector(`#${queryId}`);
     htmlTag.querySelector("ul").append(...productList);
 }
 
 
+// Show message for loading data and errors
+// container: html tag which message be shown in that, text : the content of message, type: load or error
+function showMessage(container, text, type) {
+    const content = document.createElement("p");
+    content.textContent = text;
+    content.classList.add("msg");
+    
+    if (type === "load") {
+        content.classList.add("load-msg");
+        content.setAttribute("role", "status");
+    }
+    else {
+        content.classList.add("error-msg");
+        content.setAttribute("role", "alert");
+    }
+    document.querySelector(container).append(content);
+}
+
+// Removes the message (loading or error) shown by showMessage.
+// container: CSS selector of the section that holds it (e.g. "#dairy").
+// Does nothing if there is no message.
+function clearMessage(container) {
+    const box = document.querySelector(container);
+    const message = box.querySelector(".msg");
+    message?.remove();
+}
 
 // Entry point: loads the data, picks the dairy products
 // and renders them. Errors are caught here, because this is
 // the one place that knows about the page.
 async function init() {
     try {
+        showMessage("#dairy", "در حال بارگذاری…", "load");
         const { categories, products } = await getData();
-
+        clearMessage("#dairy");
         //Get "لبنیات" products
         const categoryId = getCategoryID("لبنیات", categories);
         const filteredProducts = filterProductsByCategoryID(categoryId, products);
@@ -125,6 +152,8 @@ async function init() {
         renderProducts(filteredProducts, "dairy");
 
     } catch (error) {
+        clearMessage("#dairy");
+        showMessage("#dairy", "بارگذاری محصولات ممکن نشد. اینترنت را بررسی کنید.", "error");
         console.error(error);
     }
 }

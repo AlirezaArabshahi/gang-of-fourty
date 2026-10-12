@@ -422,6 +422,26 @@ html[dir="ltr"] .carousel-arrows img {
   
 }
 
+.msg {
+  margin: 0;
+  padding: 1rem;
+  font-size: 0.875rem;
+  text-align: center;
+  border: 1px solid rgb(236, 230, 230);
+  border-radius: 0.5rem;
+}
+
+.load-msg {
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+}
+
+.error-msg {
+  color: var(--color-text);
+  background-color: var(--tint-red);
+  border-color: var(--color-sale);
+}
+
 .product-card {
   background-color: var(--color-surface);
   border: 1px solid rgb(236, 230, 230);
@@ -463,6 +483,7 @@ html[dir="ltr"] .carousel-arrows img {
   border-radius: 1rem;
   cursor: default;
 }
+
 
 .product-carousel li:nth-child(1) { --cardBadge: var(--tint-red); }
 .product-carousel li:nth-child(2) { --cardBadge: var(--tint-blue); }
