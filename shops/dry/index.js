@@ -1,9 +1,7 @@
-// آدرس پوشه‌ی داده‌ها، نسبت به صفحه‌ی index.html
-const API = '../../api/'
-const DAIRY_CATEGORY_ID = 2 // شناسه‌ی دسته‌ی لبنیات در categories.json
 
-// عکس‌های خودم؛ داده‌ها از API می‌آد، عکس‌ها از پوشه‌ی assets
-// محصولی که اینجا نباشه، ایموجی خودش رو نشون می‌ده
+const API = '../../api/'
+const DAIRY_CATEGORY_ID = 2 
+
 const IMAGES = {
   102: './assets/products/orange.png',
   103: './assets/products/banana.png',
@@ -16,14 +14,13 @@ const IMAGES = {
 const faNumber = new Intl.NumberFormat('fa-IR')
 const toman = (n) => faNumber.format(n) + ' تومان'
 
-// یک فایل جیسون می‌گیره؛ اگه جواب سالم نبود خطا می‌ندازه
 async function getJSON(file) {
   const res = await fetch(API + file)
   if (!res.ok) throw new Error('خطا: ' + res.status)
   return res.json()
 }
 
-// ساختن یک عنصر با کلاس و متن (فقط با textContent، نه innerHTML)
+
 function el(tag, className, text) {
   const node = document.createElement(tag)
   if (className) node.className = className
@@ -31,7 +28,7 @@ function el(tag, className, text) {
   return node
 }
 
-// ساختن یک کارت محصول
+
 function createCard(product, inStock, offer) {
   const card = el('div', 'product-card')
   if (!inStock) card.classList.add('out')
@@ -46,7 +43,7 @@ function createCard(product, inStock, offer) {
   if (IMAGES[product.id]) {
     const img = el('img')
     img.src = IMAGES[product.id]
-    img.alt = '' // اسم محصول زیرش نوشته شده، تکراری خونده نشه
+    img.alt = '' 
     pic.append(img)
   } else {
     const emoji = el('span', '', product.emoji)
@@ -57,7 +54,7 @@ function createCard(product, inStock, offer) {
 
   const price = el('div', 'price')
   if (offer) {
-    // قیمت جدید، گرد شده به نزدیک‌ترین هزار تومان
+
     const newPrice = Math.round((product.price * (100 - offer.percent)) / 100 / 1000) * 1000
     price.append(el('span', 'old-price', toman(product.price)), el('span', '', toman(newPrice)))
   } else {
@@ -73,14 +70,13 @@ function createCard(product, inStock, offer) {
   return card
 }
 
-// نمایش پیام (در حال بارگذاری / خطا / خالی) داخل کاروسل
 function showStatus(box, message, isError = false) {
   const p = el('p', isError ? 'status error' : 'status', message)
   p.setAttribute('role', isError ? 'alert' : 'status')
   box.replaceChildren(p)
 }
 
-// گذاشتن کارت‌ها داخل کاروسل و تنظیم دکمه‌های ابتدا و انتها
+
 function renderCarousel(box, cards, prefix) {
   box.setAttribute('aria-busy', 'false')
   if (cards.length === 0) {
@@ -108,7 +104,7 @@ async function init() {
   }
 
   try {
-    // سه فایل هم‌زمان خونده می‌شن
+
     const [products, stock, offers] = await Promise.all([
       getJSON('products.json'),
       getJSON('stock.json'),
