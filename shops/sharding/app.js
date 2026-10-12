@@ -223,34 +223,6 @@ function renderCarousel(list, gridId, statusId, sectionId, offerMap, stockMap) {
   });
 }
 
-function startCountdown() {
-  const el = document.getElementById('offers-timer');
-  if (!el) return;
-
-  const hEl = el.querySelector('[data-h]');
-  const mEl = el.querySelector('[data-m]');
-  const sEl = el.querySelector('[data-s]');
-  if (!hEl || !mEl || !sEl) return;
-
-  const fmt = new Intl.NumberFormat('fa-IR', { minimumIntegerDigits: 2 });
-
-  const tick = () => {
-    const now = new Date();
-    const end = new Date(now);
-    end.setHours(24, 0, 0, 0);
-    const diff = Math.max(0, end - now);
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    hEl.textContent = fmt.format(h);
-    mEl.textContent = fmt.format(m);
-    sEl.textContent = fmt.format(s);
-  };
-
-  tick();
-  setInterval(tick, 1000);
-}
-
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -263,7 +235,21 @@ async function fetchJson(url) {
   return res.json();
 }
 
+function setupProductLinkGuard() {
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a.product__link');
+    if (!link) return;
+
+    const href = link.getAttribute('href');
+    if (href === '#' || href === '') {
+      e.preventDefault();
+    }
+  });
+}
+
 async function init() {
+  setupProductLinkGuard();
+
   const errorTargets = [
     { gridId: 'offers-grid', statusId: 'offers-status' },
     { gridId: 'fruits-grid', statusId: 'fruits-status' },
@@ -271,12 +257,18 @@ async function init() {
   ];
 
   try {
+    const startedAt = performance.now();
+
     const [products, stockData, offers] = await Promise.all([
       fetchJson(API.products),
       fetchJson(API.stock),
       fetchJson(API.offers),
-      wait(MIN_SKELETON_MS).then(() => null),
-    ]).then(([p, s, o]) => [p, s, o]);
+    ]);
+
+    const remaining = MIN_SKELETON_MS - (performance.now() - startedAt);
+    if (remaining > 0) {
+      await wait(remaining);
+    }
 
     const offerMap = buildOfferMap(offers);
     const stockMap = buildStockMap(stockData);
@@ -316,8 +308,6 @@ async function init() {
       offerMap,
       stockMap
     );
-
-    startCountdown();
   } catch (err) {
     console.error('خطا در دریافت داده:', err);
     const msg =
