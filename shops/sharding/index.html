@@ -3,6 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t !== 'light' && t !== 'dark' && t !== 'auto') t = 'auto';
+        document.documentElement.dataset.theme = t;
+      } catch (e) {
+        document.documentElement.dataset.theme = 'auto';
+      }
+    })();
+  </script>
   <title>شاردینگ مارکت | سوپرمارکت فوری محله شما</title>
   <meta name="description" content="خرید آنلاین و ارسال سریع محصولات سوپرمارکتی با تخفیف از شاردینگ مارکت">
 
@@ -11,11 +22,32 @@
 
   <link rel="stylesheet" href="styles/fonts.css?v=2">
   <link rel="stylesheet" href="styles/base.css?v=2">
-  <link rel="stylesheet" href="styles/layout.css?v=2">
+
+  <!-- Layout components -->
+  <link rel="stylesheet" href="styles/topbar.css?v=2">
+  <link rel="stylesheet" href="styles/brand.css?v=2">
+  <link rel="stylesheet" href="styles/header.css?v=2">
+  <link rel="stylesheet" href="styles/mobile-menu.css?v=2">
+  <link rel="stylesheet" href="styles/footer.css?v=2">
+  <link rel="stylesheet" href="styles/theme-switch.css?v=2">
+
+  <!-- Sections -->
   <link rel="stylesheet" href="styles/hero.css?v=2">
+  <link rel="stylesheet" href="styles/hero-video.css?v=2">
+  <link rel="stylesheet" href="styles/hero-carousel.css?v=2">
   <link rel="stylesheet" href="styles/categories.css?v=2">
   <link rel="stylesheet" href="styles/mega-menu.css?v=2">
+
+  <!-- Shared components -->
+  <link rel="stylesheet" href="styles/carousel.css?v=2">
+  <link rel="stylesheet" href="styles/product-card.css?v=2">
+  <link rel="stylesheet" href="styles/scrollbars.css?v=2">
+
+  <!-- Product sections -->
   <link rel="stylesheet" href="styles/products.css?v=2">
+  <link rel="stylesheet" href="styles/offers.css?v=2">
+
+  <!-- System -->
   <link rel="stylesheet" href="styles/animations.css?v=2">
   <link rel="stylesheet" href="styles/responsive.css?v=2">
   <link rel="stylesheet" href="styles/theme.css?v=2">
@@ -24,11 +56,6 @@
   <a href="#main-content" class="skip-link">
     <span class="container">پرش به محتوای اصلی</span>
   </a>
-
-  <input type="radio" name="theme" id="theme-auto"  class="theme-radio" hidden checked>
-  <input type="radio" name="theme" id="theme-light" class="theme-radio" hidden>
-  <input type="radio" name="theme" id="theme-dark"  class="theme-radio" hidden>
-  <input type="checkbox" id="menu-toggle" class="menu-toggle" hidden aria-hidden="true" tabindex="-1">
 
   <div class="topbar">
     <div class="container topbar__inner">
@@ -49,12 +76,12 @@
   <header class="header">
     <div class="container header__inner">
 
-      <label for="menu-toggle" class="menu-btn">
+      <button type="button" class="menu-btn" data-menu-open aria-expanded="false" aria-controls="mobile-menu">
         <span class="visually-hidden">باز کردن منو</span>
         <svg class="menu-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
         </svg>
-      </label>
+      </button>
 
       <a href="#main-content" class="brand" aria-label="شاردینگ مارکت — صفحه اصلی">
         <span class="brand__mark" aria-hidden="true">
@@ -139,30 +166,43 @@
           </span>
         </a>
       </div>
-<div class="theme-switch" role="radiogroup" aria-label="انتخاب پوسته">
-        
-        <label for="theme-auto" class="theme-switch__btn theme-switch__btn--auto" title="پیروی از سیستم">
+
+      <div class="theme-switch" role="group" aria-label="انتخاب پوسته">
+
+        <button type="button"
+                class="theme-switch__btn theme-switch__btn--auto"
+                data-theme-set="auto"
+                aria-pressed="true"
+                title="پیروی از سیستم">
           <span class="visually-hidden">پیروی از تنظیمات سیستم</span>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="2" y="4" width="20" height="14" rx="2"/>
             <path d="M8 20h8M12 18v2"/>
           </svg>
-        </label>
+        </button>
 
-        <label for="theme-light" class="theme-switch__btn theme-switch__btn--light" title="حالت روشن">
+        <button type="button"
+                class="theme-switch__btn theme-switch__btn--light"
+                data-theme-set="light"
+                aria-pressed="false"
+                title="حالت روشن">
           <span class="visually-hidden">حالت روشن</span>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="4"/>
             <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"/>
           </svg>
-        </label>
+        </button>
 
-        <label for="theme-dark" class="theme-switch__btn theme-switch__btn--dark" title="حالت تاریک">
+        <button type="button"
+                class="theme-switch__btn theme-switch__btn--dark"
+                data-theme-set="dark"
+                aria-pressed="false"
+                title="حالت تاریک">
           <span class="visually-hidden">حالت تاریک</span>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/>
           </svg>
-        </label>
+        </button>
 
       </div>
 
@@ -172,17 +212,16 @@
       <div class="container header-nav__inner">
 
         <div class="dept">
-          
-          <input type="checkbox" id="dept-toggle" class="dept-toggle" tabindex="-1">
-
-          <label for="dept-toggle" class="dept-btn">
+          <button type="button" class="dept-btn"
+                  aria-expanded="false"
+                  aria-controls="dept-panel">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
             </svg>
             <span>همه دسته‌بندی‌ها</span>
-          </label>
+          </button>
 
-          <div class="dept-panel">
+          <div class="dept-panel" id="dept-panel">
             <ul class="dept-menu">
               <li class="dept-menu__item dept-menu__item--fruits">
                 <a href="#fruits" class="dept-menu__link">میوه و سبزیجات</a>
@@ -463,36 +502,52 @@
 
   <div class="mobile-menu__overlay"></div>
 
-  <div class="mobile-menu">
+  <div class="mobile-menu" id="mobile-menu">
     <div class="mobile-menu__head">
-      <label for="menu-toggle" class="mobile-menu__close">
+      <button type="button" class="mobile-menu__close" data-menu-close>
         <span class="visually-hidden">بستن منو</span>
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
         </svg>
-      </label>
+      </button>
       <span class="mobile-menu__title">منو</span>
-      <div class="mobile-menu__theme theme-switch" role="radiogroup" aria-label="انتخاب پوسته">
-        <label for="theme-auto" class="theme-switch__btn theme-switch__btn--auto" title="پیروی از سیستم">
+      <div class="mobile-menu__theme theme-switch" role="group" aria-label="انتخاب پوسته">
+
+        <button type="button"
+                class="theme-switch__btn theme-switch__btn--auto"
+                data-theme-set="auto"
+                aria-pressed="true"
+                title="پیروی از سیستم">
           <span class="visually-hidden">پیروی از تنظیمات سیستم</span>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="2" y="4" width="20" height="14" rx="2"/>
             <path d="M8 20h8M12 18v2"/>
           </svg>
-        </label>
-        <label for="theme-light" class="theme-switch__btn theme-switch__btn--light" title="حالت روشن">
+        </button>
+
+        <button type="button"
+                class="theme-switch__btn theme-switch__btn--light"
+                data-theme-set="light"
+                aria-pressed="false"
+                title="حالت روشن">
           <span class="visually-hidden">حالت روشن</span>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <circle cx="12" cy="12" r="4"/>
             <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"/>
           </svg>
-        </label>
-        <label for="theme-dark" class="theme-switch__btn theme-switch__btn--dark" title="حالت تاریک">
+        </button>
+
+        <button type="button"
+                class="theme-switch__btn theme-switch__btn--dark"
+                data-theme-set="dark"
+                aria-pressed="false"
+                title="حالت تاریک">
           <span class="visually-hidden">حالت تاریک</span>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/>
           </svg>
-        </label>
+        </button>
+
       </div>
     </div>
 
@@ -606,7 +661,7 @@
   </section>
 
   <main id="main-content" tabindex="-1">
-    <section class="products" id="offers" aria-labelledby="offers-title">
+    <section class="products products--offers" id="offers" aria-labelledby="offers-title">
       <div class="container">
         <div class="products__inner">
           <div class="products__main">
@@ -642,7 +697,7 @@
           </div>
         </div>
       </div>
-    </section>   
+    </section>
 
     <section class="categories" aria-labelledby="categories-title">
       <div class="container">
@@ -872,7 +927,7 @@
 
             <div class="products__status" id="dairy-status" hidden></div>
 
-            <ul class="products__grid" id="dairy-grid" aria-label="محصولات lb">
+            <ul class="products__grid" id="dairy-grid" aria-label="محصولات لبنیات و تخم‌مرغ">
               <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
               <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
               <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
@@ -983,6 +1038,10 @@
 
     </div>
   </footer>
+
+  <script src="theme.js" defer></script>
+  <script src="menu.js" defer></script>
+  <script src="carousel.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>
