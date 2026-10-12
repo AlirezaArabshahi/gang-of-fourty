@@ -1,0 +1,68 @@
+/* ─── Theme switch (segmented control) ─── */
+
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.theme-switch__btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  cursor: pointer;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  transition:
+    background 0.2s var(--ease),
+    color 0.2s var(--ease);
+}
+
+.theme-switch__btn:hover {
+  background: var(--lime-soft);
+  color: var(--navy);
+}
+
+.theme-switch__btn svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.theme-switch__btn[aria-pressed="true"] {
+  background: var(--lime);
+  color: var(--on-lime);
+}
+
+.theme-switch__btn[aria-pressed="true"] svg {
+  stroke: var(--on-lime);
+}
+
+/* Header switch: hidden on mobile (drawer has its own) */
+.header .theme-switch {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .header .theme-switch {
+    display: inline-flex;
+  }
+}
+
+/* Drawer switch: slightly larger tap targets */
+.mobile-menu__theme .theme-switch__btn {
+  width: 32px;
+  height: 32px;
+}
