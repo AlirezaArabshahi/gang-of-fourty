@@ -88,7 +88,7 @@ function renderCarousel(box, cards, prefix) {
   })
   box.replaceChildren(...cards)
 
-  const links = box.closest('section').querySelectorAll('.carousel-nav a')
+ const links = box.closest('.products').querySelectorAll('.carousel-nav a')
   links[0].href = `#${prefix}-1`
   links[1].href = `#${prefix}-${cards.length}`
 }
