@@ -1,19 +1,8 @@
+/* ─── Department mega menu ─── */
+
 .dept {
   position: relative;
   flex-shrink: 0;
-}
-
-.dept-toggle {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.dept-toggle:focus-visible + .dept-btn {
-  outline: 2px solid var(--navy);
-  outline-offset: 2px;
 }
 
 .dept-btn {
@@ -32,7 +21,7 @@
 }
 
 .dept:hover .dept-btn,
-.dept-toggle:checked + .dept-btn {
+.dept-btn[aria-expanded="true"] {
   background: var(--lime-hover);
 }
 
@@ -61,10 +50,12 @@
   transition:
     opacity 0.2s var(--ease),
     transform 0.2s var(--ease),
-    visibility 0s 0s;
+    visibility 0s 0.2s;
 }
 
-.dept-toggle:checked ~ .dept-panel {
+/* Open state — persistent (.is-open) or transient hover */
+.dept.is-open .dept-panel,
+.dept:hover .dept-panel {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
@@ -73,13 +64,6 @@
     opacity 0.2s var(--ease),
     transform 0.2s var(--ease),
     visibility 0s 0s;
-}
-
-.dept:hover .dept-panel {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  pointer-events: auto;
 }
 
 /* Bridge gap so hover doesn't drop */
@@ -159,6 +143,7 @@
   transition: opacity 0.15s var(--ease), visibility 0s 0s;
 }
 
+/* Show sub/promo of the hovered/focused item */
 .dept-menu__item:hover > .dept-sub,
 .dept-menu__item:focus-within > .dept-sub {
   visibility: visible;
@@ -171,17 +156,29 @@
   opacity: 1;
 }
 
-/* Default open first item */
-.dept-menu__item--fruits > .dept-sub,
-.dept-menu__item--fruits > .dept-promo {
+/* ─── First item (fruits) shown by default ───
+   IMPORTANT: scoped to .is-open / :hover so children don't become
+   focusable via Tab while the panel is closed. If we set visibility: visible
+   unconditionally, descendants override the panel's visibility: hidden and
+   remain in the tab order even though the panel is not shown. */
+
+.dept.is-open .dept-menu__item--fruits > .dept-sub,
+.dept.is-open .dept-menu__item--fruits > .dept-promo,
+.dept:hover  .dept-menu__item--fruits > .dept-sub,
+.dept:hover  .dept-menu__item--fruits > .dept-promo {
   visibility: visible;
   opacity: 1;
 }
 
-.dept-menu:hover > .dept-menu__item--fruits:not(:hover) > .dept-sub,
-.dept-menu:focus-within > .dept-menu__item--fruits:not(:focus-within) > .dept-sub,
-.dept-menu:hover > .dept-menu__item--fruits:not(:hover) > .dept-promo,
-.dept-menu:focus-within > .dept-menu__item--fruits:not(:focus-within) > .dept-promo {
+/* Hide fruits sub when another item is being hovered/focused */
+.dept.is-open .dept-menu:hover > .dept-menu__item--fruits:not(:hover) > .dept-sub,
+.dept.is-open .dept-menu:hover > .dept-menu__item--fruits:not(:hover) > .dept-promo,
+.dept.is-open .dept-menu:focus-within > .dept-menu__item--fruits:not(:focus-within) > .dept-sub,
+.dept.is-open .dept-menu:focus-within > .dept-menu__item--fruits:not(:focus-within) > .dept-promo,
+.dept:hover  .dept-menu:hover > .dept-menu__item--fruits:not(:hover) > .dept-sub,
+.dept:hover  .dept-menu:hover > .dept-menu__item--fruits:not(:hover) > .dept-promo,
+.dept:hover  .dept-menu:focus-within > .dept-menu__item--fruits:not(:focus-within) > .dept-sub,
+.dept:hover  .dept-menu:focus-within > .dept-menu__item--fruits:not(:focus-within) > .dept-promo {
   visibility: hidden;
   opacity: 0;
 }
@@ -284,13 +281,6 @@
   font-size: 0.78rem;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.9);
-}
-
-.dept:not(:focus-within):not(:hover) .dept-panel {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transform: translateY(-8px);
 }
 
 @media (min-width: 768px) {
