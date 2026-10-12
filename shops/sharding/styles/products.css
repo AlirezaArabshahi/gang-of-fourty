@@ -1,9 +1,3 @@
-/* ─── Products section wrapper ─── */
-
-.products {
-  /* spacing handled by --section-gap in base.css */
-}
-
 .products__inner {
   background: var(--white);
   border: 1px solid var(--border);
@@ -101,8 +95,8 @@
   align-items: center;
   gap: 6px;
   padding: clamp(28px, 5vw, 40px) var(--sp-lg);
-  background: light-dark(#fafafa, #151a24);
-  border: 1px dashed light-dark(#d0d4dc, #2e3444);
+  background: var(--surface);
+  border: 1px dashed var(--border);
   color: var(--muted);
 }
 

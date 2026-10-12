@@ -1,5 +1,3 @@
-/* ─── Mobile menu (drawer) ─── */
-
 .mobile-menu__overlay {
   position: fixed;
   inset: 0;
@@ -89,14 +87,20 @@
   gap: var(--sp-md);
 }
 
-/* Promo banner — always dark (intentional, not theme-driven) */
+/* ─── Promo banner ─── */
+/* Intentional: always dark, regardless of theme.
+   Uses local variables so it's clear these are fixed values. */
+
 .mobile-menu__banner {
+  --banner-bg: #0F1319;
+  --banner-accent: #B5C400;
+
   display: flex;
   flex-direction: column;
   gap: var(--sp-sm);
   padding: var(--sp-md);
-  background: #0F1319;
-  border-inline-start: 4px solid var(--lime);
+  background: var(--banner-bg);
+  border-inline-start: 4px solid var(--banner-accent);
   border-radius: var(--radius);
   color: #fff;
 }
@@ -104,7 +108,7 @@
 .mobile-menu__banner-title {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #B5C400;
+  color: var(--banner-accent);
 }
 
 .mobile-menu__banner-desc {
@@ -117,8 +121,8 @@
   align-self: flex-start;
   margin-top: var(--sp-sm);
   padding: 8px 16px;
-  background: #B5C400;
-  color: #0F1319;
+  background: var(--banner-accent);
+  color: var(--banner-bg);
   font-size: 0.82rem;
   font-weight: 800;
   border-radius: var(--radius-sm);
@@ -128,6 +132,8 @@
 .mobile-menu__banner-cta:hover {
   background: var(--lime-hover);
 }
+
+/* ─── Navigation list ─── */
 
 .mobile-menu__list {
   display: flex;
@@ -147,6 +153,8 @@
 .mobile-menu__list a:hover {
   color: var(--lime-dark);
 }
+
+/* ─── Apps ─── */
 
 .mobile-menu__apps {
   margin-top: var(--sp-md);
@@ -179,7 +187,8 @@
   background: var(--navy-2);
 }
 
-/* Hide drawer entirely on desktop */
+/* ─── Responsive: hide drawer on desktop ─── */
+
 @media (min-width: 768px) {
   .mobile-menu,
   .mobile-menu__overlay {

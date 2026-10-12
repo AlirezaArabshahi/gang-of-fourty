@@ -1,9 +1,7 @@
-/* ─── Footer ─── */
-
 .footer {
   background: var(--white);
   border-top: 1px solid var(--border);
-  margin-top: var(--section-gap);  
+  margin-top: var(--section-gap);
   padding: var(--sp-lg) 0 var(--sp-md);
 }
 
@@ -137,6 +135,16 @@
   fill: currentColor;
 }
 
+/* ─── Responsive ─── */
+
+@media (min-width: 640px) {
+  .footer__bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: start;
+  }
+}
+
 @media (min-width: 768px) {
   .footer__brand {
     flex-direction: column;
@@ -145,5 +153,23 @@
 
   .footer__brand .brand {
     order: 0;
+  }
+
+  .footer__main {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: var(--sp-lg);
+  }
+
+  .footer__links {
+    flex: 0 0 auto;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: var(--sp-lg);
+  }
+
+  /* ادغام شده — نه جدا */
+  .footer__brand {
+    flex: 1 1 auto;
+    max-width: 420px;
   }
 }

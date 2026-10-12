@@ -1,11 +1,9 @@
-/* ─── Hero video banner ─── */
-
 .hero-video {
   position: relative;
   width: 100%;
   height: clamp(220px, 40vw, 420px);
   overflow: hidden;
-  background: var(--navy);
+  background: var(--video-bg);
   border-radius: var(--radius-lg);
   contain: layout paint;
 }
@@ -21,12 +19,6 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    270deg,
-    rgba(15, 19, 25, 0.82) 0%,
-    rgba(15, 19, 25, 0.5) 45%,
-    rgba(15, 19, 25, 0) 100%
-  );
   pointer-events: none;
   border-radius: inherit;
 }

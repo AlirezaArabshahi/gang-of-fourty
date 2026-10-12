@@ -1,8 +1,6 @@
 (function () {
   'use strict';
 
-  /* ─── Mobile menu drawer ─── */
-
   const menuBtn = document.querySelector('[data-menu-open]');
   const menuClose = document.querySelector('[data-menu-close]');
   const menu = document.getElementById('mobile-menu');
@@ -43,7 +41,6 @@
         setOpen(false);
       }
     });
-
     // Auto-close if user resizes to desktop while drawer open
     const mq = window.matchMedia('(min-width: 768px)');
     mq.addEventListener('change', (e) => {
@@ -53,7 +50,6 @@
     });
   }
 
-  /* ─── Department mega menu ─── */
 
   const deptBtn = document.querySelector('.dept-btn[aria-expanded]');
   const dept = deptBtn ? deptBtn.closest('.dept') : null;
@@ -69,8 +65,8 @@
       const isOpen = deptBtn.getAttribute('aria-expanded') === 'true';
       setDeptOpen(!isOpen);
     });
-
     // Close when focus leaves the entire dept
+
     dept.addEventListener('focusout', () => {
       setTimeout(() => {
         if (!dept.contains(document.activeElement)) {
@@ -78,15 +74,15 @@
         }
       }, 0);
     });
-
     // Close on click outside
+
     document.addEventListener('click', (e) => {
       if (!dept.contains(e.target)) {
         setDeptOpen(false);
       }
     });
-
     // Close on Escape and return focus to button
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && dept.classList.contains('is-open')) {
         setDeptOpen(false);

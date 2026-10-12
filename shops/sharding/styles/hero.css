@@ -1,5 +1,0 @@
-/* ─── Hero section wrapper ─── */
-
-.hero {
-  padding-block: clamp(var(--sp-md), 2vw, var(--sp-lg));
-}

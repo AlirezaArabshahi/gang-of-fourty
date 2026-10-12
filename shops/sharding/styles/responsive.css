@@ -1,14 +1,7 @@
+/* Component-specific media queries live in their own files.
+   This file only handles overrides that span multiple components. */
+
 @media (max-width: 767px) {
-  .categories__list {
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-
-  .category,
-  .products__item {
-    scroll-snap-stop: normal;
-  }
-
   /* Skip logo animation in footer on mobile (battery) */
   .footer .logo__wedge {
     animation: none;
@@ -24,114 +17,5 @@
 
   .footer .logo__shard {
     animation: none;
-  }
-}
-
-@media (min-width: 640px) {
-  .topbar__inner {
-    justify-content: space-between;
-    gap: var(--sp-md);
-    min-height: 38px;
-  }
-
-  .topbar__note {
-    text-align: start;
-  }
-
-  .topbar__links {
-    display: flex;
-    align-items: center;
-    gap: var(--sp-lg);
-  }
-
-  .topbar__links a {
-    transition: color 0.15s var(--ease);
-  }
-
-  .topbar__links a:hover {
-    color: var(--lime);
-  }
-
-  .footer__bottom {
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: start;
-  }
-}
-
-@media (min-width: 768px) {
-  .header__inner {
-    flex-wrap: nowrap;
-    gap: var(--sp-lg);
-    padding: 0;
-    min-height: 78px;
-  }
-
-  .menu-btn {
-    display: none;
-  }
-
-  .brand {
-    order: 0;
-    flex: 0 0 auto;
-  }
-
-  .brand__mark {
-    width: 52px;
-    height: 52px;
-  }
-
-  .brand__name {
-    font-size: 1.18rem;
-    letter-spacing: -0.4px;
-  }
-
-  .brand__tagline {
-    display: block;
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: var(--muted);
-    line-height: 1.4;
-  }
-
-  .search {
-    order: 0;
-    flex: 1 1 auto;
-    max-width: 520px;
-    height: 46px;
-  }
-
-  .actions {
-    order: 0;
-    margin-inline-start: auto;
-  }
-
-  .action--location {
-    display: flex;
-  }
-
-  .action__label {
-    display: inline;
-  }
-
-  .header-nav {
-    display: block;
-  }
-
-  .footer__main {
-    flex-direction: row;
-    justify-content: space-between;
-    gap: var(--sp-lg);
-  }
-
-  .footer__brand {
-    flex: 1 1 auto;
-    max-width: 420px;
-  }
-
-  .footer__links {
-    flex: 0 0 auto;
-    grid-template-columns: repeat(2, minmax(180px, 1fr));
-    gap: var(--sp-lg);
   }
 }

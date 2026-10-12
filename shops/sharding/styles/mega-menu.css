@@ -1,5 +1,3 @@
-/* ─── Department mega menu ─── */
-
 .dept {
   position: relative;
   flex-shrink: 0;
@@ -158,9 +156,7 @@
 
 /* ─── First item (fruits) shown by default ───
    IMPORTANT: scoped to .is-open / :hover so children don't become
-   focusable via Tab while the panel is closed. If we set visibility: visible
-   unconditionally, descendants override the panel's visibility: hidden and
-   remain in the tab order even though the panel is not shown. */
+   focusable via Tab while the panel is closed. */
 
 .dept.is-open .dept-menu__item--fruits > .dept-sub,
 .dept.is-open .dept-menu__item--fruits > .dept-promo,

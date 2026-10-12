@@ -1,26 +1,4 @@
 :root {
-  /* Brand */
-  --navy: #0F1319;
-  --navy-2: #1A2030;
-  --lime: #B5C400;
-  --lime-ring: rgba(181, 196, 0, 0.18);
-  --lime-dark: #8A9700;
-  --lime-soft: #F6F8DC;
-  --lime-hover: #A8B800;
-  --on-lime: #0F1319;
-
-  /* Surfaces */
-  --text: #12161F;
-  --muted: #59617A;
-  --faint: #A5AAB8;
-  --border: #E6E9EE;
-  --border-soft: #F0F2F5;
-  --white: #FFFFFF;
-  --surface: #FAFBFC;
-  --bg: #F6F7F9;
-  --red: #CB1400;
-  --dough: #F5EBD8;
-
   /* Spacing scale */
   --sp-xs: 4px;
   --sp-sm: 8px;
@@ -34,12 +12,6 @@
   --radius: 10px;
   --radius-lg: 14px;
   --radius-full: 999px;
-
-  /* Elevation */
-  --shadow: 0 2px 8px -2px rgba(18, 22, 31, 0.08);
-  --shadow-md: 0 4px 16px -4px rgba(18, 22, 31, 0.12);
-  --shadow-lg: 0 8px 24px -8px rgba(18, 22, 31, 0.18);
-  --shadow-lime: 0 10px 28px -12px rgba(181, 196, 0, 0.45);
 
   /* Layout */
   --container: 1200px;
@@ -55,9 +27,8 @@
   --text-lg: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
   --text-xl: clamp(1.3rem, 1.1rem + 0.8vw, 2.2rem);
 
-  /* Categories (theme may override) */
-  --categories-bg: linear-gradient(135deg, #F6F8DC 0%, #F5F8D6 45%, #FFFFFF 100%);
-  --categories-border: rgba(181, 196, 0, 0.25);
+  /* Section rhythm */
+  --section-gap: clamp(var(--sp-md), 2.5vw, var(--sp-lg));
 }
 
 /* ─── Reset ─── */
@@ -182,7 +153,6 @@ textarea:focus-visible {
   inset-inline-start: 0;
   z-index: 10000;
 
-  /* Fully off-screen until focused — reliable in all browsers */
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
   width: 1px;
@@ -208,7 +178,6 @@ textarea:focus-visible {
   padding-block: 8px;
 }
 
-/* Reveal on keyboard focus (Tab) */
 .skip-link:focus,
 .skip-link:focus-visible {
   clip: auto;
@@ -243,16 +212,7 @@ textarea:focus-visible {
   contain-intrinsic-size: auto 420px;
 }
 
-/* ─── Section vertical rhythm ───
-   All top-level sections use a single margin-block token.
-   Do NOT add padding-block to these sections — padding inside a section
-   would add to the margin and break the rhythm. Inner containers handle
-   their own visual padding. */
-
-:root {
-  --section-gap: clamp(var(--sp-md), 2.5vw, var(--sp-lg));
-}
-
+/* ─── Section vertical rhythm ─── */
 .hero,
 .categories,
 .products {

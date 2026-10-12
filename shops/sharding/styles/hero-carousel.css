@@ -1,5 +1,3 @@
-/* ─── Hero carousel (promo banners) ─── */
-
 .hero-carousel {
   margin-top: var(--sp-md);
 }
@@ -28,6 +26,8 @@
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   padding: 4px 4px 12px;
+
+  /* Edge fade — only on mobile where it helps; removed on desktop */
   -webkit-mask-image: linear-gradient(
     to left,
     transparent 0,
@@ -91,6 +91,8 @@
   object-fit: cover;
 }
 
+/* ─── Responsive ─── */
+
 @media (min-width: 640px) {
   .hero-carousel__slide {
     flex: 0 0 calc((100% - 24px) / 2.5);
@@ -101,6 +103,8 @@
   .hero-carousel__track {
     scroll-snap-type: x proximity;
     overscroll-behavior-x: contain;
+
+    /* Remove edge fade on desktop */
     -webkit-mask-image: none;
     mask-image: none;
   }
@@ -112,11 +116,6 @@
 }
 
 @media (max-width: 767px) {
-  .hero-carousel__track {
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-
   .hero-carousel__slide {
     scroll-snap-stop: normal;
   }

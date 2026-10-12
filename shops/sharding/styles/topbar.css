@@ -31,3 +31,31 @@
 .topbar__links {
   display: none;
 }
+
+/* ─── Desktop ─── */
+
+@media (min-width: 640px) {
+  .topbar__inner {
+    justify-content: space-between;
+    gap: var(--sp-md);
+    min-height: 38px;
+  }
+
+  .topbar__note {
+    text-align: start;
+  }
+
+  .topbar__links {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-lg);
+  }
+
+  .topbar__links a {
+    transition: color 0.15s var(--ease);
+  }
+
+  .topbar__links a:hover {
+    color: var(--lime);
+  }
+}
