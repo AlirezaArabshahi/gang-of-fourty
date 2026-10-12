@@ -1,0 +1,139 @@
+/* ─── Hero carousel (promo banners) ─── */
+
+.hero-carousel {
+  margin-top: var(--sp-md);
+}
+
+.hero-carousel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-md);
+  margin-bottom: var(--sp-sm);
+}
+
+.hero-carousel__title {
+  font-size: var(--text-md);
+  font-weight: 800;
+  color: var(--navy);
+}
+
+.hero-carousel__track {
+  display: flex;
+  gap: clamp(10px, 1.5vw, 16px);
+  overflow-x: auto;
+  overflow-y: hidden;
+  touch-action: pan-x;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 4px 12px;
+  -webkit-mask-image: linear-gradient(
+    to left,
+    transparent 0,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to left,
+    transparent 0,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
+}
+
+.hero-carousel__slide {
+  flex: 0 0 85%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  opacity: 0.75;
+  transform: scale(0.96);
+  transition:
+    opacity 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.hero-carousel__slide.is-active,
+.hero-carousel__slide:hover,
+.hero-carousel__slide:focus-within,
+.hero-carousel__slide:target {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.hero-carousel__slide.is-active .hero-banner,
+.hero-carousel__slide:hover .hero-banner,
+.hero-carousel__slide:focus-within .hero-banner,
+.hero-carousel__slide:target .hero-banner {
+  border-color: var(--lime);
+  box-shadow: var(--shadow-lime);
+}
+
+.hero-banner {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition:
+    box-shadow 0.25s var(--ease),
+    border-color 0.25s var(--ease);
+  contain: paint;
+}
+
+.hero-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (min-width: 640px) {
+  .hero-carousel__slide {
+    flex: 0 0 calc((100% - 24px) / 2.5);
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-carousel__track {
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .hero-carousel__slide {
+    flex: 0 0 calc((100% - 32px) / 3.2);
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-carousel__track {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .hero-carousel__slide {
+    scroll-snap-stop: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-carousel__slide,
+  .hero-banner {
+    transition: none;
+  }
+
+  .hero-carousel__slide {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero-carousel__track {
+    scroll-behavior: auto;
+  }
+}
