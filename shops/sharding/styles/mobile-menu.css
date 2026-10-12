@@ -87,52 +87,6 @@
   gap: var(--sp-md);
 }
 
-/* ─── Promo banner ─── */
-/* Intentional: always dark, regardless of theme.
-   Uses local variables so it's clear these are fixed values. */
-
-.mobile-menu__banner {
-  --banner-bg: #0F1319;
-  --banner-accent: #B5C400;
-
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-sm);
-  padding: var(--sp-md);
-  background: var(--banner-bg);
-  border-inline-start: 4px solid var(--banner-accent);
-  border-radius: var(--radius);
-  color: #fff;
-}
-
-.mobile-menu__banner-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--banner-accent);
-}
-
-.mobile-menu__banner-desc {
-  font-size: 0.82rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.mobile-menu__banner-cta {
-  align-self: flex-start;
-  margin-top: var(--sp-sm);
-  padding: 8px 16px;
-  background: var(--banner-accent);
-  color: var(--banner-bg);
-  font-size: 0.82rem;
-  font-weight: 800;
-  border-radius: var(--radius-sm);
-  transition: background 0.2s var(--ease);
-}
-
-.mobile-menu__banner-cta:hover {
-  background: var(--lime-hover);
-}
-
 /* ─── Navigation list ─── */
 
 .mobile-menu__list {
@@ -152,39 +106,6 @@
 
 .mobile-menu__list a:hover {
   color: var(--lime-dark);
-}
-
-/* ─── Apps ─── */
-
-.mobile-menu__apps {
-  margin-top: var(--sp-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-sm);
-}
-
-.mobile-menu__apps-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.mobile-menu__apps-buttons {
-  display: flex;
-  gap: var(--sp-sm);
-}
-
-.mobile-menu__app {
-  padding: 8px 16px;
-  background: var(--navy);
-  color: var(--white);
-  font-size: 0.78rem;
-  font-weight: 700;
-  border-radius: var(--radius-sm);
-  transition: background 0.2s var(--ease);
-}
-
-.mobile-menu__app:hover {
-  background: var(--navy-2);
 }
 
 /* ─── Responsive: hide drawer on desktop ─── */

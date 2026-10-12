@@ -116,7 +116,6 @@ textarea:focus-visible {
 .dept-btn:focus-visible,
 .product__add:focus-visible,
 .hero-video__cta:focus-visible,
-.mobile-menu__banner-cta:focus-visible,
 .skip-link:focus-visible {
   box-shadow:
     0 0 0 2px var(--white),
