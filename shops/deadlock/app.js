@@ -27,16 +27,37 @@ function createProductCard(product){
     div.append(btn)
     return article
 }
-async function loadProducts(){
-    const res = await fetch('../../api/products.json')
-    const products = await res.json()
-    const pantryProducts = products.filter((n) => n.categoryId === 4)
-    const container = document.querySelector('#tents .carousel')
-    
-    for(let i = 0; i < pantryProducts.length; i++){
-        const card = createProductCard(pantryProducts[i])
-        container.append(card)
-    }
 
+async function loadProducts(){
+    const container = document.querySelector('#tents .carousel')
+    const loadingMessage = document.createElement('p')
+    loadingMessage.classList.add('carousel-message')
+    loadingMessage.textContent = "در حال بارگذاری..."
+    container.append(loadingMessage) 
+    try {
+        const res = await fetch('../../api/products.json')
+        if(!res.ok){
+            throw new Error("something went wrong")
+        }
+        const products = await res.json()
+        const pantryProducts = products.filter((n) => n.categoryId === 4)
+        loadingMessage.remove()
+        for(let i = 0; i < pantryProducts.length; i++){
+            const card = createProductCard(pantryProducts[i])
+            container.append(card)
+        }
+
+    } catch (error) {
+        loadingMessage.remove()
+        console.log(error.message)
+
+        const errorMessage = document.createElement('p')
+        errorMessage.classList.add('carousel-message')
+        errorMessage.textContent = 'متأسفانه محصولات بارگذاری نشد. لطفاً دوباره تلاش کنید.'
+        container.append(errorMessage)
+    }
+    
+    
+    
 }
 loadProducts()

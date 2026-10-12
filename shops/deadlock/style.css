@@ -383,6 +383,11 @@ header {
     overscroll-behavior-x: contain;
     padding-bottom: 15px;
 }
+.carousel-message {
+    width: 100%;
+    text-align: center;
+    padding: 40px;
+}
 .product,
 .tent-article {
     scroll-snap-align: start;        /* ← هر کارت از اولش چفت بشه */
