@@ -815,3 +815,130 @@ main {
         transition: none !important;
     }
 }
+
+/* -------------------------------- EMOJI, SKELETON, MESSAGES (Week 2) -------------------------------- */
+
+.item-emoji {
+    font-size: 72px;
+    line-height: 1;
+}
+
+.carousel-message {
+    flex: 1 1 100%;
+    margin: 0;
+    padding: 28px 16px;
+    border-radius: 16px;
+    text-align: center;
+    line-height: 1.8;
+    background-color: #fadcd8;
+    color: #7a1f17;
+}
+
+.item-skeleton {
+    min-height: 290px;
+    border-color: #d8d8d8;
+    pointer-events: none;
+}
+.skeleton-block,
+.skeleton-line {
+    border-radius: 12px;
+    background-color: #ececec;
+    animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+.skeleton-block {
+    height: 150px;
+    margin-bottom: 6px;
+}
+.skeleton-line {
+    height: 14px;
+    margin-top: 10px;
+}
+.skeleton-line-short {
+    width: 60%;
+}
+
+@keyframes skeleton-pulse {
+    50% {
+        opacity: 0.45;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-block,
+    .skeleton-line {
+        animation: none;
+    }
+}
+
+/* -------------------------------- WEEK 2: LEVEL 3 & 4 (دسته‌ها، بنرها، کاروسل‌های زنده) -------------------------------- */
+
+.category-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    font-size: 32px;
+    line-height: 1;
+}
+.menu-emoji {
+    font-size: 22px;
+    line-height: 1;
+}
+.title-emoji {
+    margin-inline-end: 4px;
+}
+.banner-emoji {
+    font-size: 56px;
+    line-height: 1;
+}
+.promo-emoji {
+    font-size: 34px;
+    line-height: 1;
+}
+.s-banners {
+    color: #1f2a1c;
+}
+.item-image {
+    background-color: #eef2f7;
+}
+
+.carousel-message-info {
+    background-color: #ececec;
+    color: #1f2a1c;
+}
+
+/* Skeleton صفحه (بنرها، دسته‌ها و عنوان کاروسل) */
+.banner-skeleton {
+    flex: 1;
+    background: #ececec;
+    animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+.banner-skeleton-wide {
+    flex: 2;
+}
+.skeleton-tile {
+    flex: 1;
+    height: 150px;
+    border-radius: 20px;
+    background: #ececec;
+    animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+.skeleton-title {
+    width: 160px;
+    height: 24px;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+    .banner-emoji {
+        font-size: 44px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .banner-skeleton,
+    .skeleton-tile {
+        animation: none;
+    }
+}
