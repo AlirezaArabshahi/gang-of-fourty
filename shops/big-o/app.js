@@ -14,9 +14,10 @@ async function getDataObjects(url, objectName) {
 }
 
 
-// Loads categories and products in parallel with Promise.all,
+// Loads categories, products, offers and stock in parallel with Promise.all,
 // so total wait time is the slowest request, not the sum.
-// Returns { categories, products }. Any failure is rethrown to the caller.
+// Returns { categories, products, offeredProducts, stock }.
+// Any failure is rethrown to the caller.
 async function getData() {
     const [categories, products, offeredProducts, stock] = await Promise.all([
         getDataObjects('../../api/categories.json', "categories"),
@@ -44,9 +45,23 @@ function filterProductsByCategoryID(id, products) {
 }
 
 
-// Builds one product card element from a product object and returns it.
-function createProductCard(product, label , percent) {
+// Returns only the products that have a discount and are in stock.
+// offers: array from offers.json, products: array from products.json,
+// stock: object from stock.json (stock.items[id] is the quantity).
+function filterSpecialProducts(offers, products, stock) {
+   const specialProducts = products.filter(item => offers.some(offer => item.id === offer.productId) && stock.items[item.id] > 0);
+   return specialProducts;
+}
+
+
+// Builds one product card (an li element) from a product and returns it.
+// product: an item from products.json.
+// cardInfo: { percent, label, inStock }
+//   percent/label: discount from offers.json (undefined if no discount),
+//   inStock: false shows the "ناموجود" badge instead of the discount badge.
+function createProductCard(product, cardInfo = {}) {
     const carouselItem = document.createElement("li");
+    const { percent, label, inStock = true } = cardInfo;
 
     const card = document.createElement("article");
     card.classList.add("product-card");
@@ -102,20 +117,22 @@ function createProductCard(product, label , percent) {
     plusContent.classList.add("visually-hidden");
     button.append(plus, plusContent);
     
-    if(label) {
-        let badge = document.createElement("span");
-        badge.classList.add("discount-badge");
-
-        let badgeReader = document.createElement("span");
+    if(label || !inStock ) {
+        const badge = document.createElement("span");
+        const badgeReader = document.createElement("span");
         badgeReader.classList.add("visually-hidden");
 
-        if(label === "ناموجود") {
-            badge.textContent = label;
-            badgeReader.textContent = label;
+        if(!inStock) {
+            badge.textContent = "ناموجود";
+            badgeReader.textContent = "ناموجود";
+            card.classList.add("out-of-stock");
+            badge.classList.add("stock-badge");
+            button.disabled = true;
         }
-        else {
+        else if(label) {
             badge.textContent = `${new Intl.NumberFormat('fa-IR').format(percent)} ٪`;
-            badgeReader.textContent = "تخفیف";
+            badgeReader.textContent = label;
+            badge.classList.add("discount-badge");
         }
 
         badge.append(badgeReader);
@@ -132,24 +149,24 @@ function createProductCard(product, label , percent) {
 }
 
 
-// Renders a list of product cards inside the carousel with the given id.
+// Renders product cards inside the carousel with the given id.
 // The first and last cards get ids (first-<id>, last-<id>) so the arrows can jump to them.
-// data: array of products, queryId: id of the section (a string).
+// data: array of products, queryId: id of the section (a string),
+// offeredProducts: array from offers.json, stock: object from stock.json.
 function renderProducts(data, queryId, offeredProducts, stock) {
     const productList = data.map((item, index) => {
-        const offered = offeredProducts.find(offered => offered.productId == item.id);
-        const productNumber = stock.items[item.id];
+        const offered = offeredProducts.find(offered => offered.productId === item.id);
         let label;
         let percent;
-       
-        if(productNumber === 0 ) {
-            label = "ناموجود";
-        }
-        else if (offered) {
+        const inStock = stock.items[item.id] > 0;
+        if (offered) {
             label = offered.label;
-            percent = offered.percent
+            percent = offered.percent;
         }
-        const productCard = createProductCard(item,label, percent);
+
+        const cardInfo = {inStock,label,percent};
+
+        const productCard = createProductCard(item, cardInfo);
         if (index === 0) {
             productCard.id = `first-${queryId}`;
         }
@@ -191,24 +208,31 @@ function clearMessage(container) {
     message?.remove();
 }
 
-// Entry point: loads the data, picks the dairy products
-// and renders them. Errors are caught here, because this is
-// the one place that knows about the page.
+// Entry point: loads the data, then renders the carousels.
+// Errors are caught here, because this is the one place that knows about the page.
 async function init() {
     try {
         showMessage("#dairy", "در حال بارگذاری…", "load");
+        showMessage("#special-products", "در حال بارگذاری…", "load");
         const { categories, products, offeredProducts, stock } = await getData();
         clearMessage("#dairy");
+        clearMessage("#special-products");
         //Get "لبنیات" products
         const categoryId = getCategoryID("لبنیات", categories);
         const filteredProducts = filterProductsByCategoryID(categoryId, products);
+        //Get "پیشنهاد امروز" products
+        const specialProducts = filterSpecialProducts(offeredProducts,products,stock)
+        
 
-        // Render the dairy carousel
+        // Render the dairy and special products carousel
         renderProducts(filteredProducts, "dairy",offeredProducts, stock);
+        renderProducts(specialProducts, "special-products", offeredProducts, stock);
 
     } catch (error) {
         clearMessage("#dairy");
+        clearMessage("#special-products");
         showMessage("#dairy", "بارگذاری محصولات ممکن نشد. اینترنت را بررسی کنید.", "error");
+        showMessage("#special-products", "بارگذاری محصولات ممکن نشد. اینترنت را بررسی کنید.", "error");
         console.error(error);
     }
 }
