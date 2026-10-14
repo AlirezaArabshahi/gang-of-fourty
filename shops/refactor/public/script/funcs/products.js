@@ -73,7 +73,6 @@ const createPromos = (p) => {
 
 const getAndShowHeroBanner = async() => {
     const heroGrid = document.querySelector('.hero-grid');
-    if (!heroGrid) return false;
     showError(heroGrid, 'در حال بارگیری ...');
 
     try {
@@ -129,42 +128,71 @@ const getProductsWithDetails = async() => {
 
         }
     })
+    getAndShowProductTrack(finalProduct)
     return finalProduct
+}
+const getAndShowSearchProduct = () => {
+    const searches = document.querySelectorAll('#q-mobile, #q-desktop')
+    searches.forEach(input => {
+        input.placeholder = `جست و جو در میان ${products.length} کالا`
+    })
 }
 
 
-const getAndShowOfferProducts = async() => {
-    const track = document.querySelector('.products-track-off');
-    const searches = document.querySelectorAll('#q-mobile, #q-desktop')
+const getAndShowProducts = async(trackSelector, categoryId) => {
+    const track = document.querySelector(trackSelector);
+
     if (!track) return;
 
     renderSkeletons(track);
     showError(track, 'در حال بارگیری ...');
 
     try {
-        const products = await getProductsWithDetails()
+        const products = await getProductsWithDetails();
 
-        searches.forEach(input => {
-            input.placeholder = `جست و جو در میان ${products.length} کالا`
-        })
+        const filtered = products.filter(
+            p => p.categoryId === categoryId
+        );
 
-        const filtered = products.filter((p) => p.categoryId === 2);
         if (filtered.length === 0) {
             showError(track, 'محصولی برای نمایش وجود ندارد.');
             return;
         }
+
         const cards = filtered.map(makeCard);
+
         track.textContent = '';
-        cards.forEach((card) => track.append(card));
+        track.append(...cards);
+
     } catch (err) {
         showError(track, 'خطا در بارگیری.');
         return false;
     }
-}
+};
+
+
+// const getAndShowOfferProducts = async() => {
+//     const track = document.querySelector('.products-track-off');
+//     renderSkeletons(track);
+//     showError(track, 'در حال بارگیری ...');
+//     try {
+//         const products = await getProductsWithDetails()
+//         const filtered = products.filter((p) => p.categoryId === 2);
+//         if (filtered.length === 0) {
+//             showError(track, 'محصولی برای نمایش وجود ندارد.');
+//             return;
+//         }
+//         const cards = filtered.map(makeCard);
+//         track.textContent = '';
+//         cards.forEach((card) => track.append(card));
+//     } catch (err) {
+//         showError(track, 'خطا در بارگیری.');
+//         return false;
+//     }
+// }
 
 const getAndShowAllProducts = () => {
     const productsTrackLatest = document.querySelector('.products-track-latest');
-    if (!productsTrackLatest) return;
     renderSkeletons(productsTrackLatest);
     showError(productsTrackLatest, 'در حال بارگیری ...');
 
@@ -208,6 +236,17 @@ const getAndShowAllProducts = () => {
 
     })
 }
+
+
+const getAndShowProductTrack = async(finalProduct) => {
+    const productsTrack = document.querySelector(".products-track")
+    const test = finalProduct.filter((p) => p.categoryId == "1")
+    console.log(test);
+
+}
+
+
+
 
 const createQuickLinks = (p) => {
     const nav = el("nav");
@@ -322,7 +361,6 @@ const getndShowFooterInfos = async() => {
     const footerCols = document.querySelector(".footer-cols")
     const footerContact = document.querySelector(".footer-contact")
     const footerAbout = document.querySelector(".footer-about")
-    if (!footerCols) return false;
 
     showError(footerCols, 'در حال بارگیری ...');
 
@@ -353,5 +391,5 @@ const getndShowFooterInfos = async() => {
 
 
 
-
-export { getAndShowOfferProducts, getAndShowAllProducts, getAndShowHeroBanner, getndShowFooterInfos };
+getAndShowProducts(".products-track-off", 2)
+export { getAndShowAllProducts, getAndShowHeroBanner, getndShowFooterInfos };
