@@ -452,6 +452,29 @@ footer nav {
   text-decoration: none;
 }
 
+#dairy-products .carousel-status {
+  margin-block: 0.75rem;
+  padding: 1rem;
+  color: var(--ink);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+}
+
+/* Make the error state visually distinct. */
+#dairy-products .carousel-status.is-error {
+  border-inline-start: 4px solid #c94b45;
+}
+
+/* Existing layout rules must not override the hidden attribute. */
+#dairy-products [hidden] {
+  display: none !important;
+}
+
+#dairy-status:empty {
+  display: none;
+}
+
 .product-track {
   display: flex;
   gap: 1rem;
