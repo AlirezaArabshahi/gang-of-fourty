@@ -1,14 +1,15 @@
 
 const API_URL = "../../api/products.json";
 
+
 async function loadDairyProducts() {
-  const container = document.querySelector("#dairy");
+  const container = document.querySelector("#dairy-products");
 
   try {
-    const response = await fetch(API_URL);
+    const response = await fetch("../../api/products.json");
 
     if (!response.ok) {
-      throw new Error("دریافت محصولات با خطا مواجه شد");
+      throw new Error("لطفا چند لحظه منتظر بمانید");
     }
 
     const products = await response.json();
@@ -17,54 +18,52 @@ async function loadDairyProducts() {
       return product.categoryId === 2;
     });
 
-    container.textContent = "";
+    const template = container.querySelector("#dairy-template");
 
-    dairyProducts.forEach(function (product) {
-      const card = document.createElement("article");
-      card.classList.add("product");
+    template.remove();
 
-      const image = document.createElement("div");
-      image.classList.add("product-emoji");
+    dairyProducts.forEach(function (product, index) {
+      const card = template.cloneNode(true);
 
-      const emoji = document.createElement("span");
-      emoji.textContent = product.emoji;
-      image.appendChild(emoji);
+      card.removeAttribute("id");
 
-      const info = document.createElement("div");
-      info.classList.add("product-info");
+      if (index === 0) {
+        card.id = "dairy-first";
+      }
 
-      const name = document.createElement("h3");
-      name.textContent = product.name;
+      if (index === dairyProducts.length - 1) {
+        card.id = "dairy-last";
+      }
 
-      const unit = document.createElement("p");
-      unit.textContent = product.unit;
+      card.querySelector(".product-emoji").textContent = product.emoji;
+      card.querySelector("h3").textContent = product.name;
+      card.querySelector(".product-info p").textContent = product.unit;
 
-      const price = document.createElement("strong");
-      price.textContent =
-        product.price.toLocaleString("fa-IR") + " تومان";
+      card.querySelector(".product-price").textContent =
+        `${new Intl.NumberFormat("fa-IR").format(product.price)} تومان`;
 
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = "+";
-      button.setAttribute("aria-label", "افزودن " + product.name);
+      const button = card.querySelector("button");
 
-      info.appendChild(name);
-      info.appendChild(unit);
-      info.appendChild(price);
-      info.appendChild(button);
-
-      card.appendChild(image);
-      card.appendChild(info);
+      button.setAttribute(
+        "aria-label",
+        `افزودن ${product.name} به سبد خرید`
+      );
 
       container.appendChild(card);
     });
   } catch (error) {
-    container.textContent = "دریافت محصولات ناموفق بود. لطفاً دوباره تلاش کنید.";
-    console.error("خطا در دریافت محصولات:", error);
+    console.error("خطا در دریافت محصولات لبنی:", error);
+
+    const message = document.createElement("p");
+    message.textContent =
+      "دریافت محصولات با مشکل مواجه شد. لطفاً دوباره تلاش کنید.";
+
+    container.replaceChildren(message);
   }
 }
 
 loadDairyProducts();
+
 
 
 // daily offers
@@ -94,117 +93,108 @@ async function loadDailyOffers() {
       stockResponse.json()
     ]);
 
-const offerProducts = products
-  .map(function (product) {
-    const offer = offers.find(function (offer) {
-      return offer.productId === product.id;
+    // فقط محصولاتی که تخفیف دارند
+    const offerProducts = products
+      .map(function (product) {
+        const offer = offers.find(function (item) {
+          return item.productId === product.id;
+        });
+
+        if (!offer) {
+          return null;
+        }
+
+        return {
+          ...product,
+          percent: offer.percent,
+          quantity: stock.items[product.id],
+          discountedPrice: Math.round(
+            product.price * (1 - offer.percent / 100)
+          )
+        };
+      })
+      .filter(function (product) {
+        return product !== null;
+      });
+
+    const template = container.querySelector("#offer-template");
+    template.remove();
+    container.replaceChildren();
+
+    offerProducts.forEach(function (product, index) {
+      const card = template.cloneNode(true);
+
+      card.removeAttribute("id");
+
+      if (index === 0) {
+        card.id = "offer-first";
+      }
+
+      if (index === offerProducts.length - 1) {
+        card.id = "offer-last";
+      }
+
+      card.querySelector(".product-emoji").textContent =
+        product.emoji;
+
+      card.querySelector("h3").textContent = product.name;
+
+      card.querySelector(".product-info p").textContent =
+        product.unit;
+
+      const discountBadge =
+        card.querySelector(".discount-badge");
+
+      discountBadge.textContent = `${product.percent}٪ تخفیف`;
+      discountBadge.hidden = false;
+
+      const unavailableBadge =
+        card.querySelector(".unavailable-badge");
+
+      const oldPrice = card.querySelector(".old-price");
+      const newPrice = card.querySelector(".new-price");
+
+      oldPrice.textContent =
+        `${new Intl.NumberFormat("fa-IR").format(product.price)} تومان`;
+
+      newPrice.textContent =
+        `${new Intl.NumberFormat("fa-IR").format(product.discountedPrice)} تومان`;
+
+      const button = card.querySelector("button");
+
+      button.setAttribute(
+        "aria-label",
+        `افزودن ${product.name} به سبد خرید`
+      );
+
+      if (product.quantity === 0) {
+        card.classList.add("out-of-stock");
+
+        unavailableBadge.textContent = "ناموجود";
+        unavailableBadge.hidden = false;
+
+        button.disabled = true;
+      } else {
+        unavailableBadge.hidden = true;
+        button.disabled = false;
+      }
+
+      container.appendChild(card);
     });
 
-    if (!offer) {
-      return null;
+    if (offerProducts.length === 0) {
+      const message = document.createElement("p");
+      message.textContent = "فعلاً پیشنهادی برای نمایش وجود ندارد.";
+      container.appendChild(message);
     }
-
-    const quantity = stock.items[product.id];
-
-    return {
-      ...product,
-      percent: offer.percent,
-      label: offer.label,
-      quantity: quantity,
-      discountedPrice: Math.round(
-        product.price * (100 - offer.percent) / 100
-      )
-    };
-  })
-  .filter(function (product) {
-    return product !== null;
-  });
-
-  console.log("Offer products:", offerProducts);
-
-
-container.replaceChildren();
-
-offerProducts.forEach(function (product, index) {
-  const card = document.createElement("article");
-  card.classList.add("product");
-
-  if (product.quantity === 0) {
-    card.classList.add("out-of-stock");
-  }
-
-  if (index === 0) {
-    card.id = "offer-first";
-  }
-
-  if (index === offerProducts.length - 1) {
-    card.id = "offer-last";
-  }
-
-  const emoji = document.createElement("span");
-  emoji.classList.add("product-emoji");
-  emoji.textContent = product.emoji;
-
-  const info = document.createElement("div");
-  info.classList.add("product-info");
-
-  const name = document.createElement("h3");
-  name.textContent = product.name;
-
-  const unit = document.createElement("p");
-  unit.textContent = product.unit;
-
-  const discountBadge = document.createElement("span");
-  discountBadge.classList.add("discount-badge");
-  discountBadge.textContent = `${product.percent}٪ تخفیف`;
-
-  const oldPrice = document.createElement("small");
-  oldPrice.classList.add("off");
-  oldPrice.textContent =
-    `${new Intl.NumberFormat("fa-IR").format(product.price)} تومان`;
-
-  const newPrice = document.createElement("strong");
-  newPrice.textContent =
-    `${new Intl.NumberFormat("fa-IR").format(product.discountedPrice)} تومان`;
-
-  const priceContainer = document.createElement("div");
-  priceContainer.classList.add("off-content");
-  priceContainer.append(oldPrice, newPrice);
-
-  const button = document.createElement("button");
-  button.type = "button";
-  button.textContent = "+";
-  button.setAttribute("aria-label", `افزودن ${product.name} به سبد خرید`);
-
-  if (product.quantity === 0) {
-    const unavailableBadge = document.createElement("span");
-    unavailableBadge.classList.add("unavailable-badge");
-    unavailableBadge.textContent = "ناموجود";
-
-    button.disabled = true;
-
-    info.append(name, unit, discountBadge, unavailableBadge, priceContainer, button);
-  } else {
-    info.append(name, unit, discountBadge, priceContainer, button);
-  }
-
-  card.append(emoji, info);
-  container.appendChild(card);
-});
-
-
-
-    // console.log("Products:", products);
-    // console.log("Offers:", offers);
-    // console.log("Stock:", stock);
   } catch (error) {
-    console.error("خطا در دریافت پیشنهادها:", error);
+    console.error("خطا در دریافت محصولات پیشنهادی:", error);
 
-    const errorMessage = document.createElement("p");
-    errorMessage.textContent =
-      "دریافت پیشنهادها با مشکل مواجه شد. لطفاً دوباره تلاش کنید.";
+    const message = document.createElement("p");
+    message.textContent =
+      "دریافت محصولات با مشکل مواجه شد. لطفاً دوباره تلاش کنید.";
 
-    container.replaceChildren(errorMessage);
+    container.replaceChildren(message);
   }
 }
 

@@ -14,6 +14,7 @@
 
 :root {
   --light-orang: #FF3800;
+  --dark-orang: #d63002;
   --orang: #FF8C00;
   --light-light-orang: #e9f4ec;
   --sky:#023e8a;
@@ -629,7 +630,7 @@ nav {
   align-items: end;
 }
 
-.products-section{
+.products{
   display: inline-flex;
   width: 100%;
   gap: 16px;
@@ -725,7 +726,7 @@ nav {
 }
 
 .product-info button:hover {
-  background: #1c5037;
+  background:var(--dark-orang) ;
 }
 
 .product-info button:disabled {
@@ -735,6 +736,62 @@ nav {
   font-size: 9px;
   cursor: not-allowed;
 }
+
+.badge-container{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 8px;
+}
+
+.discount-badge,
+.unavailable-badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.discount-badge {
+  color: #fff;
+  background-color: var(--light-orang);
+}
+
+.unavailable-badge {
+  color: #fff;
+  background-color: #777;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.old-price {
+  color: #777;
+  text-decoration: line-through;
+}
+
+.new-price {
+  display: block;
+}
+
+.product.out-of-stock {
+  opacity: 0.5;
+}
+
+.product button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  left: 12px;
+  bottom: 13px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 9px;
+}
+
 
 .advertisment{
   display: flex;

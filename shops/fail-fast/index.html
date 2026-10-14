@@ -204,14 +204,27 @@
         <a href="#offer-first" aria-label="محصولات قبلی">←</a>
       </div>
     </div>
+    <section class="products products-section" id="dailyOffers" tabindex="0">
+      <article class="product" id="offer-template">
+        <div class="badge-container">
+          <span class="discount-badge" hidden></span>
+          <span class="unavailable-badge" hidden></span>
+        </div>
+        <span class="product-emoji"></span>
+        <div class="product-info">
+          <h3></h3>
+          <p></p>
+          <div class="off-content">
+            <small class="old-price"></small>
+            <strong class="new-price"></strong>
+          </div>
 
-    <section class="products-section products" id="dailyOffers" tabindex="0">
-      <p>در حال بارگذاری پیشنهادها...</p>
+          <button type="button">+</button>
+        </div>
+      </article>
     </section>
   </div>
 
-
-  
 
     <!-- بنر تبلیغاتی -->
     <section class="advertisment">
@@ -228,30 +241,32 @@
     </section>
 
     <!-- سکشن لبنیات -->
-    <div class="layout">
-      <div class="section-title">
-        <div>
-          <h2>مزه‌ي کنار لازمت میشه</h2>
-        </div>
-        <div class="arrows">
-          <a href="#dairy-last" aria-label="محصولات بعدی">→</a>
-          <a href="#dairy-first" aria-label="محصولات قبلی">←</a>
-        </div>
+  <div class="layout">
+    <div class="section-title">
+      <div>
+        <h2>مزه‌ی کنار لازمت میشه</h2>
       </div>
-      <section class="products-section" id="dairy">
-          <article class="product" id="dairy-first">
-            <span class="product-emoji"></span>
-            <div class="product-info">
-              <h3></h3>
-              <p></p>
-              <div class="off-content">
-                <strong> <small></small></strong>
-              </div>
-              <button type="button" aria-label="افزودن پنیر به سبد خرید">+</button>
-            </div>
-          </article>
-      </section>
+
+      <div class="arrows">
+        <a href="#offer-last" aria-label="محصولات بعدی">→</a>
+        <a href="#offer-first" aria-label="محصولات قبلی">←</a>
+      </div>
     </div>
+    <div class="products" id="dairy-products" tabindex="0">
+      <article class="product" id="dairy-template">
+        <span class="product-emoji"></span>
+
+        <div class="product-info">
+          <h3></h3>
+          <p></p>
+
+          <strong class="product-price"></strong>
+
+          <button type="button">+</button>
+        </div>
+      </article>
+    </div>
+  </div>  
   </main>
 
   <!-- فوتر -->
