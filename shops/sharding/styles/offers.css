@@ -93,3 +93,26 @@
 }
 
 /* Card lift: .products__item:hover in product-card.css */
+
+/* Error state on wine background — no solid white slab */
+.products--offers .products__status--error {
+  margin-inline: var(--sp-md);
+  margin-block-end: var(--sp-md);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+.products--offers .products__status-title {
+  color: #fff;
+}
+
+.products--offers .products__status-text {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.products--offers .products__status-icon {
+  opacity: 1;
+  filter: grayscale(0);
+}

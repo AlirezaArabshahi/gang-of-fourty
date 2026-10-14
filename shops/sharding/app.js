@@ -244,10 +244,38 @@ function showError(sectionId, message) {
   const grid = document.getElementById(`${sectionId}-grid`);
   const status = document.getElementById(`${sectionId}-status`);
   if (!grid || !status) return;
+
   grid.hidden = true;
+  grid.replaceChildren();
+  grid.removeAttribute('aria-busy');
+
   status.hidden = false;
   status.className = 'products__status products__status--error';
-  status.textContent = message;
+  status.replaceChildren();
+
+  const icon = document.createElement('span');
+  icon.className = 'products__status-icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = '⚠️';
+
+  const title = document.createElement('p');
+  title.className = 'products__status-title';
+  title.textContent = 'بارگذاری ناموفق';
+
+  const text = document.createElement('p');
+  text.className = 'products__status-text';
+  text.textContent = message;
+
+  status.append(icon, title, text);
+}
+
+function showCarouselErrors(message) {
+  const ids = new Set(['offers', 'fruits', 'dairy']);
+  document.querySelectorAll('[id$="-grid"]').forEach((grid) => {
+    const id = grid.id.replace(/-grid$/, '');
+    if (id) ids.add(id);
+  });
+  ids.forEach((id) => showError(id, message));
 }
 
 function fillSectionGrid(sectionId, list, offerMap, stockMap) {
@@ -827,46 +855,74 @@ function setupCart() {
   });
 }
 
+function errorMessage(err) {
+  if (err && err.name === 'AbortError') {
+    return 'زمان انتظار برای دریافت داده به پایان رسید. لطفاً دوباره تلاش کنید.';
+  }
+  return 'داده‌ها در دسترس نیست. لطفاً اتصال اینترنت را بررسی کنید.';
+}
+
 async function init() {
   document.querySelector('.search')?.addEventListener('submit', (e) => e.preventDefault());
   setupCart();
 
   const startedAt = performance.now();
 
-  const allPromise = Promise.all([
+  // Parallel fetches; shell and catalog can succeed/fail independently
+  // so a broken products.json still shows an error UI (not endless skeleton).
+  const shellPromise = Promise.all([
     fetchJson(API.shop),
     fetchJson(API.categories),
     fetchJson(API.home),
+  ]).then(([shop, categories, home]) => ({ shop, categories, home }));
+
+  const catalogPromise = Promise.all([
     fetchJson(API.products),
     fetchJson(API.stock),
     fetchJson(API.offers).catch((err) => {
       console.warn('[shop] offers unavailable:', err);
       return [];
     }),
+  ]).then(([products, stockData, offers]) => ({ products, stockData, offers }));
+
+  const [shellSettled, catalogSettled] = await Promise.all([
+    shellPromise.then((data) => ({ ok: true, data })).catch((err) => ({ ok: false, err })),
+    catalogPromise.then((data) => ({ ok: true, data })).catch((err) => ({ ok: false, err })),
   ]);
 
-  try {
-    const [shop, categories, home, products, stockData, offers] = await allPromise;
-    await waitMinSkeleton(startedAt);
+  await waitMinSkeleton(startedAt);
 
-    renderCarousels(home, products, stockData, offers);
-    renderShell(shop, categories, home, products.length);
-  } catch (err) {
-    console.error('[shop] data failed:', err);
-    await waitMinSkeleton(startedAt);
+  if (shellSettled.ok) {
+    const { shop, categories, home } = shellSettled.data;
+    const count = catalogSettled.ok ? catalogSettled.data.products.length : undefined;
+    renderShell(shop, categories, home, count);
+
+    if (catalogSettled.ok) {
+      const { products, stockData, offers } = catalogSettled.data;
+      renderCarousels(home, products, stockData, offers);
+    } else {
+      console.error('[shop] catalog failed:', catalogSettled.err);
+      showCarouselErrors(errorMessage(catalogSettled.err));
+    }
+  } else {
+    console.error('[shop] shell failed:', shellSettled.err);
     clearShellSkeletons();
 
-    const message =
-      err.name === 'AbortError'
-        ? 'زمان انتظار برای دریافت داده به پایان رسید. لطفاً دوباره تلاش کنید.'
-        : 'داده‌ها در دسترس نیست. لطفاً اتصال اینترنت را بررسی کنید.';
-
-    const root = document.getElementById('carousels-root');
-    if (root && !root.children.length) {
-      const p = document.createElement('p');
-      p.className = 'products__status products__status--error';
-      p.textContent = message;
-      root.appendChild(p);
+    if (catalogSettled.ok) {
+      // rare: products ok but shop/home failed — still try carousels with empty home
+      try {
+        const { products, stockData, offers } = catalogSettled.data;
+        renderCarousels({ carousels: [
+          { id: 'offers', title: 'پیشنهادهای ویژه امروز', source: 'offers', variant: 'offers' },
+          { id: 'fruits', title: 'میوه و سبزیجات', categoryId: 1 },
+          { id: 'dairy', title: 'لبنیات و تخم‌مرغ', categoryId: 2 },
+        ] }, products, stockData, offers);
+      } catch (e) {
+        showCarouselErrors(errorMessage(shellSettled.err));
+      }
+    } else {
+      console.error('[shop] catalog failed:', catalogSettled.err);
+      showCarouselErrors(errorMessage(catalogSettled.err || shellSettled.err));
     }
   }
 }

@@ -98,11 +98,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: clamp(28px, 5vw, 40px) var(--sp-lg);
+  gap: 8px;
+  padding: clamp(32px, 5vw, 48px) var(--sp-lg);
   background: var(--surface);
   border: 1px dashed var(--border);
   color: var(--muted);
+  border-radius: var(--radius-lg);
 }
 
 .products__status-icon {
