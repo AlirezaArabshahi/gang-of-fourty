@@ -6,7 +6,7 @@ const API = {
   categories: './api/categories.json',
   home: './api/home.json',
 };
-
+// deploy test
 const MIN_SKELETON_MS = 300;
 const TIMEOUT_MS = 8000;
 
