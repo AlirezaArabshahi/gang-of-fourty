@@ -157,11 +157,9 @@ const getAndShowProducts = async(trackSelector, categoryId) => {
         track.append(...cards);
 
     } catch (err) {
-        console.error(err);
         showError(track, 'خطا در بارگیری.');
     }
 };
-
 
 
 const getAndShowAllProducts = () => {
@@ -393,6 +391,7 @@ const getndShowFooterInfos = async() => {
 
 getAndShowProducts(".products-track-off", 2);
 getAndShowProducts(".product-fruit", 1);
+
 export {
     getAndShowAllProducts,
     getAndShowHeroBanner,

@@ -51,6 +51,7 @@ const renderCategoriesInto = async(selector, builder) => {
         categoryLists.forEach((categoryList) => {
             categoryList.textContent = '';
             categories
+                .slice(0, 6)
                 .map(builder)
                 .forEach((card) => categoryList.append(card));
         });
