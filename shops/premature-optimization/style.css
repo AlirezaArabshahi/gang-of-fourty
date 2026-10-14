@@ -1838,3 +1838,47 @@ footer {
     right: -24px;
   }
 }
+
+/* Level 2: the special-offers carousel uses the same JavaScript controls as dairy. */
+.special-carousel .products {
+  transition: transform 300ms ease;
+  will-change: transform;
+}
+
+.dairy-carousel .products {
+  transition: transform 300ms ease;
+  will-change: transform;
+}
+
+.product-item--unavailable {
+  opacity: 0.55;
+}
+
+.product-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 4px 10px;
+  margin-block: 4px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #374151;
+  font-size: 0.8rem;
+}
+
+.product-discount[hidden],
+.item-old-price[hidden] {
+  display: none !important;
+}
+
+.item-old-price {
+  color: #777;
+  text-decoration: line-through;
+  font-size: 0.9rem;
+}
+
+.buy-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
