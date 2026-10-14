@@ -208,20 +208,42 @@ function clearMessage(container) {
     message?.remove();
 }
 
+// Renders the category list from the template in the HTML.
+// categoryData: array from categories.json.
+// Each category gets an emoji, a name and a link to #<slug>.
+function renderCategories(categoryData) {
+    const categoryList = document.querySelector(".categories ul");
+    const template = document.querySelector("#category-template");
+    categoryData.forEach(category => {
+        const clone = template.content.cloneNode(true);
+        clone.querySelector("a").setAttribute("href", `#${category.slug}`);
+        clone.querySelector("a span").textContent = category.emoji;
+        clone.querySelector("a h3").textContent = category.name;
+        categoryList.append(clone);
+    });
+}
+
 // Entry point: loads the data, then renders the carousels.
 // Errors are caught here, because this is the one place that knows about the page.
 async function init() {
+    const containers = ["#dairy", "#special-products", ".categories"];
     try {
-        showMessage("#dairy", "در حال بارگذاری…", "load");
-        showMessage("#special-products", "در حال بارگذاری…", "load");
+        containers.forEach(container => {
+            showMessage(container , "در حال بارگذاری…", "load");
+        });
+    
         const { categories, products, offeredProducts, stock } = await getData();
-        clearMessage("#dairy");
-        clearMessage("#special-products");
+
+        containers.forEach(container => {
+            clearMessage(container);
+        });
+        
+        renderCategories(categories);
         //Get "لبنیات" products
         const categoryId = getCategoryID("لبنیات", categories);
         const filteredProducts = filterProductsByCategoryID(categoryId, products);
         //Get "پیشنهاد امروز" products
-        const specialProducts = filterSpecialProducts(offeredProducts,products,stock)
+        const specialProducts = filterSpecialProducts(offeredProducts,products,stock);
         
 
         // Render the dairy and special products carousel
@@ -229,10 +251,12 @@ async function init() {
         renderProducts(specialProducts, "special-products", offeredProducts, stock);
 
     } catch (error) {
-        clearMessage("#dairy");
-        clearMessage("#special-products");
-        showMessage("#dairy", "بارگذاری محصولات ممکن نشد. اینترنت را بررسی کنید.", "error");
-        showMessage("#special-products", "بارگذاری محصولات ممکن نشد. اینترنت را بررسی کنید.", "error");
+        containers.forEach(container => {
+            clearMessage(container);
+        });
+        containers.forEach(container => {
+            showMessage(container, "بارگذاری اطلاعات ممکن نشد. اینترنت را بررسی کنید.", "error");
+        });
         console.error(error);
     }
 }
