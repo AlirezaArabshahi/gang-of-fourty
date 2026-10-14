@@ -128,8 +128,7 @@ const getProductsWithDetails = async() => {
             stock: stokeItem,
             oldPrice: offerItem ? p.price : undefined,
             price: offerItem ?
-                Math.round(p.price * (1 - offerItem.percent / 100)) :
-                p.price
+                Math.round(p.price * (1 - offerItem.percent / 100)) : p.price
         };
     });
 

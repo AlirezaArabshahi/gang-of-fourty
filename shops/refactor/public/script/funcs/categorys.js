@@ -120,7 +120,7 @@ const closeBtn = document.querySelector(".cat-modal__close")
 closeBtn.addEventListener("click", closeModal)
 const getAndShowCategories = () => renderCategoriesInto('.cat-list', makeCategory);
 const getAndShowSubMenus = () => renderCategoriesInto('.sub-menu', makeSubMenu);
-const fetchProducts = () => fetchJSON('/products.json');
+const fetchProducts = () => fetchJSON('/product.json');
 const fetchCategories = () => fetchJSON('/categories.json');
 
 
