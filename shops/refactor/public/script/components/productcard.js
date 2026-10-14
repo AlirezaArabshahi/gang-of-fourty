@@ -1,38 +1,21 @@
-import { el, makeIcon, makeButton } from '../utils/dom.js';
+import { el, makeButton } from '../utils/utils.js';
 import { formatPrice } from '../utils/format.js';
 
+
 const makeCard = (p) => {
-    const card = el('li', 'card');
+    const card = el('article', 'card');
+    card.dataset.productId = p.id;
+
     const top = el('div', 'card-top');
 
-    if (p.off) {
-        const chipOff = el('span', 'chip-off');
-        const srOff = el('span', 'sr-only', 'تخفیف ');
-        chipOff.append(srOff, `${formatPrice(p.off)}٪`);
-        top.append(chipOff);
-    }
-
-    if (p.rate) {
-        const chipRate = el('span', 'chip-rate');
-        chipRate.setAttribute('role', 'img');
-        chipRate.setAttribute('aria-label', `امتیاز ${formatPrice(p.rate)} از ۵`);
-        chipRate.append(makeIcon('i-star', 'icon icon--fill'), formatPrice(p.rate));
-        top.append(chipRate);
-    }
-
-    const media = el('a', 'card-media');
-    media.href = '#products';
-    media.tabIndex = -1;
-    media.setAttribute('aria-hidden', 'true');
-
-    const emoji = el('span', 'card-emoji', p.emoji);
-    emoji.setAttribute('role', 'img');
-    emoji.setAttribute('aria-label', `تصویر ${p.name}`);
+    const media = el('div', 'card-media');
+    const emoji = el('span', 'card-emoji');
+    emoji.textContent = p.emoji || '🛒';
     media.append(emoji);
 
     const title = el('h3', 'card-title');
     const titleLink = el('a', null, p.name);
-    titleLink.href = '#products';
+    titleLink.href = `#product-${p.id}`;
     title.append(titleLink);
 
     const body = el('div', 'card-body');
@@ -56,7 +39,6 @@ const makeCard = (p) => {
     const favBtn = makeButton('act-btn', `افزودن ${p.name} به علاقه‌مندی‌ها`, 'i-heart');
     const cartBtn = makeButton('act-btn act-cart', `افزودن ${p.name} به سبد خرید`, 'i-cart', 'افزودن');
 
-
     if (p.stock === 0) {
         const chipOut = el('span', 'chip-out', 'ناموجود');
         card.classList.add('card--out');
@@ -71,6 +53,5 @@ const makeCard = (p) => {
     card.append(top, media, body, actions);
     return card;
 };
-
 
 export { makeCard }

@@ -1,5 +1,5 @@
 import { BASEURL } from '../config.js';
-import { el } from '../utils/dom.js';
+import { el } from '../utils/utils.js';
 import { showError } from '../components/skeleton.js';
 
 const makeCategory = (category) => {

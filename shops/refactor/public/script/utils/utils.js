@@ -26,11 +26,18 @@
      return btn;
  };
 
-
+ const saveToLocalStorage = (count) => {
+     localStorage.setItem("basket", JSON.stringify(count));
+ };
+ const getCountBasketFromLocalStorage = () => {
+     return Number(localStorage.getItem("basket")) || 0;
+ };
 
 
  export {
      el,
      makeIcon,
-     makeButton
+     makeButton,
+     saveToLocalStorage,
+     getCountBasketFromLocalStorage
  }

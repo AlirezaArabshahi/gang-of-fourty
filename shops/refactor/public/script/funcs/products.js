@@ -1,8 +1,12 @@
 import { BASEURL } from '../config.js';
 import { showError, renderSkeletons } from '../components/skeleton.js';
-import { makeCard } from '../components/productcard.js';
-import { el } from '../utils/dom.js';
 import { formatPrice } from '../utils/format.js';
+import { makeCard } from '../components/productcard.js';
+import {
+    el,
+    saveToLocalStorage,
+    getCountBasketFromLocalStorage
+} from '../utils/utils.js';
 
 const toFa = (n) => String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹' [d]);
 
@@ -96,7 +100,6 @@ const getAndShowHeroBanner = async() => {
         return false;
     }
 };
-
 
 const getProductsWithDetails = async() => {
     const [productsRes, stocksRes, offersRes] = await Promise.all([
@@ -387,6 +390,28 @@ const getndShowFooterInfos = async() => {
         return false;
     }
 };
+
+
+// const saveToLocalStorage = (count) => {
+//     localStorage.setItem("basket", JSON.stringify(count));
+// };
+// const getCountBasketFromLocalStorage = () => {
+//     return Number(localStorage.getItem("basket")) || 0;
+// };
+
+// document.addEventListener("click", (e) => {
+//     const btn = e.target.closest(".act-btn.act-cart");
+//     if (btn.disabled) return;
+
+//     let count = getCountBasketFromLocalStorage();
+
+//     count += 1;
+
+
+//     saveToLocalStorage(count);
+// });
+
+
 
 
 getAndShowProducts(".products-track-off", 2);
