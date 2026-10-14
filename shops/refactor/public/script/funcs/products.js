@@ -131,13 +131,6 @@ const getProductsWithDetails = async() => {
     getAndShowProductTrack(finalProduct)
     return finalProduct
 }
-const getAndShowSearchProduct = () => {
-    const searches = document.querySelectorAll('#q-mobile, #q-desktop')
-    searches.forEach(input => {
-        input.placeholder = `جست و جو در میان ${products.length} کالا`
-    })
-}
-
 
 const getAndShowProducts = async(trackSelector, categoryId) => {
     const track = document.querySelector(trackSelector);
@@ -170,26 +163,6 @@ const getAndShowProducts = async(trackSelector, categoryId) => {
     }
 };
 
-
-// const getAndShowOfferProducts = async() => {
-//     const track = document.querySelector('.products-track-off');
-//     renderSkeletons(track);
-//     showError(track, 'در حال بارگیری ...');
-//     try {
-//         const products = await getProductsWithDetails()
-//         const filtered = products.filter((p) => p.categoryId === 2);
-//         if (filtered.length === 0) {
-//             showError(track, 'محصولی برای نمایش وجود ندارد.');
-//             return;
-//         }
-//         const cards = filtered.map(makeCard);
-//         track.textContent = '';
-//         cards.forEach((card) => track.append(card));
-//     } catch (err) {
-//         showError(track, 'خطا در بارگیری.');
-//         return false;
-//     }
-// }
 
 const getAndShowAllProducts = () => {
     const productsTrackLatest = document.querySelector('.products-track-latest');
@@ -245,6 +218,12 @@ const getAndShowProductTrack = async(finalProduct) => {
 
 }
 
+const updateSearchPlaceholders = () => {
+    const searches = document.querySelectorAll('#q-mobile, #q-desktop')
+    searches.forEach(input => {
+        input.placeholder = `جست و جو در میان ${products.length} کالا`
+    })
+}
 
 
 
@@ -392,4 +371,4 @@ const getndShowFooterInfos = async() => {
 
 
 getAndShowProducts(".products-track-off", 2)
-export { getAndShowAllProducts, getAndShowHeroBanner, getndShowFooterInfos };
+export { getAndShowAllProducts, getAndShowHeroBanner, getndShowFooterInfos, updateSearchPlaceholders };
