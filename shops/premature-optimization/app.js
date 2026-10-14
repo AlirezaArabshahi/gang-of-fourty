@@ -1,185 +1,143 @@
 const API_BASE = "../../api/";
-const DAIRY_CATEGORY_ID = 2;
 const numberFormatter = new Intl.NumberFormat("fa-IR");
+const CART_STORAGE_KEY = "superino-cart";
+let cart = readCart();
 
-const dairy = {
-  products: document.querySelector("#dairy-products"),
-  viewport: document.querySelector(".dairy-carousel-viewport"),
-  status: document.querySelector("#dairy-status"),
-  previous: document.querySelector("#dairy-prev"),
-  next: document.querySelector("#dairy-next"),
-  offset: 0,
-};
-const special = {
-  products: document.querySelector("#special-products"),
-  viewport: document.querySelector("#special-viewport"),
-  status: document.querySelector("#special-status"),
-  previous: document.querySelector("#special-prev"),
-  next: document.querySelector("#special-next"),
-  offset: 0,
-};
-
-function showStatus(element, message, isError = false) {
-  element.textContent = message;
-  element.classList.toggle("api-status--error", isError);
-  element.hidden = false;
-}
-
-function createProductCard(product, { offer = null, stock = null, categoryName = "لبنیات", templateId = "dairy-product-template" } = {}) {
-  const template = document.querySelector(`#${templateId}`);
-  const card = template.content.firstElementChild.cloneNode(true);
-  const discountBadge = card.querySelector(".product-discount");
-  const oldPrice = card.querySelector(".item-old-price");
-  const price = card.querySelector(".item-price");
-  const buyButton = card.querySelector(".buy-button");
-  const quantity = stock?.items?.[String(product.id)];
-  const isOutOfStock = quantity === 0;
-  const finalPrice = offer ? Math.round(product.price * (100 - offer.percent) / 100) : product.price;
-
-  card.querySelector(".product-emoji").textContent = product.emoji ?? "🛒";
-  card.querySelector(".item-tag").textContent = categoryName;
-  card.querySelector(".item-title").textContent = product.name;
-  card.querySelector(".item-description").textContent = product.unit;
-  price.textContent = `${numberFormatter.format(finalPrice)} تومان`;
-
-  if (offer) {
-    discountBadge.hidden = false;
-    discountBadge.textContent = `${numberFormatter.format(offer.percent)}٪`;
-    oldPrice.hidden = false;
-    oldPrice.textContent = `${numberFormatter.format(product.price)} تومان`;
-  } else {
-    discountBadge.hidden = true;
-    oldPrice.hidden = true;
-  }
-
-  if (isOutOfStock) {
-    card.classList.add("product-item--unavailable");
-    const unavailableBadge = document.createElement("span");
-    unavailableBadge.className = "product-stock-badge";
-    unavailableBadge.textContent = "ناموجود";
-    card.querySelector(".item-tag").after(unavailableBadge);
-    buyButton.disabled = true;
-  }
-  return card;
-}
-
-function renderProducts(container, products, optionsForProduct = () => ({})) {
-  const fragment = document.createDocumentFragment();
-  products.forEach((product) => fragment.append(createProductCard(product, optionsForProduct(product))));
-  container.replaceChildren(fragment);
-}
-
-function updateCarousel(carousel) {
-  const firstCard = carousel.products.querySelector(".product-item");
-  if (!firstCard) {
-    carousel.previous.disabled = true;
-    carousel.next.disabled = true;
-    return;
-  }
-  const styles = getComputedStyle(carousel.products);
-  const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
-  const step = firstCard.getBoundingClientRect().width + gap;
-  const maxOffset = Math.max(0, carousel.products.scrollWidth - carousel.viewport.clientWidth);
-  carousel.offset = Math.min(carousel.offset, maxOffset);
-  carousel.products.style.transform = `translateX(${carousel.offset}px)`;
-  carousel.previous.disabled = carousel.offset <= 0;
-  carousel.next.disabled = carousel.offset >= maxOffset - 1;
-}
-
-function moveCarousel(carousel, direction) {
-  const firstCard = carousel.products.querySelector(".product-item");
-  if (!firstCard) return;
-  const styles = getComputedStyle(carousel.products);
-  const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
-  const step = firstCard.getBoundingClientRect().width + gap;
-  const maxOffset = Math.max(0, carousel.products.scrollWidth - carousel.viewport.clientWidth);
-  carousel.offset = Math.max(0, Math.min(maxOffset, carousel.offset + direction * step));
-  carousel.products.style.transform = `translateX(${carousel.offset}px)`;
-  carousel.previous.disabled = carousel.offset <= 0;
-  carousel.next.disabled = carousel.offset >= maxOffset - 1;
-}
-
-function setupCarousel(carousel) {
-  carousel.previous.addEventListener("click", () => moveCarousel(carousel, -1));
-  carousel.next.addEventListener("click", () => moveCarousel(carousel, 1));
-  window.addEventListener("resize", () => updateCarousel(carousel));
-  requestAnimationFrame(() => updateCarousel(carousel));
-}
-
-async function loadPageProducts() {
-  showStatus(dairy.status, "در حال بارگذاری محصولات...");
-  showStatus(special.status, "در حال بارگذاری پیشنهادها...");
-  try {
-    const [productsResponse, stockResponse, offersResponse, categoriesResponse, shopResponse] = await Promise.all([
-      fetch(`${API_BASE}products.json`),
-      fetch(`${API_BASE}stock.json`),
-      fetch(`${API_BASE}offers.json`),
-      fetch(`${API_BASE}categories.json`),
-      fetch(`${API_BASE}shop.json`),
-    ]);
-    for (const response of [productsResponse, stockResponse, offersResponse, categoriesResponse, shopResponse]) {
-      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-    }
-    const [products, stock, offers, categories, shop] = await Promise.all([
-      productsResponse.json(), stockResponse.json(), offersResponse.json(),
-      categoriesResponse.json(), shopResponse.json(),
-    ]);
-    renderShopDetails(shop);
-    renderCategories(categories);
-    const offersByProductId = new Map(offers.map((offer) => [offer.productId, offer]));
-
-    const dairyProducts = products.filter((product) => product.categoryId === DAIRY_CATEGORY_ID);
-    renderProducts(dairy.products, dairyProducts, (product) => ({
-      offer: offersByProductId.get(product.id) ?? null,
-      stock,
-      categoryName: "لبنیات",
-      templateId: "dairy-product-template",
-    }));
-    dairy.status.hidden = dairyProducts.length > 0;
-    if (dairyProducts.length === 0) showStatus(dairy.status, "در حال حاضر محصولی برای نمایش وجود ندارد.");
-
-    const specialProducts = products.filter((product) => offersByProductId.has(product.id));
-    renderProducts(special.products, specialProducts, (product) => ({
-      offer: offersByProductId.get(product.id),
-      stock,
-      categoryName: product.categoryName ?? "پیشنهاد ویژه",
-      templateId: "special-product-template",
-    }));
-    special.status.hidden = specialProducts.length > 0;
-    if (specialProducts.length === 0) showStatus(special.status, "در حال حاضر پیشنهاد ویژه‌ای وجود ندارد.");
-
-    renderCategorySections(categories, products, stock, offersByProductId);
-    setupCarousel(dairy);
-    setupCarousel(special);
-  } catch (error) {
-    dairy.products.replaceChildren();
-    special.products.replaceChildren();
-    const message = "بارگذاری اطلاعات با مشکل مواجه شد. لطفاً اتصال را بررسی و صفحه را دوباره بارگذاری کنید.";
-    showStatus(dairy.status, message, true);
-    showStatus(special.status, message, true);
-  }
-}
-
-loadPageProducts();
-
-function makeElement(tag, className, text = "") {
+function makeElement(tag, className = "", text = "") {
   const element = document.createElement(tag);
   if (className) element.className = className;
-  if (text) element.textContent = text;
+  if (text !== "") element.textContent = text;
   return element;
 }
 
-function appendLink(container, label, href, className = "") {
+function appendLink(container, label, href = "#", className = "") {
   const link = makeElement("a", className, label);
   link.href = href || "#";
   container.append(link);
   return link;
 }
 
+function readCart() {
+  try {
+    const value = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "{}");
+    return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  } catch {
+    return {};
+  }
+}
+
+function updateCartCount() {
+  const count = Object.values(cart).reduce((sum, value) => sum + Math.max(0, Number(value) || 0), 0);
+  const badge = document.querySelector("#cart-count");
+  if (badge) badge.textContent = numberFormatter.format(count);
+}
+
+function addToCart(productId) {
+  const key = String(productId);
+  cart[key] = (Number(cart[key]) || 0) + 1;
+  try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch { /* storage may be unavailable */ }
+  updateCartCount();
+}
+
+function makeSkeleton(className = "") {
+  return makeElement("div", `skeleton ${className}`.trim());
+}
+
+function renderLoadingSkeletons() {
+  const banner = document.querySelector("#home-banners");
+  banner.replaceChildren(makeSkeleton("skeleton-banner"), makeSkeleton("skeleton-banner"));
+  const categories = document.querySelector("#category-cards");
+  categories.replaceChildren(...Array.from({ length: 7 }, () => makeSkeleton("skeleton-category")));
+  const carouselContainer = document.querySelector("#home-carousels");
+  carouselContainer.replaceChildren();
+  for (let i = 0; i < 2; i++) {
+    const section = makeElement("section", "recommendation");
+    section.append(makeSkeleton("skeleton-heading"));
+    const row = makeElement("div", "skeleton-products");
+    for (let j = 0; j < 4; j++) row.append(makeSkeleton("skeleton-product"));
+    section.append(row);
+    carouselContainer.append(section);
+  }
+  const promos = document.querySelector("#home-promos");
+  promos.replaceChildren(makeSkeleton("skeleton-banner"), makeSkeleton("skeleton-banner"));
+}
+
+function makeProductCard(product, { offer, stock, categoryName }) {
+  const card = makeElement("li", "product-item");
+  const emoji = makeElement("div", "product-icon product-emoji", product.emoji || "🛒");
+  const tag = makeElement("p", "item-tag", categoryName || product.categoryName || "محصول");
+  const quantity = stock?.items?.[String(product.id)];
+  const outOfStock = quantity === 0;
+  const discount = makeElement("span", "product-discount");
+  const title = makeElement("h3", "item-title", product.name || "");
+  const description = makeElement("p", "item-description", product.unit || "");
+  const oldPrice = makeElement("p", "item-old-price");
+  const buyRow = makeElement("div", "item-buy");
+  const price = makeElement("span", "item-price");
+  const finalPrice = offer ? Math.round(product.price * (100 - offer.percent) / 100) : product.price;
+  price.textContent = `${numberFormatter.format(finalPrice)} تومان`;
+  if (offer) {
+    discount.textContent = `${numberFormatter.format(offer.percent)}٪`;
+    oldPrice.textContent = `${numberFormatter.format(product.price)} تومان`;
+  } else {
+    discount.hidden = true;
+    oldPrice.hidden = true;
+  }
+  const button = makeElement("button", "buy-button", "+");
+  button.type = "button";
+  if (outOfStock) {
+    card.classList.add("product-item--unavailable");
+    tag.after(makeElement("span", "product-stock-badge", "ناموجود"));
+    button.disabled = true;
+    button.title = "این کالا موجود نیست";
+  } else {
+    button.dataset.productId = String(product.id);
+    button.title = `افزودن ${product.name} به سبد خرید`;
+  }
+  buyRow.append(price, button);
+  card.append(emoji, tag, discount, title, description, oldPrice, buyRow);
+  return card;
+}
+
+function renderProducts(container, products, optionsForProduct) {
+  const fragment = document.createDocumentFragment();
+  products.forEach((product) => fragment.append(makeProductCard(product, optionsForProduct(product))));
+  container.replaceChildren(fragment);
+}
+
+function setupCarousel({ products, viewport, previous, next }) {
+  const carousel = { offset: 0, step: 0, maxOffset: 0 };
+  const update = () => {
+    const firstCard = products.querySelector(".product-item");
+    if (!firstCard) { previous.disabled = true; next.disabled = true; return; }
+    const styles = getComputedStyle(products);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+    carousel.step = firstCard.getBoundingClientRect().width + gap;
+    carousel.maxOffset = Math.max(0, products.scrollWidth - viewport.clientWidth);
+    carousel.offset = Math.min(carousel.offset, carousel.maxOffset);
+    products.style.transform = `translateX(${carousel.offset}px)`;
+    previous.disabled = carousel.offset <= 0;
+    next.disabled = carousel.offset >= carousel.maxOffset - 1;
+  };
+  const move = (direction) => {
+    carousel.offset = Math.max(0, Math.min(carousel.maxOffset, carousel.offset + direction * carousel.step));
+    products.style.transform = `translateX(${carousel.offset}px)`;
+    previous.disabled = carousel.offset <= 0;
+    next.disabled = carousel.offset >= carousel.maxOffset - 1;
+  };
+  previous.addEventListener("click", () => move(-1));
+  next.addEventListener("click", () => move(1));
+  window.addEventListener("resize", update);
+  requestAnimationFrame(update);
+}
+
 function renderShopDetails(shop) {
   const setText = (selector, value) => {
     const element = document.querySelector(selector);
-    if (element && value != null) element.textContent = value;
+    if (element && value != null) {
+      element.textContent = value;
+      element.classList.remove("skeleton-text");
+    }
   };
   setText("#shop-notice", shop.notice);
   setText("#shop-name", "سوپرینو");
@@ -188,38 +146,25 @@ function renderShopDetails(shop) {
   setText("#shop-about", shop.about);
   setText("#shop-address", shop.address);
   setText("#shop-phone", shop.phone);
-  const copyrightText = String(shop.copyright || "").replace(/سوپرمارکت\s*مینا/g, "سوپرینو").trim();
-  setText("#shop-copyright", copyrightText);
+  const copyright = String(shop.copyright || "").replace(/سوپرمارکت\s*مینا/g, "سوپرینو").trim();
+  setText("#shop-copyright", copyright || "سوپرینو");
 
   const menu = document.querySelector("#shop-menu-links");
   menu.replaceChildren();
   (shop.menu || []).forEach((item) => appendLink(menu, item.label, item.href, "menu-texts"));
-
   const hours = document.querySelector("#shop-hours");
   hours.replaceChildren();
-  (shop.schedule || []).forEach((item) => {
-    hours.append(makeElement("p", "", `${item.days}: ${item.time}`));
-  });
+  (shop.schedule || []).forEach((item) => hours.append(makeElement("p", "", `${item.days}: ${item.time}`)));
 }
 
 function renderCategories(categories) {
   const categoryMenu = document.querySelector("#category-menu-links");
   const categoryCards = document.querySelector("#category-cards");
   const footerCategories = document.querySelector("#footer-category-links");
-  categoryMenu.replaceChildren();
-  categoryCards.replaceChildren();
-  footerCategories.replaceChildren();
-
+  categoryMenu.replaceChildren(); categoryCards.replaceChildren(); footerCategories.replaceChildren();
   categories.forEach((category) => {
     const href = `#${category.slug}`;
-    const menuLink = appendLink(categoryMenu, category.name, href, "hidden-content-links");
-    const arrow = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    arrow.classList.add("left-icon");
-    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-    use.setAttribute("href", "./svgs/left.svg");
-    arrow.append(use);
-    menuLink.append(arrow);
-
+    appendLink(categoryMenu, `${category.emoji || "🛒"} ${category.name}`, href, "hidden-content-links");
     const card = appendLink(categoryCards, "", href, "categories-box");
     const icon = makeElement("span", "categories-icon category-emoji", category.emoji || "🛒");
     icon.style.backgroundColor = category.color || "var(--light-blue)";
@@ -228,54 +173,165 @@ function renderCategories(categories) {
   });
 }
 
-function renderCategorySections(categories, products, stock, offersByProductId) {
-  const container = document.querySelector("#category-product-sections");
+function makeBanner(data, variant) {
+  if (!data) return null;
+  const article = makeElement("article", variant);
+  const content = makeElement("div", `banner-content ${variant}-content`);
+  content.append(makeElement("h2", `banner-title ${variant}-title`, `${data.title || ""}`.trim()));
+  content.append(makeElement("p", `banner-details ${variant}-details`, data.text || ""));
+  if (data.cta) appendLink(content, data.cta.label || "مشاهده", data.cta.href || "#", `banner-button ${variant}-button`);
+  const icon = makeElement("span", "banner-art", data.emoji || "🛍️");
+  article.append(content, icon);
+  return article;
+}
+
+function renderHeroBanners(home) {
+  const container = document.querySelector("#home-banners");
   container.replaceChildren();
-  categories.filter((category) => category.slug !== "dairy").forEach((category) => {
-    const categoryProducts = products.filter((product) => product.categoryId === category.id);
-    const section = makeElement("section", "recommendation category-products-section");
-    section.id = category.slug;
-    const title = makeElement("h2", "recommendation-title", `${category.emoji || "🛒"} ${category.name}`);
-    section.append(title);
+  const hero = makeBanner(home.hero, "banner-fruit");
+  const side = makeBanner(home.side, "banner-sale");
+  if (hero) container.append(hero);
+  if (side) container.append(side);
+}
 
-    const carouselElement = makeElement("div", "dairy-carousel category-carousel");
-    const viewport = makeElement("div", "dairy-carousel-viewport");
-    const list = makeElement("ul", "products category-products-list");
-    list.id = `${category.slug}-products`;
-    const previous = makeElement("button", "dairy-prev-button");
-    previous.type = "button";
-    previous.textContent = "→";
-    previous.disabled = true;
-    previous.id = `${category.slug}-prev`;
-    const next = makeElement("button", "dairy-next-button");
-    next.type = "button";
-    next.textContent = "←";
-    next.type = "button";
-    next.id = `${category.slug}-next`;
-
-    const fragment = document.createDocumentFragment();
-    categoryProducts.forEach((product) => {
-      fragment.append(createProductCard(product, {
-        offer: offersByProductId.get(product.id) || null,
-        stock,
-        categoryName: category.name,
-        templateId: "category-product-template",
-      }));
-    });
-    list.append(fragment);
-    viewport.append(list);
-    const controls = makeElement("div", "dairy-carousel-controls");
-    controls.append(previous, next);
-    carouselElement.append(viewport, controls);
-    section.append(carouselElement);
-
-    if (categoryProducts.length === 0) {
-      viewport.append(makeElement("p", "api-status", "محصولی برای این دسته وجود ندارد."));
-      previous.disabled = true;
-      next.disabled = true;
-    } else {
-      setupCarousel({ products: list, viewport, previous, next, offset: 0 });
-    }
-    container.append(section);
+function renderPromos(home) {
+  const container = document.querySelector("#home-promos");
+  container.replaceChildren();
+  (home.promos || []).forEach((promo, index) => {
+    const variant = index % 2 === 0 ? "banner-breakfast" : "banner-bread";
+    const article = makeElement("article", variant);
+    const content = makeElement("div", "banner-content");
+    content.append(makeElement("h2", "banner-title", `${promo.text || ""}`.trim()));
+    appendLink(content, "دیدن محصولات", promo.href || "#", "promo-link");
+    const icon = makeElement("span", "promo-emoji", promo.emoji || "🛍️");
+    article.append(content, icon);
+    container.append(article);
   });
 }
+
+function createCarouselSection(config, products, stock, offersByProductId, categories) {
+  const section = makeElement("section", "recommendation");
+  section.id = config.id;
+  section.append(makeElement("h2", "recommendation-title", `${config.emoji || "🛒"} ${config.title || "محصولات"}`.trim()));
+  const carousel = makeElement("div", "dairy-carousel");
+  const viewport = makeElement("div", "dairy-carousel-viewport");
+  const list = makeElement("ul", "products");
+  const previous = makeElement("button", "dairy-prev-button", "→");
+  previous.type = "button"; previous.disabled = true; previous.title = "محصول قبلی";
+  const next = makeElement("button", "dairy-next-button", "←");
+  next.type = "button"; next.title = "محصول بعدی";
+  const controls = makeElement("div", "dairy-carousel-controls");
+  controls.append(previous, next);
+  viewport.append(list); carousel.append(viewport, controls); section.append(carousel);
+
+  let selected;
+  if (config.source === "offers" || config.id === "offers") selected = products.filter((product) => offersByProductId.has(product.id));
+  else {
+    const categoryId = config.categoryId ?? config.category?.id;
+    selected = products.filter((product) => product.categoryId === categoryId);
+  }
+  const category = categories.find((item) => item.id === (config.categoryId ?? config.category?.id));
+  renderProducts(list, selected, (product) => ({ offer: offersByProductId.get(product.id), stock, categoryName: category?.name || config.title || "محصول" }));
+  if (!selected.length) section.append(makeElement("p", "empty-message", "محصولی برای نمایش وجود ندارد."));
+  setupCarousel({ products: list, viewport, previous, next });
+  return section;
+}
+
+function renderHomeCarousels(home, products, stock, offersByProductId, categories) {
+  const container = document.querySelector("#home-carousels");
+  container.replaceChildren();
+
+  const configuredCategoryIds = new Set();
+
+  (home.carousels || [])
+    .filter((config) => config.title !== "لبنیات")
+    .forEach((config) => {
+      if (config.categoryId != null) {
+        configuredCategoryIds.add(config.categoryId);
+      } else if (config.category?.id != null) {
+        configuredCategoryIds.add(config.category.id);
+      }
+
+      container.append(
+        createCarouselSection(
+          config,
+          products,
+          stock,
+          offersByProductId,
+          categories
+        )
+      );
+    });
+
+  return configuredCategoryIds;
+}
+
+function renderRemainingCategoryCarousels(
+  categories,
+  products,
+  stock,
+  offersByProductId,
+  configuredCategoryIds
+) {
+  const container = document.querySelector("#category-product-sections");
+  container.replaceChildren();
+
+  categories
+    .filter(
+      (category) =>
+        !configuredCategoryIds.has(category.id) ||
+        category.name === "لبنیات"
+    )
+    .forEach((category) => {
+      container.append(
+        createCarouselSection(
+          {
+            id: category.slug,
+            title: category.name,
+            emoji: category.emoji,
+            categoryId: category.id,
+          },
+          products,
+          stock,
+          offersByProductId,
+          categories
+        )
+      );
+    });
+}
+
+function setupSearch(products) {
+  const input = document.querySelector(".search-entry");
+  if (input) input.placeholder = `جستجو در میان ${numberFormatter.format(products.length)} کالا...`;
+}
+
+async function loadPage() {
+  const endpoints = ["products.json", "stock.json", "offers.json", "categories.json", "shop.json", "home.json"];
+  try {
+    const responses = await Promise.all(endpoints.map((file) => fetch(`${API_BASE}${file}`)));
+    if (responses.some((response) => !response.ok)) throw new Error("API request failed");
+    const [products, stock, offers, categories, shop, home] = await Promise.all(responses.map((response) => response.json()));
+    const offersByProductId = new Map(offers.map((offer) => [offer.productId, offer]));
+    renderShopDetails(shop);
+    renderCategories(categories);
+    renderHeroBanners(home);
+    renderPromos(home);
+    const configuredCategoryIds = renderHomeCarousels(home, products, stock, offersByProductId, categories);
+    renderRemainingCategoryCarousels(categories, products, stock, offersByProductId, configuredCategoryIds);
+    setupSearch(products);
+  } catch (error) {
+    document.querySelectorAll(".skeleton-text").forEach((item) => item.classList.remove("skeleton-text"));
+    const main = document.querySelector("#main-content");
+    main.prepend(makeElement("p", "api-status api-status--error", "بارگذاری اطلاعات با مشکل مواجه شد. اتصال را بررسی و صفحه را دوباره بارگذاری کنید."));
+    console.error(error);
+  }
+}
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest(".buy-button[data-product-id]");
+  if (button && !button.disabled) addToCart(button.dataset.productId);
+});
+
+updateCartCount();
+renderLoadingSkeletons();
+loadPage();

@@ -1,298 +1,62 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>سوپرینو</title>
-  <!-- Week 1: put YOUR name here to claim this shop. The landing page shows it. -->
   <meta name="author" content="Eleena">
-  <meta name="description" content="به‌زودی: بهترین میوه و سبزی محله!">
+  <meta name="description" content="سوپرینو؛ خرید آسان کالاهای روزمره">
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body id="top">
   <a class="skip-link" href="#main-content">پرش به محتوای اصلی</a>
   <header id="page-header">
-
-    <article class="announcement">
-      <svg class="announcement-icon" focusable="false">
-        <use href="./svgs/announcement.svg"></use>
-      </svg>
-      <p id="shop-notice">در حال بارگذاری...</p>
-    </article>
-
-    <!-- Logo & Title -->
-    <section class="header-part">
+    <div class="announcement"><span class="announcement-icon"></span><p id="shop-notice" class="skeleton-text"></p></div>
+    <div class="header-part">
       <a class="brand brand-link" href="#top">
-        <svg class="logo">
-          <use href="./svgs/logo.svg"></use>
-        </svg>
-        <section class="page-brand">
-          <h1 class="page-title" id="shop-name">سوپرینو</h1>
-          <p class="page-description" id="shop-slogan">در حال بارگذاری...</p>
-        </section>
+        <svg class="logo" focusable="false"><use href="./svgs/logo.svg"></use></svg>
+        <span class="page-brand"><h1 class="page-title" id="shop-name">سوپرینو</h1><span class="page-description skeleton-text" id="shop-slogan"></span></span>
       </a>
-
-
-      <!-- Search -->
-      <section class="search">
-        <svg class="search-icon" focusable="false">
-          <use href="./svgs/search.svg"></use>
-        </svg>
-        <input class="search-entry" type="search" placeholder="جستجو در محصولات...">
-      </section>
-
-
-      <!-- Cart Button -->
-      <button class="cart-button" type="button">
-        <svg class="cart-icon" focusable="false">
-          <use href="./svgs/cart.svg"></use>
-        </svg>
-        <span class="cart-text">سبد خرید</span>
-        <span class="cart-notification">0</span>
-      </button>
-    </section>
-
+      <label class="search"><span class="search-icon">🔍︎</span><input class="search-entry" type="search" placeholder="جستجو در کالاها..."></label>
+      <button class="cart-button" type="button"><span class="cart-icon">🛒</span><span class="cart-text">سبد خرید</span><span class="cart-notification" id="cart-count">۰</span></button>
+    </div>
     <input class="mobile-menu-toggle" type="checkbox" id="mobile-menu-toggle">
-    <label class="mobile-menu-button" for="mobile-menu-toggle">
-      <span>☰</span>
-      <span>منو</span>
-    </label>
+    <label class="mobile-menu-button" for="mobile-menu-toggle"><span>☰</span><span>منو</span></label>
     <nav class="navigation" id="main-navigation">
-      <div class="menu-categories">
-        <span class="menu-categories-span">
-          <svg class="menu-categories-icon" focusable="false">
-            <use href="./svgs/categories.svg"></use>
-          </svg>
-          همه دسته‌ها
-        </span>
-        <div class="hidden-content" id="category-menu-links"></div>
-      </div>
+      <div class="menu-categories"><span class="menu-categories-span">☷ همه دسته‌ها</span><div class="hidden-content" id="category-menu-links"></div></div>
       <div id="shop-menu-links" class="shop-menu-links"></div>
     </nav>
-
   </header>
 
   <main id="main-content">
-
-    <!--Advertize-->
-    <section class="banner">
-      <article class="banner-fruit">
-        <section class="banner-content-fruit">
-          <h3 class="banner-title-fruit">
-            میوه‌های ارکانیگ، سبزی‌های تازه
-          </h3>
-          <p class="banner-details-fruit">
-            گل‌چین از بهترین باغ‌های اطراف
-          </p>
-          <button type="button" class="banner-button-fruit">
-            خرید میوه و سبزی
-          </button>
-        </section>
-        <svg class="banner-icon-fruit" focusable="false">
-          <use href="./svgs/bannerFruit.svg"></use>
-        </svg>
-      </article>
-
-      <article class="banner-sale">
-        <section class="banner-content-sale">
-          <h3 class="banner-title-sale">
-            ۲۰٪ تخفیف لبنیات
-          </h3>
-          <p class="banner-details-sale">
-            فقط تا پایان امروز
-          </p>
-          <button type="button" class="banner-button-sale">
-            دیدن محصولات
-          </button>
-        </section>
-        <svg class="banner-icon-sale" focusable="false">
-          <use href="./svgs/bannerDairy.svg"></use>
-        </svg>
-      </article>
-    </section>
-
-    <!--Categories-->
+    <section class="banner" id="home-banners"></section>
     <section class="categories" id="categories">
-      <h2 class="categories-title">
-        دسته‌بندی‌ها
-      </h2>
-      <section class="categories-section" id="category-cards"></section>
-      <template id="category-product-template">
-        <li class="product-item">
-          <div class="product-icon product-emoji"></div>
-          <p class="item-tag">دسته‌بندی</p>
-          <span class="product-discount" hidden></span>
-          <h3 class="item-title">نام محصول</h3>
-          <p class="item-description">مقدار محصول</p>
-          <p class="item-old-price" hidden></p>
-          <div class="item-buy"><span class="item-price">قیمت محصول</span><button class="buy-button"
-              type="button">+</button></div>
-        </li>
-      </template>
+      <h2 class="categories-title">دسته‌بندی‌ها</h2>
+      <div class="categories-section" id="category-cards"></div>
     </section>
-
-
-    <!-- Recommendation Carousel -->
-    <section class="recommendation" id="special">
-
-      <h2 class="recommendation-title">
-        <svg class="fire-icon" focusable="false">
-          <use href="./svgs/fire.svg"></use>
-        </svg>
-        پیشنهاد ویژه
-      </h2>
-
-      <div class="dairy-carousel special-carousel">
-        <div class="dairy-carousel-viewport" id="special-viewport">
-          <p class="api-status" id="special-status">در حال بارگذاری پیشنهادها...</p>
-          <ul class="products" id="special-products"></ul>
-        </div>
-        <div class="dairy-carousel-controls">
-          <button class="dairy-prev-button" id="special-prev" type="button" disabled>→</button>
-          <button class="dairy-next-button" id="special-next" type="button">←</button>
-        </div>
-      </div>
-      <template id="special-product-template">
-        <li class="product-item">
-          <div class="product-icon product-emoji"></div>
-          <p class="item-tag">پیشنهاد ویژه</p>
-          <span class="product-discount" hidden></span>
-          <h3 class="item-title">نام محصول</h3>
-          <p class="item-description">مقدار محصول</p>
-          <p class="item-old-price" hidden></p>
-          <div class="item-buy"><span class="item-price">قیمت محصول</span><button class="buy-button"
-              type="button">+</button></div>
-        </li>
-      </template>
-    </section>
-
-    <!--Banners-->
-    <section class="banner-down" id="bread">
-      <article class="banner-bread">
-        <section class="banner-content-bread">
-          <h3 class="banner-title-bread">
-            نان داغ تازه
-          </h3>
-          <p class="banner-details-bread">
-            هر روز ۷ صبح تا ۱۱ صبح
-          </p>
-        </section>
-        <svg class="banner-icon-bread" focusable="false">
-          <use href="./svgs/bread-banner.svg"></use>
-        </svg>
-      </article>
-
-      <article class="banner-breakfast">
-        <section class="banner-content-breakfast">
-          <h3 class="banner-title-breakfast">
-            سبد صبحانه خانواده
-          </h3>
-          <p class="banner-details-breakfast">
-            تخفیف محصولات صبحانه برای خانواده‌های بالای دو نفر
-          </p>
-        </section>
-        <svg class="banner-icon-breakfast" focusable="false">
-          <use href="./svgs/breakfast.svg"></use>
-        </svg>
-      </article>
-    </section>
-
-
-    <section class="recommendation" id="dairy">
-
-      <h2 class="recommendation-title">
-        🥛 لبنیات
-      </h2>
-
-      <div class="dairy-carousel">
-        <div class="dairy-carousel-viewport">
-          <p class="api-status" id="dairy-status">در حال بارگذاری محصولات...</p>
-          <ul class="products" id="dairy-products"></ul>
-        </div>
-
-        <div class="dairy-carousel-controls">
-          <button class="dairy-prev-button" id="dairy-prev" type="button" disabled>→</button>
-          <button class="dairy-next-button" id="dairy-next" type="button">←</button>
-        </div>
-      </div>
-      <template id="dairy-product-template">
-        <li class="product-item">
-          <div class="product-icon product-emoji"></div>
-          <p class="item-tag">لبنیات</p>
-          <span class="product-discount" hidden></span>
-          <h3 class="item-title">نام محصول</h3>
-          <p class="item-description">مقدار محصول</p>
-          <p class="item-old-price" hidden></p>
-          <div class="item-buy"><span class="item-price">قیمت محصول</span><button class="buy-button"
-              type="button">+</button></div>
-        </li>
-      </template>
-    </section>
-
+    <div id="home-carousels"></div>
+    <section class="banner-down" id="home-promos"></section>
     <div id="category-product-sections"></div>
-
   </main>
-
 
   <footer id="contact">
     <div class="upper">
-      <!-- About Us -->
       <section class="about-us">
-        <h4 class="upper-titles" id="footer-shop-name">سوپرینو</h4>
-        <section class="about-details">
-          <p id="shop-about">در حال بارگذاری اطلاعات فروشگاه...</p>
-          <section class="address">
-            <svg class="address-icon" focusable="false">
-              <use href="./svgs/address.svg"></use>
-            </svg>
-            <address id="shop-address">در حال بارگذاری...</address>
-          </section>
-          <section class="phone-number">
-            <svg class="phone-icon" focusable="false">
-              <use href="./svgs/phone.svg"></use>
-            </svg>
-            <p class="number" id="shop-phone">در حال بارگذاری...</p>
-          </section>
-        </section>
+        <h2 class="upper-titles" id="footer-shop-name">سوپرینو</h2>
+        <div class="about-details">
+          <p id="shop-about" class="skeleton-text"></p>
+          <p class="address"><span>📍</span><span id="shop-address" class="skeleton-text"></span></p>
+          <p class="phone-number"><span>☎</span><span class="number skeleton-text" id="shop-phone"></span></p>
+        </div>
       </section>
-
-      <!-- Links to Categories -->
-      <section class="links-categories">
-        <h4 class="upper-titles">
-          دسته‌ها
-        </h4>
-        <section class="links-link" id="footer-category-links"></section>
-      </section>
-
-      <!-- Work Hours -->
-      <section class="hours">
-        <h4 class="upper-titles">
-          ساعت کاری
-        </h4>
-        <section class="hours-details" id="shop-hours"></section>
-      </section>
+      <section class="links-categories"><h2 class="upper-titles">دسته‌ها</h2><div class="links-link" id="footer-category-links"></div></section>
+      <section class="hours"><h2 class="upper-titles">ساعت کاری</h2><div class="hours-details" id="shop-hours"></div></section>
     </div>
-
-    <!-- Copy right & Back to up -->
-    <section class="down">
-      <section class="copyright">
-        <p>
-          <span id="shop-copyright">در حال بارگذاری...</span>
-        </p>
-      </section>
-      <section class="back-tp-up">
-        <a class="up" href="#page-header">
-          <svg class="up-icon" focusable="false">
-            <use href="./svgs/up.svg"></use>
-          </svg>
-          <span>بازگشت به بالا</span>
-        </a>
-      </section>
-    </section>
+    <div class="down">
+      <div class="copyright"><p><span id="shop-copyright" class="skeleton-text"></span></p></div>
+      <div class="back-tp-up"><a class="up" href="#page-header"><span>↑</span><span>بازگشت به بالا</span></a></div>
+    </div>
   </footer>
   <script src="./app.js" defer></script>
 </body>
-
 </html>
