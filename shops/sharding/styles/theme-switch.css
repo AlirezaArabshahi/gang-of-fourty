@@ -8,7 +8,15 @@
   border-radius: var(--radius);
 }
 
-.theme-switch__btn {
+.theme-switch__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.theme-switch__label {
   display: grid;
   place-items: center;
   width: 30px;
@@ -17,19 +25,18 @@
   cursor: pointer;
   color: var(--muted);
   background: transparent;
-  border: none;
   border-radius: var(--radius-sm);
   transition:
     background 0.2s var(--ease),
     color 0.2s var(--ease);
 }
 
-.theme-switch__btn:hover {
+.theme-switch__label:hover {
   background: var(--lime-soft);
   color: var(--navy);
 }
 
-.theme-switch__btn svg {
+.theme-switch__label svg {
   width: 16px;
   height: 16px;
   fill: none;
@@ -39,13 +46,18 @@
   stroke-linejoin: round;
 }
 
-.theme-switch__btn[aria-checked="true"] {
+.theme-switch__radio:checked + .theme-switch__label {
   background: var(--lime);
   color: var(--on-lime);
 }
 
-.theme-switch__btn[aria-checked="true"] svg {
+.theme-switch__radio:checked + .theme-switch__label svg {
   stroke: var(--on-lime);
+}
+
+.theme-switch__radio:focus-visible + .theme-switch__label {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
 }
 
 .header .theme-switch {
@@ -58,7 +70,7 @@
   }
 }
 
-.mobile-menu__theme .theme-switch__btn {
+.mobile-menu__theme .theme-switch__label {
   width: 32px;
   height: 32px;
 }

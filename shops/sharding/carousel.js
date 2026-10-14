@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
   function getTrack(btn) {
     const hero = btn.closest('.hero-carousel');
     if (hero) return hero.querySelector('.hero-carousel__track');
@@ -22,7 +24,10 @@
     const sign = isRTL ? -1 : 1;
     const target = toEnd ? sign * maxScroll : 0;
 
-    track.scrollTo({ left: target, behavior: 'smooth' });
+    track.scrollTo({
+      left: target,
+      behavior: prefersReducedMotion.matches ? 'auto' : 'smooth',
+    });
   }
 
   document.addEventListener('click', (e) => {
@@ -46,25 +51,17 @@
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          entry.target.classList.toggle(
-            'is-active',
-            entry.intersectionRatio > 0.6
-          );
+          entry.target.classList.toggle('is-active', entry.intersectionRatio > 0.6);
         });
       },
-      {
-        root: track,
-        threshold: [0, 0.6, 1],
-      }
+      { root: track, threshold: [0, 0.6, 1] }
     );
 
     slides.forEach((slide) => observer.observe(slide));
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupHeroActiveSlide, {
-      once: true,
-    });
+    document.addEventListener('DOMContentLoaded', setupHeroActiveSlide, { once: true });
   } else {
     setupHeroActiveSlide();
   }

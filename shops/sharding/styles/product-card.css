@@ -222,8 +222,6 @@
   box-shadow: var(--shadow-lime);
 }
 
-/* ─── Skeleton ─── */
-
 .product--skeleton {
   pointer-events: none;
   animation: none;
@@ -273,6 +271,7 @@
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
 
 @media (prefers-reduced-motion: reduce) {
   .product,
