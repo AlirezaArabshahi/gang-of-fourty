@@ -452,7 +452,7 @@ footer nav {
   text-decoration: none;
 }
 
-#dairy-products .carousel-status {
+.product-carousel .carousel-status {
   margin-block: 0.75rem;
   padding: 1rem;
   color: var(--ink);
@@ -462,17 +462,22 @@ footer nav {
 }
 
 /* Make the error state visually distinct. */
-#dairy-products .carousel-status.is-error {
+.product-carousel .carousel-status.is-error {
   border-inline-start: 4px solid #c94b45;
 }
 
 /* Existing layout rules must not override the hidden attribute. */
-#dairy-products [hidden] {
+.product-carousel [hidden] {
   display: none !important;
 }
 
-#dairy-status:empty {
+.product-carousel .carousel-status:empty {
   display: none;
+}
+
+.product-carousel .stock-badge {
+  inset-block-start: auto;
+  inset-block-end: 0.7rem;
 }
 
 .product-track {
