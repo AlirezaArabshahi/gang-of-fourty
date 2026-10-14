@@ -20,6 +20,7 @@ const makeCategory = (category) => {
     li.append(a)
 
     a.addEventListener("click", (e) => {
+        e.preventDefault();
         selectCategory(category);
     });
     return li
