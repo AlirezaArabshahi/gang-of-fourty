@@ -16,17 +16,17 @@ async function getDataObjects(url, objectName) {
 
 // Loads categories, products, offers and stock in parallel with Promise.all,
 // so total wait time is the slowest request, not the sum.
-// Returns { categories, products, offeredProducts, stock }.
+// Returns { categories, products, offeredProducts, stock, shop }.
 // Any failure is rethrown to the caller.
 async function getData() {
-    const [categories, products, offeredProducts, stock] = await Promise.all([
+    const [categories, products, offeredProducts, stock, shop] = await Promise.all([
         getDataObjects('../../api/categories.json', "categories"),
         getDataObjects('../../api/products.json', "products"),
         getDataObjects('../../api/offers.json', "offeredProducts"),
-        getDataObjects('../../api/stock.json', "stock")]);
-    return { categories, products, offeredProducts, stock };
-}   
-
+        getDataObjects('../../api/stock.json', "stock"),
+        getDataObjects('../../api/shop.json', "shop")]);
+    return { categories, products, offeredProducts, stock, shop };
+}
 
 // Finds a category by its name and returns its id.
 // categories: array from categories.json, name: the category to look for.
@@ -223,6 +223,49 @@ function renderCategories(categoryData) {
     });
 }
 
+
+// Builds an li with a link inside it.
+// item: { label, href }
+function createLinkItem(item) {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.textContent = item.label;
+    a.href = item.href;
+    li.append(a);
+    return li;
+}
+
+
+// Fills the "all categories" submenu and the footer category list from categories.json.
+// categoryData: array from categories.json.
+function renderCategoryLinks(categoryData) {
+    const links = categoryData.map(category =>
+        createLinkItem({ label: category.name, href: `#${category.slug}` }));
+    document.querySelector(".mega-menu").replaceChildren(...links);
+    document.querySelector("#quick-links + ul").replaceChildren(
+        ...categoryData.map(category =>
+            createLinkItem({ label: category.name, href: `#${category.slug}` })));
+}
+
+// Fills the notice bar, tagline, phone and opening hours from shop.json.
+// shop: object from shop.json.
+function renderShop(shop) {
+    const formatter = new Intl.NumberFormat('fa-IR');
+
+    document.querySelector(".announcement p").textContent =
+        `ارسال رایگان برای خریدهای بالای ${formatter.format(shop.freeDeliveryOver)} ${shop.currency}`;
+
+    document.querySelector(".title p").textContent = shop.slogan;
+
+    const phoneLink = document.querySelector("address a");
+    phoneLink.querySelector("bdi").textContent = shop.phone;
+    phoneLink.href = `tel:${shop.phone.replace(/[^\d+]/g, "")}`;
+
+    const hours = document.createElement("p");
+    hours.textContent = `هر روز ${shop.hours.open} تا ${shop.hours.close}`;
+    document.querySelector(".info").append(hours);
+}
+
 // Entry point: loads the data, then renders the carousels.
 // Errors are caught here, because this is the one place that knows about the page.
 async function init() {
@@ -232,13 +275,15 @@ async function init() {
             showMessage(container , "در حال بارگذاری…", "load");
         });
     
-        const { categories, products, offeredProducts, stock } = await getData();
+        const { categories, products, offeredProducts, stock, shop } = await getData();
 
         containers.forEach(container => {
             clearMessage(container);
         });
         
         renderCategories(categories);
+        renderCategoryLinks(categories);
+        renderShop(shop);
         //Get "لبنیات" products
         const categoryId = getCategoryID("لبنیات", categories);
         const filteredProducts = filterProductsByCategoryID(categoryId, products);
