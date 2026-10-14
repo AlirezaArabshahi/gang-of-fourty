@@ -290,14 +290,13 @@ function renderShop(shop) {
     });
 }
 
-// Resolve a fragment again after asynchronous sections and cards exist.
-function scrollToFragment() {
-    if (!location.hash) return;
+// Measure the actual sticky header rather than adding two fixed CSS offsets.
+function fragmentTarget(hash) {
     let id;
     try {
-        id = decodeURIComponent(location.hash.slice(1));
+        id = decodeURIComponent(hash.slice(1));
     } catch {
-        return;
+        return null;
     }
     const aliases = {
         "special-offers": "offers",
@@ -308,18 +307,60 @@ function scrollToFragment() {
         sweets: "bakery",
         "daily-essentials": "dairy"
     };
-    const target = document.getElementById(aliases[id] || id);
-    if (target) target.scrollIntoView({ block: "start", inline: "nearest", behavior: "instant" });
+    return document.getElementById(aliases[id] || id);
 }
 
-window.addEventListener("hashchange", scrollToFragment);
+function scrollToFragment(animate = true) {
+    const target = fragmentTarget(location.hash);
+    document.querySelectorAll(".is-fragment-target").forEach(element => {
+        element.classList.remove("is-fragment-target");
+    });
+    if (!target) return;
+    target.classList.add("is-fragment-target");
+    const behavior = animate && !matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "smooth" : "instant";
+    const headerHeight = document.querySelector(".site-header").getBoundingClientRect().height;
+    const track = target.closest(".product-track");
+    const section = track ? target.closest(".product-carousel") : target;
 
-// Close the expanded mobile menu before scrolling so it cannot cover the target.
-document.querySelector(".mobile-navigation").addEventListener("click", event => {
-    const link = event.target.closest("a");
-    if (link) document.querySelector(".mobile-menu").open = false;
+    if (track) {
+        // Move the RTL track horizontally without letting it move the page vertically.
+        const padding = parseFloat(getComputedStyle(track).scrollPaddingInlineStart) || 0;
+        track.scrollBy({
+            left: target.getBoundingClientRect().right - track.getBoundingClientRect().right + padding,
+            behavior
+        });
+    }
+
+    window.scrollTo({
+        top: Math.max(0, scrollY + section.getBoundingClientRect().top - headerHeight - 12),
+        behavior
+    });
+}
+
+document.addEventListener("click", event => {
+    if (event.defaultPrevented || event.button !== 0 ||
+        event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const link = event.target.closest("a[href]");
+    if (!link || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin || url.pathname !== location.pathname ||
+        url.search !== location.search || !url.hash || !fragmentTarget(url.hash)) return;
+
+    event.preventDefault();
+    document.querySelector(".mobile-menu").open = false;
+    if (location.hash !== url.hash) history.pushState(null, "", url.hash);
+    requestAnimationFrame(() => scrollToFragment());
 });
 
+window.addEventListener("hashchange", () => scrollToFragment());
+
+// Keep native fragment offsets correct too, including when the viewport changes.
+const headerObserver = new ResizeObserver(() => {
+    const height = document.querySelector(".site-header").getBoundingClientRect().height;
+    document.documentElement.style.setProperty("--header-offset", `${height + 12}px`);
+});
+headerObserver.observe(document.querySelector(".site-header"));
 
 function renderCartCount() {
     const formatted = priceFormatter.format(cartCount);
@@ -358,15 +399,28 @@ function renderAbout(about) {
     const section = document.querySelector("#about");
     const heading = createTextElement("h2", "داستان سام مارکت");
     heading.id = "about-title";
-    section.replaceChildren(heading, createTextElement("p", about));
-    brandStory.paragraphs.forEach(text => section.append(createTextElement("p", text)));
+    const prose = document.createElement("div");
+    prose.className = "about-columns";
+    const introduction = document.createElement("div");
+    introduction.append(
+        createTextElement("p", about),
+        createTextElement("p", brandStory.paragraphs[0])
+    );
+    const explanation = document.createElement("div");
+    brandStory.paragraphs.slice(1).forEach(text => {
+        explanation.append(createTextElement("p", text));
+    });
+    prose.append(introduction, explanation);
+    section.replaceChildren(heading, prose);
     const steps = document.createElement("div");
     steps.className = "store-sections";
-    brandStory.steps.forEach(step => {
+    brandStory.steps.forEach((step, index) => {
         const article = document.createElement("article");
+        const icon = createTextElement("span", ["🔴", "🟢", "🔵"][index]);
+        icon.setAttribute("aria-hidden", "true");
         const copy = document.createElement("div");
         copy.append(createTextElement("h3", step.title), createTextElement("p", step.text));
-        article.append(copy);
+        article.append(icon, copy);
         steps.append(article);
     });
     section.append(steps);
@@ -525,7 +579,12 @@ async function initPage() {
         document.querySelector("#site-search").placeholder =
             `جست‌وجو در میان ${priceFormatter.format(products.length)} کالا...`;
         status.textContent = "";
-        requestAnimationFrame(scrollToFragment);
+        // Images and fonts can move the section after API rendering finishes.
+        await document.fonts.ready;
+        if (document.readyState !== "complete") {
+            await new Promise(resolve => window.addEventListener("load", resolve, { once: true }));
+        }
+        requestAnimationFrame(() => scrollToFragment(false));
     } catch {
         ["home-banners", "home-side", "home-promos", "home-carousels", "category-grid",
             "category-sections", "about"].forEach(id => {

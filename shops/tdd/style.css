@@ -512,7 +512,7 @@ footer nav {
   box-shadow: 0 .6rem 1.2rem rgb(23 50 42 / 10%);
 }
 
-.product-card:target {
+.product-card.is-fragment-target {
   border-color: var(--green);
   outline: 2px solid var(--green);
   outline-offset: 2px;
@@ -781,9 +781,9 @@ footer a,
   padding-block: .35rem;
 }
 
-main section[id]:target,
-.store-sections article[id]:target,
-footer:target {
+main section[id].is-fragment-target,
+.store-sections article[id].is-fragment-target,
+footer.is-fragment-target {
   outline: 2px solid var(--green);
   outline-offset: .25rem;
   border-radius: .75rem;
@@ -1736,7 +1736,7 @@ footer:target {
   transform: translateY(-6px);
 }
 
-.product-card:target {
+.product-card.is-fragment-target {
   border-color: var(--orange);
   outline: 3px solid rgb(242 155 56 / 20%);
   outline-offset: 2px;
@@ -2223,7 +2223,7 @@ main > .store-sections article > a::after {
   height: 2.4rem;
   background: rgb(255 255 255 / 10%);
   border-radius: 50%;
-  font-size: 1rem;
+  font-size: 0.8rem;
 }
 
 #about .store-sections h3 {
@@ -2827,7 +2827,7 @@ footer { padding-block: clamp(2.5rem, 5vw, 4rem); }
 .product-carousel,
 #contact,
 #about {
-  scroll-margin-block-start: var(--header-offset, 10rem);
+  scroll-margin-block-start: 0;
 }
 
 #shop-schedule h3 {
@@ -2853,9 +2853,40 @@ footer { padding-block: clamp(2.5rem, 5vw, 4rem); }
 }
 
 #about .store-sections article > div {
-  grid-column: 1 / -1;
+  grid-column: 2;
+  min-width: 0;
 }
 
 footer #shop-schedule h3 {
   color: #dff4e9;
+}
+
+/* Readable story columns use the full panel width. */
+#about .about-columns {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 4vw, 3rem);
+  margin-block: 1rem 1.5rem;
+}
+
+#about .about-columns p {
+  max-inline-size: none;
+  margin-block: 0 1rem;
+  color: #c5d9d0;
+  font-size: 1rem;
+  line-height: 1.95;
+}
+
+#about .store-sections p {
+  font-size: 0.85rem;
+  line-height: 1.9;
+}
+
+@media (max-width: 38rem) {
+  #about .about-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
 }
