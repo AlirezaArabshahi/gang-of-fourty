@@ -1,13 +1,20 @@
-/* ─── Offers section (variant of .products) ─── */
+/* ─── Offers section (wine shell only) ─── */
+/* Cards are normal .product — same size, hover, footer as other carousels.
+   Only the section chrome (bg + pattern + white titles) differs. */
+
 .products--offers .products__inner {
   background: var(--offers-bg);
   border: 1px solid var(--offers-bg);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  /* don't inherit layout containment — it fights transform hover */
+  contain: none;
 }
 
 .products--offers .products__main {
-  padding: 0;
+  /* same horizontal rhythm as regular .products__main */
+  padding: 0 0 var(--sp-md);
+  min-width: 0;
 }
 
 .products--offers .products__head {
@@ -16,7 +23,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-md);
-  margin: 0;
+  margin: 0 0 var(--sp-md);
   padding: clamp(16px, 2.2vw, 22px) var(--sp-md);
 
   background-color: var(--offers-bg);
@@ -60,7 +67,6 @@
   border-radius: 2px;
 }
 
-/* Nav buttons on the wine background */
 .products--offers .carousel-nav__btn {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.24);
@@ -74,25 +80,16 @@
   color: var(--offers-bg);
 }
 
+/* Grid: same item flex as products.css; padding gives room for hover lift */
 .products--offers .products__grid {
-  /* Match regular products carousel metrics so card width is identical */
-  padding-block-end: 8px;
-  padding-inline: 4px;
-  margin-inline: -4px;
-  scroll-padding-inline: 4px;
+  padding-block: 14px 16px;
+  padding-inline: var(--sp-md);
+  margin-inline: 0;
+  scroll-padding-inline: var(--sp-md);
 
   background-color: var(--offers-bg);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-opacity='0.08'%3E%3Ccircle cx='24' cy='24' r='5.5'/%3E%3Ccircle cx='48' cy='48' r='5.5'/%3E%3Cline x1='52' y1='20' x2='20' y2='52'/%3E%3C/g%3E%3C/svg%3E");
   background-size: 72px 72px;
 }
 
-.products--offers .products__item:first-child {
-  scroll-margin-inline-start: var(--sp-md);
-}
-
-.products--offers .product:hover,
-.products--offers .product:focus-within {
-  border-color: var(--lime);
-  box-shadow: var(--shadow-lime);
-  transform: translateY(-4px);
-}
+/* Card lift: .products__item:hover in product-card.css */

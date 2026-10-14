@@ -2,8 +2,9 @@
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  contain: layout style;
+  /* visible so card hover lift is not clipped by this box */
+  overflow: visible;
+  contain: style;
 }
 
 .products__main {
@@ -50,7 +51,8 @@
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  padding-block-end: 8px;
+  /* top padding = room for translateY hover inside the scrollport */
+  padding-block: 14px 16px;
   padding-inline: 4px;
   margin-inline: -4px;
   overflow-anchor: none;
@@ -63,15 +65,18 @@
 }
 
 .products__item {
-  flex: 0 0 calc((100% - var(--sp-sm) * 2) / 2.15);
+  /* ~2 cards visible, wider than before so price + button fit */
+  flex: 0 0 calc((100% - var(--sp-sm)) / 1.9);
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  min-width: 0;
+  min-width: 140px;
+  position: relative;
 }
 
 @media (min-width: 640px) {
   .products__item {
-    flex: 0 0 calc((100% - var(--sp-sm) * 4) / 4.5);
+    flex: 0 0 calc((100% - var(--sp-sm) * 3) / 3.4);
+    min-width: 0;
   }
 }
 
