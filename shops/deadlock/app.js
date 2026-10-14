@@ -71,31 +71,38 @@ function renderProducts(container, productList, stock, offers){
             
         }
 }
+function showMessage(container, text){
+    const message = document.createElement('p')
+    message.classList.add('carousel-message')
+    message.textContent = text
+    container.append(message) 
+    return message
+}
+const textmsg = 'در حال بارگذاری...'
 async function loadProducts(){
     const offersContainer = document.querySelector('#special-offers .carousel') 
     const container = document.querySelector('#tents .carousel')
-    const loadingMessage = document.createElement('p')
-    loadingMessage.classList.add('carousel-message')
-    loadingMessage.textContent = "در حال بارگذاری..."
-    container.append(loadingMessage) 
+    
+    const pantryLoading = showMessage(container, textmsg)
+    const offersLoading = showMessage(offersContainer, textmsg)
     try {
         const[products, stock, offers] = await Promise.all([getJSON('products'), getJSON('stock'), getJSON('offers')])
         const pantryProducts = products.filter((n) => n.categoryId === 4)
         const offerProducts = products.filter((product) => offers.find((o) => o.productId === product.id))
-        loadingMessage.remove()
+        pantryLoading.remove()
+        offersLoading.remove()
         renderProducts(container, pantryProducts, stock, offers)
         renderProducts(offersContainer, offerProducts, stock, offers)
         offersContainer.firstElementChild.id = 'offer-first'
         offersContainer.lastElementChild.id = 'offer-last'
 
     } catch (error) {
-        loadingMessage.remove()
-        console.log(error.message)
-
-        const errorMessage = document.createElement('p')
-        errorMessage.classList.add('carousel-message')
-        errorMessage.textContent = 'متأسفانه محصولات بارگذاری نشد. لطفاً دوباره تلاش کنید.'
-        container.append(errorMessage)
+        pantryLoading.remove()
+        offersLoading.remove()
+        console.log(error.message)       
+        const errorText = 'متأسفانه محصولات بارگذاری نشد. لطفاً دوباره تلاش کنید.'    
+        showMessage(container, errorText) 
+        showMessage(offersContainer, errorText)
     }
     
     
