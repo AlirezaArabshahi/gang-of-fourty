@@ -27,10 +27,11 @@
  };
 
  const saveToLocalStorage = (count) => {
-     localStorage.setItem("basket", JSON.stringify(count));
+     localStorage.setItem("count", String(Number(count)));
  };
+
  const getCountBasketFromLocalStorage = () => {
-     return Number(localStorage.getItem("basket")) || 0;
+     return Number(localStorage.getItem("count")) || 0;
  };
 
 

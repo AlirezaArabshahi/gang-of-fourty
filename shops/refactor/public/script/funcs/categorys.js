@@ -1,11 +1,12 @@
 import { BASEURL } from '../config.js';
 import { el } from '../utils/utils.js';
 import { showError } from '../components/skeleton.js';
+import { makeCard } from '../components/productcard.js';
 
 const makeCategory = (category) => {
     const li = el("li")
     const a = el("a", "cat")
-    a.setAttribute("href", `#${category.slug}`)
+    a.setAttribute("href", `?cat=${category.slug}`)
 
     const span = el("span", "cat-img")
     span.setAttribute("role", "img")
@@ -17,6 +18,11 @@ const makeCategory = (category) => {
 
     a.append(span, strong)
     li.append(a)
+
+    a.addEventListener("click", (e) => {
+        e.preventDefault();
+        selectCategory(category);
+    });
     return li
 }
 
@@ -29,9 +35,8 @@ const makeSubMenu = (category) => {
     return li
 }
 
-
-const fetchCategories = async() => {
-    const response = await fetch(`${BASEURL}/categories.json`);
+const fetchJSON = async(endpoint, options = {}) => {
+    const response = await fetch(`${BASEURL}${endpoint}`, options);
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -62,8 +67,55 @@ const renderCategoriesInto = async(selector, builder) => {
     }
 };
 
+const selectCategory = (category) => {
+    const url = new URL(window.location);
+    url.searchParams.set("cat", category.slug);
+    history.pushState({ cat: category.slug }, "", url);
+    openModal(category);
+};
+
+
+const openModal = async(category) => {
+    const modal = document.querySelector("#cat-modal");
+    const title = modal.querySelector(".cat-modal__title");
+    const track = modal.querySelector(".cat-modal__grid");
+
+    title.textContent = category.name;
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+    track.textContent = "";
+
+    try {
+
+        const products = await fetchProducts();
+        const filtered = products.filter(p => p.categoryId === category.id);
+
+        if (filtered.length === 0) {
+            showError(track, "محصولی در این دسته وجود ندارد.");
+            return;
+        }
+
+        const cards = filtered.map(makeCard);
+        track.textContent = "";
+        track.append(...cards);
+    } catch (err) {
+        showError(track, "خطا در بارگیری.");
+    }
+};
+
+const closeModal = () => {
+    const modal = document.querySelector("#cat-modal");
+    if (!modal) return;
+    modal.hidden = true;
+    document.body.style.overflow = "";
+};
+
+const closeBtn = document.querySelector(".cat-modal__close")
+closeBtn.addEventListener("click", closeModal)
 const getAndShowCategories = () => renderCategoriesInto('.cat-list', makeCategory);
 const getAndShowSubMenus = () => renderCategoriesInto('.sub-menu', makeSubMenu);
+const fetchProducts = () => fetchJSON('/products.json');
+const fetchCategories = () => fetchJSON('/categories.json');
 
 
 export { getAndShowCategories, getAndShowSubMenus };

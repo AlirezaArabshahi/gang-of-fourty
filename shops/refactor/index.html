@@ -147,7 +147,7 @@
                 <a class="icon-btn" href="#cart" aria-label="سبد خرید، ۰ کالا"><svg class="icon" aria-hidden="true"
                         focusable="false">
                         <use href="#i-cart" />
-                    </svg><span class="badge" aria-hidden="true">۰</span></a>
+                    </svg><span class="badge bage-basket" aria-hidden="true">۰</span></a>
                 <label for="nav-toggle-mobile" class="nav-toggle-btn">
                     <span class="sr-only">منو</span>
                     <svg class="icon icon-open" aria-hidden="true" focusable="false">
@@ -246,7 +246,7 @@
                 <a class="icon-btn" href="#cart" aria-label="سبد خرید، ۰ کالا"><svg class="icon" aria-hidden="true"
                         focusable="false">
                         <use href="#i-cart" />
-                    </svg><span class="badge" aria-hidden="true">۰</span></a>
+                    </svg><span class="badge bage-basket" aria-hidden="true">۰</span></a>
             </div>
             <search class="search">
                 <form action="#" method="get">
@@ -471,6 +471,21 @@
             </ul>
         </section>
         <!-- finish section features -->
+        <!-- modal -->
+        <div class="cat-modal" id="cat-modal" hidden>
+            <div class="cat-modal__overlay" data-close></div>
+            <div class="cat-modal__panel" role="dialog" aria-modal="true" aria-labelledby="cat-modal-title">
+                <header class="cat-modal__head">
+                    <h2 class="cat-modal__title" id="cat-modal-title"></h2>
+                    <button class="cat-modal__close" type="button" aria-label="بستن" data-close>
+                <svg class="icon" aria-hidden="true"><use href="#i-close"></use></svg>
+            </button>
+                </header>
+                <div class="cat-modal__body">
+                    <ul class="cat-modal__grid"></ul>
+                </div>
+            </div>
+        </div>
     </main>
     <!-- footer section -->
     <footer class="site-footer">
@@ -543,6 +558,8 @@
             </div>
         </div>
     </footer>
+
+
     <script src="./public/script/app.js" type="module"></script>
 </body>
 

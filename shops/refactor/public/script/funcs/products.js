@@ -91,11 +91,8 @@ const getAndShowHeroBanner = async() => {
             createSideCard(data.side),
             createPromos(data.promos)
         );
-
         return true;
-
     } catch (err) {
-        console.error(err);
         showError(heroGrid, 'خطا در بارگیری.');
         return false;
     }
@@ -164,58 +161,71 @@ const getAndShowProducts = async(trackSelector, categoryId) => {
     }
 };
 
+const getProductsData = () => {
+    return Promise.all([
+            fetch(`${BASEURL}/products.json`),
+            fetch(`${BASEURL}/stock.json`),
+            fetch(`${BASEURL}/offers.json`),
+        ])
+        .then(responses => {
+            responses.forEach(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            });
+
+            return Promise.all(
+                responses.map(response => response.json())
+            );
+        });
+};
 
 const getAndShowAllProducts = () => {
     const productsTrackLatest = document.querySelector('.products-track-latest');
+
     renderSkeletons(productsTrackLatest);
     showError(productsTrackLatest, 'در حال بارگیری ...');
 
-    Promise.all([
-        fetch(`${BASEURL}/products.json`),
-        fetch(`${BASEURL}/stock.json`),
-        fetch(`${BASEURL}/offers.json`),
-    ])
+    getProductsData()
+        .then(([products, stock, offers]) => {
+            const enriched = products.map(p => {
+                const offerItem = offers.find(
+                    offer => offer.productId === p.id
+                );
 
-    .then(responses => {
-        responses.forEach(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
+                const stockCount = stock.items[p.id] || 0;
+
+                return {
+                    ...p,
+                    stock: stockCount,
+                    off: offerItem ? offerItem.percent : undefined,
+                    oldPrice: offerItem ?
+                        Math.round(p.price / (1 - offerItem.percent / 100)) : undefined,
+                };
+            });
+
+            const offerList = offers.map(
+                offer => offer.productId
+            );
+
+            const filteredProducts = enriched.filter(
+                product => offerList.includes(product.id)
+            );
+
+            const cards = filteredProducts.map(makeCard);
+
+            productsTrackLatest.textContent = '';
+
+            cards.forEach(card => {
+                productsTrackLatest.append(card);
+            });
+        })
+        .catch(error => {
+            showError(
+                productsTrackLatest,
+                'اتصال اینترنت برقرار نیست.'
+            );
         });
-
-        return Promise.all(responses.map(response => response.json()));
-    })
-
-    .then(([products, stock, offers]) => {
-        const offerList = offers.map(offer => offer.productId);
-
-        const enriched = products.map(p => {
-            const offerItem = offers.find(offer => offer.productId === p.id);
-            const stockCount = stock.items[p.id] || 0;
-
-            return {
-                ...p,
-                stock: stockCount,
-                off: offerItem ? offerItem.percent : undefined,
-                oldPrice: offerItem ?
-                    Math.round(p.price / (1 - offerItem.percent / 100)) : undefined,
-            };
-        });
-
-        const filteredProducts = enriched.filter(
-            product => offerList.includes(product.id)
-        );
-
-        const cards = filteredProducts.map(makeCard);
-
-        productsTrackLatest.textContent = '';
-        cards.forEach((card) => productsTrackLatest.append(card));
-    })
-
-    .catch((error) => {
-        console.error(error);
-        showError(productsTrackLatest, 'اتصال اینترنت برقرار نیست.');
-    });
 };
 
 
@@ -392,34 +402,38 @@ const getndShowFooterInfos = async() => {
 };
 
 
-// const saveToLocalStorage = (count) => {
-//     localStorage.setItem("basket", JSON.stringify(count));
-// };
-// const getCountBasketFromLocalStorage = () => {
-//     return Number(localStorage.getItem("basket")) || 0;
-// };
-
-// document.addEventListener("click", (e) => {
-//     const btn = e.target.closest(".act-btn.act-cart");
-//     if (btn.disabled) return;
-
-//     let count = getCountBasketFromLocalStorage();
-
-//     count += 1;
-
-
-//     saveToLocalStorage(count);
-// });
-
-
-
-
 getAndShowProducts(".products-track-off", 2);
 getAndShowProducts(".product-fruit", 1);
+
+
+const updateBadge = () => {
+    const badge = document.querySelectorAll(".bage-basket");
+    const count = getCountBasketFromLocalStorage();
+    badge.forEach((bageContent) => {
+        bageContent.textContent = count.toLocaleString("fa-IR");
+    })
+};
+
+const initAddToCart = () => {
+    updateBadge()
+    document.addEventListener("click", (e) => {
+        e.preventDefault();
+        const btn = e.target.closest(".act-btn.act-cart");
+        if (!btn) return;
+        if (btn.disabled) return;
+
+        let count = getCountBasketFromLocalStorage();
+        count += 1;
+        saveToLocalStorage(count);
+
+        updateBadge()
+    });
+}
 
 export {
     getAndShowAllProducts,
     getAndShowHeroBanner,
     getndShowFooterInfos,
-    updateSearchPlaceholders
+    updateSearchPlaceholders,
+    initAddToCart
 };
