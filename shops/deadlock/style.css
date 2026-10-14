@@ -1193,3 +1193,12 @@ summary:focus-visible {
         scroll-behavior: auto !important;
     }
 }
+.out-of-stock{
+    opacity: 50%;
+    filter: grayscale(0.3)
+}
+.stock-label{
+    color: #9f291c;
+    font-weight: bold;
+    cursor: not-allowed;
+}
