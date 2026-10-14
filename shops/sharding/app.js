@@ -4,6 +4,7 @@ const API = {
   offers: './api/offers.json',
   shop: './api/shop.json',
   categories: './api/categories.json',
+  home: './api/home.json',
 };
 
 const MIN_SKELETON_MS = 300;
@@ -15,12 +16,122 @@ const percentFmt = new Intl.NumberFormat('fa-IR', {
   maximumFractionDigits: 0,
 });
 
+function getShopSlug() {
+  const parts = location.pathname.split('/').filter(Boolean);
+  const i = parts.indexOf('shops');
+  return i !== -1 && parts[i + 1] ? parts[i + 1] : 'default';
+}
+
+const CART_KEY = `shop:${getShopSlug()}:v1:cart`;
+
+function readCart() {
+  try {
+    const raw = localStorage.getItem(CART_KEY);
+    if (!raw) return {};
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== 'object' || Array.isArray(data)) return {};
+    const out = {};
+    for (const [id, qty] of Object.entries(data)) {
+      const n = Number(qty);
+      if (Number.isFinite(n) && n > 0) out[String(id)] = Math.floor(n);
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function writeCart(cart) {
+  try {
+    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  } catch {}
+}
+
+function cartTotal(cart) {
+  return Object.values(cart).reduce((sum, n) => sum + n, 0);
+}
+
+function getCartQty(productId) {
+  return readCart()[String(productId)] || 0;
+}
+
+function setCartQty(productId, qty) {
+  const cart = readCart();
+  const id = String(productId);
+  const n = Math.max(0, Math.floor(Number(qty) || 0));
+  if (n <= 0) delete cart[id];
+  else cart[id] = n;
+  writeCart(cart);
+  updateCartUI(cartTotal(cart));
+  return n;
+}
+
+function updateCartUI(total) {
+  const badge = document.getElementById('cart-badge');
+  const status = document.getElementById('cart-status');
+  if (badge) {
+    badge.textContent = priceFmt.format(total);
+    badge.hidden = total === 0;
+  }
+  if (status) {
+    status.textContent =
+      total === 0
+        ? 'سبد خرید خالی است'
+        : `${priceFmt.format(total)} کالا در سبد خرید`;
+  }
+}
+
 function makeEmoji(emoji) {
   const span = document.createElement('span');
   span.className = 'product__emoji';
   span.textContent = emoji || '🛒';
   span.setAttribute('aria-hidden', 'true');
   return span;
+}
+
+
+function renderCardActions(container, qty) {
+  container.replaceChildren();
+  const name = container.dataset.productName || 'محصول';
+  const id = container.dataset.productId;
+
+  if (qty <= 0) {
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'product__add';
+    addBtn.dataset.action = 'inc';
+    addBtn.setAttribute('aria-label', `افزودن ${name} به سبد خرید`);
+    const tpl = document.getElementById('tpl-icon-plus');
+    if (tpl) addBtn.appendChild(tpl.content.cloneNode(true));
+    container.appendChild(addBtn);
+    return;
+  }
+
+  const stepper = document.createElement('div');
+  stepper.className = 'product__qty';
+
+  const dec = document.createElement('button');
+  dec.type = 'button';
+  dec.className = 'product__qty-btn';
+  dec.dataset.action = 'dec';
+  dec.setAttribute('aria-label', `کم کردن ${name}`);
+  dec.textContent = '−';
+
+  const val = document.createElement('span');
+  val.className = 'product__qty-val';
+  val.textContent = priceFmt.format(qty);
+  val.setAttribute('aria-live', 'polite');
+  val.setAttribute('aria-label', `تعداد ${name}: ${priceFmt.format(qty)}`);
+
+  const inc = document.createElement('button');
+  inc.type = 'button';
+  inc.className = 'product__qty-btn';
+  inc.dataset.action = 'inc';
+  inc.setAttribute('aria-label', `افزودن ${name}`);
+  inc.textContent = '+';
+
+  stepper.append(dec, val, inc);
+  container.appendChild(stepper);
 }
 
 function createCard(product, { offer, stock }) {
@@ -105,19 +216,25 @@ function createCard(product, { offer, stock }) {
     price.appendChild(old);
   }
 
-  const addBtn = document.createElement('button');
-  addBtn.type = 'button';
-  addBtn.className = 'product__add';
-  addBtn.disabled = outOfStock;
-  addBtn.setAttribute(
-    'aria-label',
-    outOfStock ? `${product.name} ناموجود است` : `افزودن ${product.name} به سبد خرید`
-  );
+  const actions = document.createElement('div');
+  actions.className = 'product__actions';
+  actions.dataset.productId = String(product.id);
+  actions.dataset.productName = product.name;
 
-  const tpl = document.getElementById('tpl-icon-plus');
-  if (tpl) addBtn.appendChild(tpl.content.cloneNode(true));
+  if (outOfStock) {
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'product__add';
+    addBtn.disabled = true;
+    addBtn.setAttribute('aria-label', `${product.name} ناموجود است`);
+    const tpl = document.getElementById('tpl-icon-plus');
+    if (tpl) addBtn.appendChild(tpl.content.cloneNode(true));
+    actions.appendChild(addBtn);
+  } else {
+    renderCardActions(actions, getCartQty(product.id));
+  }
 
-  footer.append(price, addBtn);
+  footer.append(price, actions);
   article.append(body, footer);
   li.appendChild(article);
   return li;
@@ -133,7 +250,7 @@ function showError(sectionId, message) {
   status.textContent = message;
 }
 
-function renderSection(sectionId, list, offerMap, stockMap) {
+function fillSectionGrid(sectionId, list, offerMap, stockMap) {
   const grid = document.getElementById(`${sectionId}-grid`);
   const status = document.getElementById(`${sectionId}-status`);
   if (!grid || !status) return;
@@ -148,6 +265,7 @@ function renderSection(sectionId, list, offerMap, stockMap) {
   grid.hidden = false;
   grid.replaceChildren();
 
+  const frag = document.createDocumentFragment();
   list.forEach((product, i) => {
     const card = createCard(product, {
       offer: offerMap.get(product.id) || null,
@@ -155,8 +273,9 @@ function renderSection(sectionId, list, offerMap, stockMap) {
     });
     if (i === 0) card.id = `${sectionId}-start`;
     if (i === list.length - 1) card.id = `${sectionId}-end`;
-    grid.appendChild(card);
+    frag.appendChild(card);
   });
+  grid.appendChild(frag);
 }
 
 function renderSimpleLinks(el, links) {
@@ -199,6 +318,7 @@ function renderNavList(el, links) {
 
 function renderMegaMenu(items) {
   const ul = document.getElementById('dept-menu');
+  if (!ul) return;
   ul.replaceChildren();
 
   for (const item of items) {
@@ -288,13 +408,19 @@ function renderTopbar(shop) {
   renderSimpleLinks(links, shop.topbarLinks);
 }
 
-function renderHeader(shop) {
+function renderHeader(shop, productCount) {
   const brand = document.getElementById('header-brand');
   brand.setAttribute('aria-label', `${shop.name} — صفحه اصلی`);
   document.getElementById('brand-name').textContent = shop.name;
   document.getElementById('brand-tagline').textContent = shop.slogan;
 
-  document.getElementById('search-input').placeholder = shop.searchPlaceholder;
+  const search = document.getElementById('search-input');
+  if (typeof productCount === 'number' && productCount > 0) {
+    search.placeholder = `جستجو در میان ${priceFmt.format(productCount)} کالا…`;
+  } else {
+    search.placeholder = shop.searchPlaceholder || 'جستجوی محصول، برند یا دسته‌بندی…';
+  }
+
   document.getElementById('label-location').textContent = shop.labels.location;
   document.getElementById('label-account').textContent = shop.labels.account;
   document.getElementById('label-cart').textContent = shop.labels.cart;
@@ -313,53 +439,7 @@ function renderNavMenus(shop) {
   mobileList.removeAttribute('aria-busy');
   renderListLinks(mobileList, shop.menu);
 
-  renderMegaMenu(shop.deptMenu);
-}
-
-function renderHero(shop) {
-  document.getElementById('hero-title').textContent = shop.hero.title;
-  document.getElementById('hero-desc').textContent = shop.hero.desc;
-  const cta = document.getElementById('hero-cta');
-  cta.href = shop.hero.ctaHref;
-  cta.removeAttribute('aria-hidden');
-  cta.removeAttribute('tabindex');
-  document.getElementById('hero-cta-label').textContent = shop.hero.cta;
-
-  const heroVideo = document.getElementById('hero-video');
-  if (heroVideo) heroVideo.classList.remove('hero-video--skeleton');
-
-  const t = shop.sectionTitles;
-  const weekly = document.getElementById('weekly-title');
-  weekly.textContent = t.weekly;
-  weekly.classList.remove('hero-carousel__title--skeleton');
-
-  document.getElementById('offers-title').textContent = t.offers;
-  document.getElementById('offers-sub').textContent = t.offersSub;
-  document.getElementById('categories-title').textContent = t.categories;
-  document.getElementById('fruits-title').textContent = t.fruits;
-  document.getElementById('dairy-title').textContent = t.dairy;
-}
-
-function setupHeroBannerSkeletons(startedAt) {
-  const ready = () => waitMinSkeleton(startedAt || performance.now());
-
-  document.querySelectorAll('[data-hero-banner]').forEach((img) => {
-    const slide = img.closest('.hero-carousel__slide');
-    if (!slide) return;
-
-    const clear = async () => {
-      await ready();
-      slide.classList.remove('hero-carousel__slide--skeleton');
-    };
-
-    if (img.complete && img.naturalWidth > 0) {
-      clear();
-      return;
-    }
-
-    img.addEventListener('load', clear, { once: true });
-    img.addEventListener('error', clear, { once: true });
-  });
+  renderMegaMenu(shop.deptMenu || []);
 }
 
 function renderContactList(shop) {
@@ -435,14 +515,14 @@ function renderCategories(items) {
     const a = document.createElement('a');
     a.className = 'category';
 
-    const target = document.getElementById(cat.slug);
-    a.href = target ? `#${cat.slug}` : '#offers';
+    a.href = `#${cat.slug}`;
 
     if (i === 0) a.id = 'cat-start';
     if (i === items.length - 1) a.id = 'cat-end';
 
     const imgWrap = document.createElement('span');
     imgWrap.className = 'category__img';
+    if (cat.color) imgWrap.style.backgroundColor = cat.color;
 
     if (cat.image) {
       const img = document.createElement('img');
@@ -471,6 +551,229 @@ function renderCategories(items) {
   });
 }
 
+function renderHero(home) {
+  const hero = home.hero || {};
+  document.getElementById('hero-title').textContent = hero.title || '';
+  document.getElementById('hero-desc').textContent = hero.desc || hero.text || '';
+  const cta = document.getElementById('hero-cta');
+  cta.href = hero.ctaHref || (hero.cta && hero.cta.href) || '#fruits';
+  cta.removeAttribute('aria-hidden');
+  cta.removeAttribute('tabindex');
+  document.getElementById('hero-cta-label').textContent =
+    hero.ctaLabel || (typeof hero.cta === 'string' ? hero.cta : hero.cta && hero.cta.label) || '';
+
+  document.getElementById('hero-video')?.classList.remove('hero-video--skeleton');
+
+  const weekly = document.getElementById('weekly-title');
+  if (weekly) {
+    weekly.textContent = home.weeklyTitle || '';
+    weekly.classList.remove('hero-carousel__title--skeleton');
+  }
+
+  const catTitle = document.getElementById('categories-title');
+  if (catTitle && home.categoriesTitle) {
+    catTitle.textContent = home.categoriesTitle;
+  }
+}
+
+function renderBanners(banners) {
+  const track = document.getElementById('banner-track');
+  if (!track || !Array.isArray(banners) || banners.length === 0) return;
+
+  track.removeAttribute('aria-busy');
+  track.replaceChildren();
+
+  banners.forEach((b, i) => {
+    const li = document.createElement('li');
+    li.className = 'hero-carousel__slide' + (i === 0 ? ' is-active' : '');
+    if (i === 0) li.id = 'banner-start';
+    if (i === banners.length - 1) li.id = 'banner-end';
+
+    const a = document.createElement('a');
+    a.className = 'hero-banner';
+    a.href = b.href || '#';
+
+    const img = document.createElement('img');
+    img.src = b.image;
+    img.alt = b.alt || '';
+    img.width = 800;
+    img.height = 500;
+    img.decoding = 'async';
+    if (i === 0) img.fetchPriority = 'high';
+    else img.loading = 'lazy';
+
+    a.appendChild(img);
+    li.appendChild(a);
+    track.appendChild(li);
+  });
+}
+
+function skeletonCards(count) {
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < count; i++) {
+    const li = document.createElement('li');
+    li.className = 'products__item';
+    const article = document.createElement('article');
+    article.className = 'product product--skeleton';
+    article.setAttribute('aria-hidden', 'true');
+    article.innerHTML =
+      '<div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div>' +
+      '<div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div>';
+    li.appendChild(article);
+    frag.appendChild(li);
+  }
+  return frag;
+}
+
+function buildCarouselSection(cfg) {
+  const isOffers = cfg.source === 'offers' || cfg.variant === 'offers';
+  const section = document.createElement('section');
+  section.className = isOffers ? 'products products--offers' : 'products';
+  section.id = cfg.id;
+  section.setAttribute('aria-labelledby', `${cfg.id}-title`);
+
+  const container = document.createElement('div');
+  container.className = 'container';
+
+  const inner = document.createElement('div');
+  inner.className = 'products__inner';
+
+  const main = document.createElement('div');
+  main.className = 'products__main';
+
+  const head = document.createElement('div');
+  head.className = 'products__head';
+
+  if (isOffers && cfg.sub) {
+    const heading = document.createElement('div');
+    heading.className = 'offers__heading';
+    const h2 = document.createElement('h2');
+    h2.id = `${cfg.id}-title`;
+    h2.className = 'products__title';
+    h2.textContent = cfg.title;
+    const sub = document.createElement('p');
+    sub.className = 'offers__sub';
+    sub.id = `${cfg.id}-sub`;
+    sub.textContent = cfg.sub;
+    heading.append(h2, sub);
+    head.appendChild(heading);
+  } else {
+    const h2 = document.createElement('h2');
+    h2.id = `${cfg.id}-title`;
+    h2.className = 'products__title';
+    h2.textContent = cfg.title;
+    head.appendChild(h2);
+  }
+
+  const nav = document.createElement('nav');
+  nav.className = 'carousel-nav';
+  nav.setAttribute('aria-label', `ناوبری کاروسل ${cfg.title}`);
+
+  const btnStart = document.createElement('a');
+  btnStart.href = `#${cfg.id}-start`;
+  btnStart.className = 'carousel-nav__btn carousel-nav__btn--start';
+  btnStart.setAttribute('aria-label', `رفتن به ابتدای ${cfg.title}`);
+  btnStart.innerHTML =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>';
+
+  const btnEnd = document.createElement('a');
+  btnEnd.href = `#${cfg.id}-end`;
+  btnEnd.className = 'carousel-nav__btn carousel-nav__btn--end';
+  btnEnd.setAttribute('aria-label', `رفتن به انتهای ${cfg.title}`);
+  btnEnd.innerHTML =
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>';
+
+  nav.append(btnStart, btnEnd);
+  head.appendChild(nav);
+
+  const status = document.createElement('div');
+  status.className = 'products__status';
+  status.id = `${cfg.id}-status`;
+  status.setAttribute('role', 'status');
+  status.setAttribute('aria-live', 'polite');
+  status.hidden = true;
+
+  const grid = document.createElement('ul');
+  grid.className = 'products__grid';
+  grid.id = `${cfg.id}-grid`;
+  grid.tabIndex = 0;
+  grid.setAttribute('aria-label', cfg.title);
+  grid.appendChild(skeletonCards(7));
+
+  main.append(head, status, grid);
+  inner.appendChild(main);
+  container.appendChild(inner);
+  section.appendChild(container);
+  return section;
+}
+
+function productsForCarousel(cfg, products, offerMap) {
+  if (cfg.source === 'offers') {
+    return [...offerMap.keys()]
+      .map((id) => {
+        const p = products.find((x) => x.id === id);
+        return p;
+      })
+      .filter(Boolean)
+      .sort((a, b) => {
+        const pa = offerMap.get(a.id)?.percent || 0;
+        const pb = offerMap.get(b.id)?.percent || 0;
+        return pb - pa;
+      });
+  }
+  if (cfg.categoryId != null) {
+    return products.filter((p) => p.categoryId === cfg.categoryId);
+  }
+  return [];
+}
+
+function renderCarousels(home, products, stockData, offers) {
+  const root = document.getElementById('carousels-root');
+  if (!root) return;
+
+  const stockMap = new Map();
+  const items = (stockData && stockData.items) || {};
+  for (const product of products) {
+    const qty = items[product.id];
+    stockMap.set(product.id, typeof qty === 'number' ? qty : 0);
+  }
+
+  const offerMap = new Map((offers || []).map((o) => [o.productId, o]));
+  const list = Array.isArray(home.carousels) ? home.carousels : [];
+
+  // Keep HTML skeleton sections until we fill them.
+  // Only append brand-new carousels that are not already in the DOM.
+  for (const cfg of list) {
+    let section = document.getElementById(cfg.id);
+    if (!section) {
+      section = buildCarouselSection(cfg);
+      root.appendChild(section);
+    } else {
+      const titleEl = document.getElementById(`${cfg.id}-title`);
+      if (titleEl && cfg.title) titleEl.textContent = cfg.title;
+      const subEl = document.getElementById(`${cfg.id}-sub`);
+      if (subEl && cfg.sub) subEl.textContent = cfg.sub;
+    }
+
+    const productList = productsForCarousel(cfg, products, offerMap);
+    fillSectionGrid(cfg.id, productList, offerMap, stockMap);
+
+    const grid = document.getElementById(`${cfg.id}-grid`);
+    if (grid) grid.removeAttribute('aria-busy');
+  }
+}
+
+function renderShell(shop, categories, home, productCount) {
+  renderTopbar(shop);
+  renderHeader(shop, productCount);
+  renderNavMenus(shop);
+  renderHero(home);
+  renderBanners(home.banners || []);
+  renderFooter(shop);
+  renderCategories(categories);
+  document.title = `${shop.name} | ${shop.slogan}`;
+}
+
 async function fetchJson(url) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -494,86 +797,77 @@ function clearShellSkeletons() {
   document.getElementById('weekly-title')?.classList.remove('hero-carousel__title--skeleton');
 }
 
-function buildStockMap(products, stockData) {
-  const stockMap = new Map();
-  const items = stockData.items || {};
-  for (const product of products) {
-    const qty = items[product.id];
-    stockMap.set(product.id, typeof qty === 'number' ? qty : 0);
-  }
-  return stockMap;
-}
+function setupCart() {
+  updateCartUI(cartTotal(readCart()));
 
-function renderProductSections(products, stockData, offers) {
-  const stockMap = buildStockMap(products, stockData);
-  const offerMap = new Map(offers.map((o) => [o.productId, o]));
-  const byId = new Map(products.map((p) => [p.id, p]));
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action="inc"], [data-action="dec"]');
+    if (!btn || btn.disabled) return;
 
-  const offerProducts = [...offers]
-    .sort((a, b) => b.percent - a.percent)
-    .map((o) => byId.get(o.productId))
-    .filter(Boolean);
+    const actions = btn.closest('.product__actions');
+    if (!actions) return;
 
-  renderSection('offers', offerProducts, offerMap, stockMap);
-  renderSection('fruits', products.filter((p) => p.categoryId === 1), offerMap, stockMap);
-  renderSection('dairy', products.filter((p) => p.categoryId === 2), offerMap, stockMap);
-}
+    const id = actions.dataset.productId;
+    if (!id) return;
 
-function renderShell(shop, categories) {
-  renderTopbar(shop);
-  renderHeader(shop);
-  renderNavMenus(shop);
-  renderHero(shop);
-  renderFooter(shop);
-  renderCategories(categories);
-  document.title = `${shop.name} | ${shop.slogan}`;
+    e.preventDefault();
+    const current = getCartQty(id);
+    const next = btn.dataset.action === 'inc' ? current + 1 : current - 1;
+    const qty = setCartQty(id, next);
+    renderCardActions(actions, qty);
+
+    // brief feedback on the card
+    const card = actions.closest('.product');
+    if (card) {
+      card.classList.remove('product--cart-pulse');
+      // reflow to restart animation
+      void card.offsetWidth;
+      card.classList.add('product--cart-pulse');
+    }
+  });
 }
 
 async function init() {
   document.querySelector('.search')?.addEventListener('submit', (e) => e.preventDefault());
-  const startedAt = performance.now();
-  setupHeroBannerSkeletons(startedAt);
+  setupCart();
 
-  // One pipeline: fetch everything in parallel, one min skeleton, one paint.
-  const shellPromise = Promise.all([
+  const startedAt = performance.now();
+
+  const allPromise = Promise.all([
     fetchJson(API.shop),
     fetchJson(API.categories),
-  ]).then(([shop, categories]) => ({ shop, categories }));
-
-  const catalogPromise = Promise.all([
+    fetchJson(API.home),
     fetchJson(API.products),
     fetchJson(API.stock),
     fetchJson(API.offers).catch((err) => {
       console.warn('[shop] offers unavailable:', err);
       return [];
     }),
-  ]).then(([products, stockData, offers]) => ({ products, stockData, offers }));
-
-  const [shellSettled, catalogSettled] = await Promise.all([
-    shellPromise.then((data) => ({ ok: true, data })).catch((err) => ({ ok: false, err })),
-    catalogPromise.then((data) => ({ ok: true, data })).catch((err) => ({ ok: false, err })),
   ]);
 
-  await waitMinSkeleton(startedAt);
+  try {
+    const [shop, categories, home, products, stockData, offers] = await allPromise;
+    await waitMinSkeleton(startedAt);
 
-  if (shellSettled.ok) {
-    renderShell(shellSettled.data.shop, shellSettled.data.categories);
-  } else {
-    console.error('[shop] shell data failed:', shellSettled.err);
+    renderCarousels(home, products, stockData, offers);
+    renderShell(shop, categories, home, products.length);
+  } catch (err) {
+    console.error('[shop] data failed:', err);
+    await waitMinSkeleton(startedAt);
     clearShellSkeletons();
-  }
 
-  if (catalogSettled.ok) {
-    const { products, stockData, offers } = catalogSettled.data;
-    renderProductSections(products, stockData, offers);
-  } else {
-    console.error('[shop] product data failed:', catalogSettled.err);
-    const err = catalogSettled.err;
     const message =
-      err && err.name === 'AbortError'
+      err.name === 'AbortError'
         ? 'زمان انتظار برای دریافت داده به پایان رسید. لطفاً دوباره تلاش کنید.'
-        : 'محصولات در دسترس نیست. لطفاً اتصال اینترنت را بررسی کنید.';
-    ['offers', 'fruits', 'dairy'].forEach((id) => showError(id, message));
+        : 'داده‌ها در دسترس نیست. لطفاً اتصال اینترنت را بررسی کنید.';
+
+    const root = document.getElementById('carousels-root');
+    if (root && !root.children.length) {
+      const p = document.createElement('p');
+      p.className = 'products__status products__status--error';
+      p.textContent = message;
+      root.appendChild(p);
+    }
   }
 }
 

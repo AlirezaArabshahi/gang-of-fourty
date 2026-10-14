@@ -1,0 +1,56 @@
+{
+  "hero": {
+    "title": "میوه تازه، فردا صبح دم خونه",
+    "desc": "سفارش تا نیمه‌شب ثبت کن، فردا صبح تحویل بگیر",
+    "cta": "شروع خرید",
+    "ctaHref": "#fruits"
+  },
+  "weeklyTitle": "پیشنهادهای ویژه هفته",
+  "categoriesTitle": "خرید از دسته‌بندی‌ها",
+  "banners": [
+    {
+      "image": "assets/banner-1.webp",
+      "alt": "میوه‌های فصل با ۳۰٪ تخفیف",
+      "href": "#fruits"
+    },
+    {
+      "image": "assets/banner-2.webp",
+      "alt": "لبنیات و تخم‌مرغ",
+      "href": "#dairy"
+    },
+    {
+      "image": "assets/banner-3.webp",
+      "alt": "خواروبار با تخفیف ویژه",
+      "href": "#offers"
+    },
+    {
+      "image": "assets/banner-4.webp",
+      "alt": "نوشیدنی‌های خنک",
+      "href": "#offers"
+    },
+    {
+      "image": "assets/banner-5.webp",
+      "alt": "پیشنهاد ویژه هفته",
+      "href": "#offers"
+    }
+  ],
+  "carousels": [
+    {
+      "id": "offers",
+      "title": "پیشنهادهای ویژه امروز",
+      "sub": "تا پایان امشب، تا ۳۰٪ تخفیف",
+      "source": "offers",
+      "variant": "offers"
+    },
+    {
+      "id": "fruits",
+      "title": "میوه و سبزیجات",
+      "categoryId": 1
+    },
+    {
+      "id": "dairy",
+      "title": "لبنیات و تخم‌مرغ",
+      "categoryId": 2
+    }
+  ]
+}

@@ -23,6 +23,7 @@
 
   <link rel="preload" href="api/shop.json" as="fetch" crossorigin>
   <link rel="preload" href="api/categories.json" as="fetch" crossorigin>
+  <link rel="preload" href="api/home.json" as="fetch" crossorigin>
 
   <link rel="preload" href="assets/fonts/Vazirmatn-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Vazirmatn-Bold.woff2" as="font" type="font/woff2" crossorigin>
@@ -169,7 +170,7 @@
             <path d="M7 18a2 2 0 1 0 2 2 2 2 0 0 0-2-2zM1 2v2h2l3.6 7.59-1.35 2.45A1.96 1.96 0 0 0 5 15a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12.9-1.63h7.45a2 2 0 0 0 1.75-1.03l3.58-6.49A1 1 0 0 0 19.88 4H5.21l-.94-2H1zm16 16a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/>
           </svg>
           <span class="action__label" id="label-cart">سبد خرید</span>
-          <span class="badge" aria-hidden="true">۰</span>
+          <span class="badge" id="cart-badge" aria-hidden="true">۰</span>
         </a>
         <span class="visually-hidden" id="cart-status">سبد خرید خالی است</span>
       </div>
@@ -330,36 +331,21 @@
           </nav>
         </div>
 
-        <ul class="hero-carousel__track" tabindex="0" aria-label="کاروسل پیشنهادهای ویژه">
-          <li class="hero-carousel__slide hero-carousel__slide--skeleton is-active" id="banner-start">
-            <a href="#fruits" class="hero-banner">
-              <img src="assets/banner-1.webp"
-                  alt="میوه‌های فصل با ۳۰٪ تخفیف"
-                  width="800" height="500"
-                  fetchpriority="high"
-                  decoding="async"
-                  data-hero-banner>
-            </a>
+        <ul class="hero-carousel__track" id="banner-track" tabindex="0" aria-label="کاروسل پیشنهادهای ویژه" aria-busy="true">
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton is-active" id="banner-start" aria-hidden="true">
+            <span class="hero-banner"></span>
           </li>
-          <li class="hero-carousel__slide hero-carousel__slide--skeleton">
-            <a href="#dairy" class="hero-banner">
-              <img src="assets/banner-2.webp" alt="لبنیات و تخم‌مرغ" loading="lazy" decoding="async" width="800" height="500" data-hero-banner>
-            </a>
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton" aria-hidden="true">
+            <span class="hero-banner"></span>
           </li>
-          <li class="hero-carousel__slide hero-carousel__slide--skeleton">
-            <a href="#offers" class="hero-banner">
-              <img src="assets/banner-3.webp" alt="خواروبار با تخفیف ویژه" loading="lazy" decoding="async" width="800" height="500" data-hero-banner>
-            </a>
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton" aria-hidden="true">
+            <span class="hero-banner"></span>
           </li>
-          <li class="hero-carousel__slide hero-carousel__slide--skeleton">
-            <a href="#offers" class="hero-banner">
-              <img src="assets/banner-4.webp" alt="نوشیدنی‌های خنک" loading="lazy" decoding="async" width="800" height="500" data-hero-banner>
-            </a>
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton" aria-hidden="true">
+            <span class="hero-banner"></span>
           </li>
-          <li class="hero-carousel__slide hero-carousel__slide--skeleton" id="banner-end">
-            <a href="#offers" class="hero-banner">
-              <img src="assets/banner-5.webp" alt="پیشنهاد ویژه هفته" loading="lazy" decoding="async" width="800" height="500" data-hero-banner>
-            </a>
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton" id="banner-end" aria-hidden="true">
+            <span class="hero-banner"></span>
           </li>
         </ul>
       </div>
@@ -368,44 +354,6 @@
   </section>
 
   <main id="main-content" tabindex="-1">
-    <section class="products products--offers" id="offers" aria-labelledby="offers-title">
-      <div class="container">
-        <div class="products__inner">
-          <div class="products__main">
-
-            <div class="products__head">
-              <div class="offers__heading">
-                <h2 id="offers-title" class="products__title">پیشنهادهای ویژه امروز</h2>
-                <p class="offers__sub" id="offers-sub">تا پایان امشب، تا ۳۰٪ تخفیف</p>
-              </div>
-
-              <nav class="carousel-nav" aria-label="ناوبری کاروسل پیشنهاد ویژه">
-                <a href="#offers-start" class="carousel-nav__btn carousel-nav__btn--start" aria-label="رفتن به ابتدای پیشنهاد ویژه">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
-                </a>
-                <a href="#offers-end" class="carousel-nav__btn carousel-nav__btn--end" aria-label="رفتن به انتهای پیشنهاد ویژه">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
-                </a>
-              </nav>
-            </div>
-
-            <div class="products__status" id="offers-status" role="status" aria-live="polite" hidden></div>
-
-            <ul class="products__grid" id="offers-grid" tabindex="0" aria-label="پیشنهادهای ویژه امروز">
-              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
-              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
-              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
-              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
-              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
-              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
-              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
-            </ul>
-
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section class="categories" aria-labelledby="categories-title">
       <div class="container">
         <div class="categories__head">
@@ -435,11 +383,45 @@
       </div>
     </section>
 
+        <div id="carousels-root">
+
+    <section class="products products--offers" id="offers" aria-labelledby="offers-title">
+      <div class="container">
+        <div class="products__inner">
+          <div class="products__main">
+            <div class="products__head">
+              <div class="offers__heading">
+                <h2 id="offers-title" class="products__title">پیشنهادهای ویژه امروز</h2>
+                <p class="offers__sub" id="offers-sub">—</p>
+              </div>
+              <nav class="carousel-nav" aria-label="ناوبری کاروسل پیشنهاد ویژه">
+                <a href="#offers-start" class="carousel-nav__btn carousel-nav__btn--start" aria-label="رفتن به ابتدای پیشنهاد ویژه">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                </a>
+                <a href="#offers-end" class="carousel-nav__btn carousel-nav__btn--end" aria-label="رفتن به انتهای پیشنهاد ویژه">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                </a>
+              </nav>
+            </div>
+            <div class="products__status" id="offers-status" role="status" aria-live="polite" hidden></div>
+            <ul class="products__grid" id="offers-grid" tabindex="0" aria-label="پیشنهادهای ویژه امروز" aria-busy="true">
+              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
+              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
+              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
+              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
+              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
+              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
+              <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="products" id="fruits" aria-labelledby="fruits-title">
       <div class="container">
         <div class="products__inner">
           <div class="products__main">
-
             <div class="products__head">
               <h2 id="fruits-title" class="products__title">میوه و سبزیجات</h2>
               <nav class="carousel-nav" aria-label="ناوبری کاروسل میوه">
@@ -451,10 +433,8 @@
                 </a>
               </nav>
             </div>
-
             <div class="products__status" id="fruits-status" role="status" aria-live="polite" hidden></div>
-
-            <ul class="products__grid" id="fruits-grid" tabindex="0" aria-label="محصولات میوه و سبزیجات">
+            <ul class="products__grid" id="fruits-grid" tabindex="0" aria-label="محصولات میوه و سبزیجات" aria-busy="true">
               <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
               <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
               <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
@@ -472,7 +452,6 @@
       <div class="container">
         <div class="products__inner">
           <div class="products__main">
-
             <div class="products__head">
               <h2 id="dairy-title" class="products__title">لبنیات و تخم‌مرغ</h2>
               <nav class="carousel-nav" aria-label="ناوبری کاروسل لبنیات">
@@ -484,10 +463,8 @@
                 </a>
               </nav>
             </div>
-
             <div class="products__status" id="dairy-status" role="status" aria-live="polite" hidden></div>
-
-            <ul class="products__grid" id="dairy-grid" tabindex="0" aria-label="محصولات لبنیات و تخم‌مرغ">
+            <ul class="products__grid" id="dairy-grid" tabindex="0" aria-label="محصولات لبنیات و تخم‌مرغ" aria-busy="true">
               <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
               <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
               <li class="products__item"><article class="product product--skeleton" aria-hidden="true"><div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div><div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div></article></li>
@@ -500,7 +477,8 @@
         </div>
       </div>
     </section>
-  </main>
+
+    </div></main>
 
   <footer class="footer">
     <div class="container">
