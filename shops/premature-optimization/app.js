@@ -267,6 +267,7 @@ function renderHomeCarousels(home, products, stock, offersByProductId, categorie
 }
 
 function renderRemainingCategoryCarousels(
+  home,
   categories,
   products,
   stock,
@@ -276,12 +277,30 @@ function renderRemainingCategoryCarousels(
   const container = document.querySelector("#category-product-sections");
   container.replaceChildren();
 
+  const renderedCategoryIds = new Set(configuredCategoryIds);
+
+  (home.carousels || [])
+    .filter((config) => config.id !== "offers" && config.title !== "پیشنهاد ویژه")
+    .forEach((config) => {
+      const categoryId = config.categoryId ?? config.category?.id;
+
+      if (categoryId == null || renderedCategoryIds.has(categoryId)) return;
+
+      container.append(
+        createCarouselSection(
+          config,
+          products,
+          stock,
+          offersByProductId,
+          categories
+        )
+      );
+
+      renderedCategoryIds.add(categoryId);
+    });
+
   categories
-    .filter(
-      (category) =>
-        !configuredCategoryIds.has(category.id) ||
-        category.name === "لبنیات"
-    )
+    .filter((category) => !renderedCategoryIds.has(category.id))
     .forEach((category) => {
       container.append(
         createCarouselSection(
@@ -297,6 +316,8 @@ function renderRemainingCategoryCarousels(
           categories
         )
       );
+
+      renderedCategoryIds.add(category.id);
     });
 }
 
@@ -316,8 +337,23 @@ async function loadPage() {
     renderCategories(categories);
     renderHeroBanners(home);
     renderPromos(home);
-    const configuredCategoryIds = renderHomeCarousels(home, products, stock, offersByProductId, categories);
-    renderRemainingCategoryCarousels(categories, products, stock, offersByProductId, configuredCategoryIds);
+    const configuredCategoryIds = renderHomeCarousels(
+      home,
+      products,
+      stock,
+      offersByProductId,
+      categories
+    );
+
+    renderRemainingCategoryCarousels(
+      home,
+      categories,
+      products,
+      stock,
+      offersByProductId,
+      configuredCategoryIds
+    );
+    
     setupSearch(products);
   } catch (error) {
     document.querySelectorAll(".skeleton-text").forEach((item) => item.classList.remove("skeleton-text"));
