@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>سوپرمارکت بهینه‌سازی زودرس</title>
+  <title>سوپرینو</title>
   <!-- Week 1: put YOUR name here to claim this shop. The landing page shows it. -->
   <meta name="author" content="Eleena">
   <meta name="description" content="به‌زودی: بهترین میوه و سبزی محله!">
@@ -19,18 +19,18 @@
       <svg class="announcement-icon" focusable="false">
         <use href="./svgs/announcement.svg"></use>
       </svg>
-      <p>ارسال رایگان برای خریدهای بالای ۱ میلیون تومان</p>
+      <p id="shop-notice">در حال بارگذاری...</p>
     </article>
 
     <!-- Logo & Title -->
     <section class="header-part">
       <a class="brand brand-link" href="#top">
-        <svg class="logo" role="img">
+        <svg class="logo">
           <use href="./svgs/logo.svg"></use>
         </svg>
         <section class="page-brand">
-          <h1 class="page-title">سوپرینو</h1>
-          <p class="page-description">سوپرمارکتی تازه و نو</p>
+          <h1 class="page-title" id="shop-name">سوپرینو</h1>
+          <p class="page-description" id="shop-slogan">در حال بارگذاری...</p>
         </section>
       </a>
 
@@ -59,7 +59,7 @@
       <span>☰</span>
       <span>منو</span>
     </label>
-    <nav class="navigation" id="main-navigation" >
+    <nav class="navigation" id="main-navigation">
       <div class="menu-categories">
         <span class="menu-categories-span">
           <svg class="menu-categories-icon" focusable="false">
@@ -67,85 +67,9 @@
           </svg>
           همه دسته‌ها
         </span>
-        <div class="hidden-content">
-          <a class="hidden-content-links" href="#dairy">
-            لبنیات
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            تنقلات
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            نوشیدنی
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            خواربار و نان
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            میوه و سبزیجات
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            پروتئین و تخم‌مرغ
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            دستمال و شوینده
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            آرایشی و بهداشتی
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            کنسرو و غذای آماده
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            چاشنی و افزودنی
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            دسر و خشکبار
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-          <a class="hidden-content-links" href="">
-            لوازم برقی
-            <svg class="left-icon" focusable="false">
-              <use href="./svgs/left.svg"></use>
-            </svg>
-          </a>
-        </div>
+        <div class="hidden-content" id="category-menu-links"></div>
       </div>
-      <a class="menu-texts" href="#special">پیشنهاد ویژه</a>
-      <a class="menu-texts" href="#bread">نان تازه</a>
-      <a class="menu-texts" href="#dairy">لبنیات</a>
-      <a class="menu-texts" href="#contact">تماس با ما</a>
+      <div id="shop-menu-links" class="shop-menu-links"></div>
     </nav>
 
   </header>
@@ -194,80 +118,19 @@
       <h2 class="categories-title">
         دسته‌بندی‌ها
       </h2>
-      <section class="categories-section">
-        <a class="categories-box" href="#dairy">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/dairies.svg"></use>
-          </svg>
-          <p class="categories-name">لبنیات</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/snacks.svg"></use>
-          </svg>
-          <p class="categories-name">تنقلات</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/drinks.svg"></use>
-          </svg>
-          <p class="categories-name">نوشیدنی</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/bread.svg"></use>
-          </svg>
-          <p class="categories-name">خواربار و نان</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/fruits.svg"></use>
-          </svg>
-          <p class="categories-name">میوه و سبزیجات</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/eggs.svg"></use>
-          </svg>
-          <p class="categories-name">پروتئین و تخم‌مرغ</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/cleaner.svg"></use>
-          </svg>
-          <p class="categories-name">دستمال و شوینده</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/makeup.svg"></use>
-          </svg>
-          <p class="categories-name">آرایشی و بهداشتی</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/canned.svg"></use>
-          </svg>
-          <p class="categories-name">کنسرو و غذای آماده </p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/sauce.svg"></use>
-          </svg>
-          <p class="categories-name">چاشنی و افزودنی</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/dessert.svg"></use>
-          </svg>
-          <p class="categories-name">دسر و خشکبار</p>
-        </a>
-        <a class="categories-box" href="#categories">
-          <svg class="categories-icon" focusable="false">
-            <use href="./svgs/electronic.svg"></use>
-          </svg>
-          <p class="categories-name">لوازم برقی</p>
-        </a>
-      </section>
+      <section class="categories-section" id="category-cards"></section>
+      <template id="category-product-template">
+        <li class="product-item">
+          <div class="product-icon product-emoji"></div>
+          <p class="item-tag">دسته‌بندی</p>
+          <span class="product-discount" hidden></span>
+          <h3 class="item-title">نام محصول</h3>
+          <p class="item-description">مقدار محصول</p>
+          <p class="item-old-price" hidden></p>
+          <div class="item-buy"><span class="item-price">قیمت محصول</span><button class="buy-button"
+              type="button">+</button></div>
+        </li>
+      </template>
     </section>
 
 
@@ -283,30 +146,26 @@
 
       <div class="dairy-carousel special-carousel">
         <div class="dairy-carousel-viewport" id="special-viewport">
-          <p class="api-status" id="special-status" role="status">در حال بارگذاری پیشنهادها...</p>
-          <ul class="products" id="special-products">
-            <template id="product-card-template">
-              <li class="product-item">
-                <div class="product-icon product-emoji"></div>
-                <p class="item-tag">پیشنهاد ویژه</p>
-                <span class="product-discount" hidden></span>
-                <h3 class="item-title">نام محصول</h3>
-                <p class="item-description"></p>
-                <p class="item-old-price" hidden></p>
-                <div class="item-buy">
-                  <span class="item-price"></span>
-                  <button class="buy-button" type="button">+</button>
-                </div>
-              </li>
-            </template>
-          </ul>
+          <p class="api-status" id="special-status">در حال بارگذاری پیشنهادها...</p>
+          <ul class="products" id="special-products"></ul>
         </div>
-        <div class="dairy-carousel-controls" >
-          <button class="dairy-prev-button" id="special-prev" type="button"
-            disabled>→</button>
+        <div class="dairy-carousel-controls">
+          <button class="dairy-prev-button" id="special-prev" type="button" disabled>→</button>
           <button class="dairy-next-button" id="special-next" type="button">←</button>
         </div>
       </div>
+      <template id="special-product-template">
+        <li class="product-item">
+          <div class="product-icon product-emoji"></div>
+          <p class="item-tag">پیشنهاد ویژه</p>
+          <span class="product-discount" hidden></span>
+          <h3 class="item-title">نام محصول</h3>
+          <p class="item-description">مقدار محصول</p>
+          <p class="item-old-price" hidden></p>
+          <div class="item-buy"><span class="item-price">قیمت محصول</span><button class="buy-button"
+              type="button">+</button></div>
+        </li>
+      </template>
     </section>
 
     <!--Banners-->
@@ -344,28 +203,13 @@
     <section class="recommendation" id="dairy">
 
       <h2 class="recommendation-title">
-        لبنیات
+        🥛 لبنیات
       </h2>
 
       <div class="dairy-carousel">
         <div class="dairy-carousel-viewport">
-          <p class="api-status" id="dairy-status" role="status">در حال بارگذاری محصولات...</p>
-          <ul class="products" id="dairy-products">
-            <template id="product-card-template">
-              <li class="product-item">
-                <div class="product-icon product-emoji"></div>
-                <p class="item-tag">لبنیات</p>
-                <span class="product-discount" hidden></span>
-                <h3 class="item-title">نام محصول</h3>
-                <p class="item-description"></p>
-                <p class="item-old-price" hidden></p>
-                <div class="item-buy">
-                  <span class="item-price"></span>
-                  <button class="buy-button" type="button">+</button>
-                </div>
-              </li>
-            </template>
-          </ul>
+          <p class="api-status" id="dairy-status">در حال بارگذاری محصولات...</p>
+          <ul class="products" id="dairy-products"></ul>
         </div>
 
         <div class="dairy-carousel-controls">
@@ -373,9 +217,21 @@
           <button class="dairy-next-button" id="dairy-next" type="button">←</button>
         </div>
       </div>
+      <template id="dairy-product-template">
+        <li class="product-item">
+          <div class="product-icon product-emoji"></div>
+          <p class="item-tag">لبنیات</p>
+          <span class="product-discount" hidden></span>
+          <h3 class="item-title">نام محصول</h3>
+          <p class="item-description">مقدار محصول</p>
+          <p class="item-old-price" hidden></p>
+          <div class="item-buy"><span class="item-price">قیمت محصول</span><button class="buy-button"
+              type="button">+</button></div>
+        </li>
+      </template>
     </section>
 
-
+    <div id="category-product-sections"></div>
 
   </main>
 
@@ -384,22 +240,20 @@
     <div class="upper">
       <!-- About Us -->
       <section class="about-us">
-        <h4 class="upper-titles">
-          سوپرینو
-        </h4>
+        <h4 class="upper-titles" id="footer-shop-name">سوپرینو</h4>
         <section class="about-details">
-          <p>کالاهای باکیفیت و تازه با قیمتی منصفانه</p>
+          <p id="shop-about">در حال بارگذاری اطلاعات فروشگاه...</p>
           <section class="address">
             <svg class="address-icon" focusable="false">
               <use href="./svgs/address.svg"></use>
             </svg>
-            <address> تهران، خیابان استاد معین، پلاک ۳۸</address>
+            <address id="shop-address">در حال بارگذاری...</address>
           </section>
           <section class="phone-number">
             <svg class="phone-icon" focusable="false">
               <use href="./svgs/phone.svg"></use>
             </svg>
-            <p class="number">۲۱-۶۶۵۶۲۲۱۰+</p>
+            <p class="number" id="shop-phone">در حال بارگذاری...</p>
           </section>
         </section>
       </section>
@@ -409,20 +263,7 @@
         <h4 class="upper-titles">
           دسته‌ها
         </h4>
-        <section class="links-link">
-          <a href="">لبنیات</a>
-          <a href="">تنقلات</a>
-          <a href="">نوشیدنی</a>
-          <a href="">خواربار و نان</a>
-          <a href="">میوه و سبزیجات</a>
-          <a href="">پروتئین و تخم‌مرغ</a>
-          <a href="">دستمال و شوینده</a>
-          <a href="">آرایشی و بهداشتی</a>
-          <a href="">کنسرو و غذای آماده </a>
-          <a href="">چاشنی و افزودنی</a>
-          <a href="">دسر و خشکبار</a>
-          <a href="">لوازم برقی</a>
-        </section>
+        <section class="links-link" id="footer-category-links"></section>
       </section>
 
       <!-- Work Hours -->
@@ -430,10 +271,7 @@
         <h4 class="upper-titles">
           ساعت کاری
         </h4>
-        <section class="hours-details">
-          <p>شنبه تا چهارشنبه: ۸ تا ۲۲</p>
-          <p>پنجشنبه و جمعه: ۱۰ تا ۲۰</p>
-        </section>
+        <section class="hours-details" id="shop-hours"></section>
       </section>
     </div>
 
@@ -441,10 +279,7 @@
     <section class="down">
       <section class="copyright">
         <p>
-          <svg class="copyright-icon" focusable="false">
-            <use href="./svgs/copyright.svg"></use>
-          </svg>
-          ۱۴۰۵ سوپرینو، سوپرمارکتی تازه و نو
+          <span id="shop-copyright">در حال بارگذاری...</span>
         </p>
       </section>
       <section class="back-tp-up">
@@ -457,7 +292,6 @@
       </section>
     </section>
   </footer>
-
   <script src="./app.js" defer></script>
 </body>
 
