@@ -1,6 +1,8 @@
 const PRODUCTS_URL = "../../api/products.json"
 const STOCK_URL = "../../api/stock.json";
 const OFFERS_URL = "../../api/offers.json";
+const CATEGORIES_URL = "../../api/categories.json";
+const SHOP_URL = "../../api/shop.json";
 
 const DAIRY_CATEGORY_ID = 2 
 const priceFormatter = new Intl.NumberFormat("fa-IR")
@@ -243,6 +245,7 @@ async function initcarousels() {
             offers
         );
 
+        return products;
     } catch (error) {
 
         console.error(error)
@@ -265,4 +268,168 @@ async function initcarousels() {
 
 }
 
-initcarousels()
+
+// Level 3: one category dataset supplies all navigation and destinations.
+function createTextElement(tag, text, className) {
+    const element = document.createElement(tag);
+    element.textContent = text;
+    if (className) element.className = className;
+    return element;
+}
+
+function createLink(label, href) {
+    const link = createTextElement("a", label);
+    link.setAttribute("href", href);
+    return link;
+}
+
+function renderCategories(categories, products = []) {
+    const grid = document.querySelector("#category-grid");
+    const sections = document.querySelector("#category-sections");
+    const menus = [
+        document.querySelector("#desktop-categories"),
+        document.querySelector("#mobile-categories"),
+        document.querySelector("#footer-categories")
+    ];
+
+    grid.replaceChildren();
+    sections.replaceChildren();
+    menus.forEach(menu => menu.replaceChildren());
+
+    categories.forEach(category => {
+        const href = `#${category.slug}`;
+        const link = createLink("", href);
+        const icon = createTextElement("span", category.emoji);
+        icon.setAttribute("aria-hidden", "true");
+        icon.style.background = category.color;
+        link.append(icon, createTextElement("strong", category.name));
+        grid.append(link);
+
+        menus.forEach(menu => menu.append(createLink(category.name, href)));
+
+        // Use the API slug as the destination, including newly added categories.
+        const section = document.createElement("article");
+        section.id = category.slug;
+        section.setAttribute("aria-labelledby", `category-${category.id}-title`);
+        const sectionIcon = createTextElement("span", category.emoji);
+        sectionIcon.setAttribute("aria-hidden", "true");
+        sectionIcon.style.background = category.color;
+        const copy = document.createElement("div");
+        const heading = createTextElement("h2", category.name);
+        heading.id = `category-${category.id}-title`;
+        const categoryProducts = products.filter(product => product.categoryId === category.id);
+        copy.append(heading);
+        if (categoryProducts.length) {
+            copy.append(createTextElement("p", categoryProducts.map(product => product.name).join("، ")));
+        }
+        section.append(sectionIcon, copy);
+        if (category.id === DAIRY_CATEGORY_ID) {
+            section.append(createLink("مشاهده محصولات لبنیات", "#dairy-products"));
+        }
+        sections.append(section);
+    });
+}
+
+// The shared shop menu uses #offers; retain this shop's existing carousel ID.
+function shopHref(href) {
+    return href === "#offers" ? "#special-offers" : href;
+}
+
+function renderShop(shop) {
+    document.querySelector("#shop-notice").textContent = shop.notice;
+    document.querySelector("#shop-slogan").textContent = shop.slogan;
+    document.querySelector("#shop-about").textContent = shop.about;
+    document.querySelector("#footer-about-text").textContent = shop.about;
+
+    const address = document.querySelector("#shop-address");
+    const phone = createLink(shop.phone, `tel:${shop.phone.replace(/[^+0-9]/g, "")}`);
+    phone.dir = "ltr";
+    address.replaceChildren(
+        document.createTextNode(shop.address),
+        document.createElement("br"),
+        phone
+    );
+
+    const schedule = document.querySelector("#shop-schedule");
+    schedule.replaceChildren(createTextElement("h3", "ساعت کاری"));
+    shop.schedule.forEach(entry => {
+        schedule.append(createTextElement("p", `${entry.days}: ${entry.time}`));
+    });
+
+    // Keep our own brand while using the API's copyright text.
+    const shopName = document.querySelector(".brand strong").textContent;
+    document.querySelector("#shop-copyright").textContent =
+        shop.copyright.replaceAll(shop.name, shopName);
+
+    [".desktop-navigation", ".mobile-navigation"].forEach(selector => {
+        const menu = document.querySelector(selector);
+        menu.querySelectorAll("[data-shop-link]").forEach(link => link.remove());
+        shop.menu.forEach(item => {
+            const link = createLink(item.label, shopHref(item.href));
+            link.dataset.shopLink = "";
+            menu.append(link);
+        });
+    });
+}
+
+// Resolve a fragment again after asynchronous sections and cards exist.
+function scrollToFragment() {
+    if (!location.hash) return;
+    let id;
+    try {
+        id = decodeURIComponent(location.hash.slice(1));
+    } catch {
+        return;
+    }
+    const aliases = {
+        offers: "special-offers",
+        fruit: "fruits",
+        herbs: "fruits",
+        proteins: "protein",
+        sweets: "bakery",
+        "daily-essentials": "dairy-products"
+    };
+    const target = document.getElementById(aliases[id] || id);
+    if (target) target.scrollIntoView({ block: "start", inline: "nearest", behavior: "instant" });
+}
+
+window.addEventListener("hashchange", scrollToFragment);
+
+// Close the expanded mobile menu before scrolling so it cannot cover the target.
+document.querySelector(".mobile-navigation").addEventListener("click", event => {
+    const link = event.target.closest("a");
+    if (link) document.querySelector(".mobile-menu").open = false;
+});
+
+async function initPage() {
+    const categoriesStatus = document.querySelector("#categories-status");
+    const shopStatus = document.querySelector("#shop-status");
+    categoriesStatus.textContent = "در حال بارگذاری دسته‌بندی‌ها...";
+    shopStatus.textContent = "در حال بارگذاری اطلاعات فروشگاه...";
+
+    // Independent outcomes: unavailable shop information must not hide products.
+    const [productResult, categoryResult, shopResult] = await Promise.allSettled([
+        initcarousels(),
+        loadJSON(CATEGORIES_URL),
+        loadJSON(SHOP_URL)
+    ]);
+
+    if (categoryResult.status === "fulfilled" && Array.isArray(categoryResult.value)) {
+        renderCategories(categoryResult.value, productResult.value || []);
+        categoriesStatus.textContent = categoryResult.value.length ? "" : "دسته‌بندی‌ای یافت نشد.";
+    } else {
+        categoriesStatus.textContent = "دسته‌بندی‌ها بارگذاری نشدند. لطفاً صفحه را دوباره بارگذاری کنید.";
+    }
+    document.querySelector("#category-grid").setAttribute("aria-busy", "false");
+
+    if (shopResult.status === "fulfilled") {
+        renderShop(shopResult.value);
+        shopStatus.textContent = "";
+    } else {
+        shopStatus.textContent = "اطلاعات فروشگاه بارگذاری نشد. لطفاً صفحه را دوباره بارگذاری کنید.";
+    }
+
+    requestAnimationFrame(scrollToFragment);
+}
+
+initPage();

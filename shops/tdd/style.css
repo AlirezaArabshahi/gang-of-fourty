@@ -153,6 +153,7 @@ main,
 footer {
   width: min(100% - clamp(1.5rem, 5vw, 4rem), var(--container));
   margin-inline: auto;
+  font-size: 0.75rem;
 }
 
 .header-content {
@@ -2239,6 +2240,7 @@ main > .store-sections article > a::after {
 
 footer {
   display: grid;
+  align-items: center;
   grid-template-columns: minmax(16rem, 1fr) minmax(0, 1.8fr);
   column-gap: clamp(2rem, 7vw, 7rem);
   width: 100%;
@@ -2286,7 +2288,7 @@ footer nav a {
   width: fit-content;
   min-height: 2.4rem;
   color: #b8cec4;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   text-decoration: none;
   transition: color .2s ease, transform .2s ease;
 }
@@ -2807,4 +2809,36 @@ footer { padding-block: clamp(2.5rem, 5vw, 4rem); }
     color: #d8e1dd;
     background: #46564f;
   }
+}
+
+.page-status:empty,
+.announcement:empty {
+  display: none;
+}
+
+.page-status {
+  padding: 0.75rem;
+  color: var(--ink);
+  background: var(--surface-soft);
+  border-radius: 0.75rem;
+}
+
+#category-sections > article,
+.product-carousel,
+#contact,
+#about {
+  scroll-margin-block-start: var(--header-offset, 10rem);
+}
+
+#shop-schedule h3 {
+  margin-block: 1rem 0.4rem;
+  font-size: 0.9rem;
+}
+
+#shop-schedule p {
+  margin-block: 0.25rem;
+}
+
+.category-grid {
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
 }

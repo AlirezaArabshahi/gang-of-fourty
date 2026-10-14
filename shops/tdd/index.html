@@ -13,7 +13,7 @@
   <a class="skip-link" href="#main-content">پرش به محتوای اصلی</a>
 
   <header class="site-header">
-    <p class="announcement">ارسال رایگان برای خریدهای بالای ۵۰۰ هزار تومان</p>
+    <p class="announcement" id="shop-notice" role="status"></p>
 
     <div class="header-content">
       <a class="brand" href="#top" aria-label="سام مارکت؛ بازگشت به بالای صفحه">
@@ -37,7 +37,7 @@
         </svg>
         <span>
           <strong>سام مارکت</strong>
-          <small>تازگی در سبد، دقت در انتخاب</small>
+          <small id="shop-slogan"></small>
         </span>
       </a>
 
@@ -53,46 +53,19 @@
     </div>
 
     <nav class="primary-navigation desktop-navigation" aria-label="منوی اصلی">
-      <a href="#special-offers">پیشنهادهای ویژه</a>
       <div class="category-menu">
         <a class="category-trigger" href="#categories">دسته‌بندی‌ها <span aria-hidden="true">⌄</span></a>
-        <div class="category-dropdown">
-            <a href="#fruit">میوه &#127817;</a>
-            <a href="#herbs">سبزی و صیفی‌جات &#129388;</a>
-            <a href="#proteins">پروتئین &#129385;</a>
-            <a href="#dairy">لبنیات &#129472;</a>
-            <a href="#bakery">نان و صبحانه &#127838;</a>
-            <a href="#sweets">شیرینی &#127850;</a>
-            <a href="#snacks">خواربار و تنقلات &#127851;</a>
-            <a href="#drinks">نوشیدنی &#9749;</a>
-        </div>
+        <div class="category-dropdown" id="desktop-categories"></div>
       </div>
-      <a href="#daily-essentials">سبد روزمره</a>
-      <a href="#about">داستان سام مارکت</a>
-      <a href="#contact">تماس با ما</a>
     </nav>
 
     <details class="mobile-menu">
       <summary><span aria-hidden="true">☰</span> منوی فروشگاه</summary>
       <nav class="mobile-navigation" aria-label="منوی اصلی موبایل">
-        <a href="#special-offers">پیشنهادهای ویژه</a>
-        <a href="#daily-essentials">سبد روزمره</a>
         <details class="mobile-categories">
           <summary>دسته‌بندی محصولات</summary>
-          <div class="mobile-category-links">
-            <a href="#categories">همهٔ دسته‌بندی‌ها</a>
-            <a href="#fruit">میوه &#127817;</a>
-            <a href="#herbs">سبزی و صیفی‌جات &#129388;</a>
-            <a href="#proteins">پروتئین &#129385;</a>
-            <a href="#dairy">لبنیات &#129472;</a>
-            <a href="#bakery">نان و صبحانه &#127838;</a>
-            <a href="#sweets">شیرینی &#127850;</a>
-            <a href="#snacks">خواربار و تنقلات &#127851;</a>
-            <a href="#drinks">نوشیدنی &#9749;</a>
-          </div>
+          <div class="mobile-category-links" id="mobile-categories"></div>
         </details>
-        <a href="#about">داستان سام مارکت</a>
-        <a href="#contact">تماس با ما</a>
       </nav>
     </details>
   </header>
@@ -136,16 +109,8 @@
         <p>از اولین لقمه صبح تا آخرین فنجان شب؛ هر انتخاب، سر جای خودش.</p>
       </header>
 
-      <div class="category-grid">
-        <a href="#fruit"><span aria-hidden="true">&#127817;&#127824;</span><strong>میوه</strong><small>تازه و فصلی</small></a>
-        <a href="#herbs"><span aria-hidden="true">&#129388;&#129382;</span><strong>سبزی و صیفی‌جات</strong><small>تازه و فصلی</small></a>
-        <a href="#proteins"><span aria-hidden="true">&#129385;🍗</span><strong>پروتئین</strong><small>تازه و مطمئن</small></a>
-        <a href="#dairy"><span aria-hidden="true">🥛&#129472;</span><strong>لبنیات</strong><small>سالم و روزانه</small></a>
-        <a href="#bakery"><span aria-hidden="true">&#127838;🥖</span><strong>نان</strong><small>شروع مقوی روز</small></a>
-        <a href="#sweets"><span aria-hidden="true">&#127850;&#127856;</span><strong>شیرینی</strong><small>یک مکث شیرین</small></a>
-        <a href="#snacks"><span aria-hidden="true">&#127851;🫘</span><strong>خواربار و تنقلات</strong><small>متنوع و خوشمزه</small></a>
-        <a href="#drinks"><span aria-hidden="true">&#9749;🧃</span><strong>نوشیدنی</strong><small>خنک و دلچسب</small></a>
-      </div>
+      <p id="categories-status" class="page-status" role="status"></p>
+      <div class="category-grid" id="category-grid" aria-busy="true"></div>
     </section>
 
     <section class="promo-grid" aria-label="پیشنهادهای منتخب">
@@ -229,53 +194,13 @@
       </div>
     </section>
 
-    <section class="store-sections" aria-label="بخش‌های فروشگاه">
-      <article id="fruit">
-        <span aria-hidden="true">&#127817;</span>
-        <div><h2>میوه تازه</h2><p>تازه ترین میوه های هر فصل.</p></div>
-        <a href="#special-offers">مشاهده محصولات</a>
-      </article>
-      <article id="dairy">
-        <span aria-hidden="true">🥛</span>
-        <div><h2>لبنیات تازه</h2><p>از شیر صبحانه تا ماست کنار غذا؛ پایه‌های یک سبد کامل.</p></div>
-        <a href="#dairy-products">مشاهده محصولات</a>
-      </article>
-      <article id="bakery">
-        <span aria-hidden="true">🥖</span>
-        <div><h2>نان و صبحانه</h2><p>نان تازه و همراه‌های خوشمزه‌اش؛ برای یک شروع دل‌چسب.</p></div>
-        <a href="#special-offers">مشاهده محصولات</a>
-      </article>
-      <article id="proteins">
-        <span aria-hidden="true">🍗</span>
-        <div><h2>پروتئین تازه</h2><p>برای وعده اصلی، یک انتخاب حساب‌شده به سبدت اضافه کن.</p></div>
-        <a href="#special-offers">مشاهده محصولات</a>
-      </article>
-      <article id="snacks">
-        <span aria-hidden="true">🫘</span>
-        <div><h2>خواربار و تنقلات</h2><p>مواد اولیه آشپزی و خوراکی‌های یک استراحت کوتاه.</p></div>
-        <a href="#special-offers">مشاهده محصولات</a>
-      </article>
-      <article id="herbs">
-        <span aria-hidden="true">🥬</span>
-        <div><h2>سبزی و صیفی‌جات</h2><p>رنگ تازه سفره؛ برای سالاد، آشپزی و همراه هر وعده.</p></div>
-        <a href="#special-offers">مشاهده محصولات</a>
-      </article>
-      <article id="sweets">
-        <span aria-hidden="true">🍪</span>
-        <div><h2>شیرینی</h2><p>یک مکث شیرین کنار چای یا قهوه؛ برای خودت یا مهمان‌ها.</p></div>
-        <a href="#special-offers">مشاهده محصولات</a>
-      </article>
-      <article id="drinks">
-        <span aria-hidden="true">🧃</span>
-        <div><h2>نوشیدنی</h2><p>از چای وقت استراحت تا نوشیدنی خنک روزهای گرم.</p></div>
-        <a href="#special-offers">مشاهده محصولات</a>
-      </article>
-    </section>
+    <section class="store-sections" id="category-sections" aria-label="بخش‌های فروشگاه"></section>
 
     <section id="about" aria-labelledby="about-title">
       <h2 id="about-title">داستان سام مارکت</h2>
+      <p id="shop-about"></p>
       <p>سام مارکت، سوپرمارکت سام در پروژه بوتکمپ است؛ با یک سبد برای نیازهای روزمره و یک داستان از دنیای برنامه‌نویسی. نام پروژه، <bdi lang="en" dir="ltr">TDD</bdi>، یادآور هدف سام است: تسلط بر توسعه آزمون‌محور تا پایان بوتکمپ.</p>
-      <p>در توسعه آزمون‌محور، اول یک تست ناموفق می‌نویسیم، بعد کد لازم برای پاس‌شدن آن را می‌سازیم و در پایان ساختار کد را بهبود می‌دهیم. سام از این نگاه برای ایده ارزیابی تازگی الهام گرفته: اول معیار مشخص، بعد بررسی محصول و در ادامه بهبود شیوه انتخاب. این فرایند، طرح پیشنهادی برند در پروژه بوتکمپ است؛ چرخه نرم‌افزاری <bdi lang="en" dir="ltr">TDD</bdi> الهام آن است.</p>
+      <p>در توسعه آزمون‌محور، اول یک تست ناموفق می‌نویسیم، بعد کد لازم برای پاس‌شدن آن را می‌سازیم و در پایان ساختار کد را بهبود می‌دهیم. سام از این نگاه برای ایده ارزیابی تازگی الهام گرفته: اول معیار مشخص، بعد بررسی محصول و در ادامه بهبود شیوه انتخاب. این فرایند، طرح پیشنهادی برند در پروژه بوتکمپ فرانت اند است؛ چرخه نرم‌افزاری <bdi lang="en" dir="ltr">TDD</bdi> الهام آن است.</p>
       <div class="store-sections" role="group" aria-label="از چرخه آزمون‌محور تا ایده ارزیابی تازگی">
         <article>
           <span aria-hidden="true">🔴</span>
@@ -296,30 +221,17 @@
   <footer id="contact">
     <section aria-labelledby="footer-about">
       <h2 id="footer-about">سام مارکت</h2>
-      <p>تازگی در سبد، دقت در انتخاب؛ از صبحانه تا شام، همراه خریدهای روزمره تو.</p>
-      <address>
-        تهران، خیابان بهار، پلاک ۲۰<br>
-        <a dir="ltr" href="tel:+982188887777">۰۲۱&#8209;۸۸۸۸۷۷۷۷</a>
-      </address>
-      <p>ساعت کاری: هر روز از <time datetime="08:00">۸:۰۰</time> تا <time datetime="23:00">۲۳:۰۰</time></p>
+      <p id="footer-about-text"></p>
+      <p id="shop-status" class="page-status" role="status"></p>
+      <address id="shop-address"></address>
+      <div id="shop-schedule" role="group" aria-label="ساعت کاری"></div>
     </section>
 
-    <nav aria-label="پیوندهای پایین صفحه">
-      <a href="#categories">دسته‌بندی‌ها</a>
-      <a href="#fruit">میوه</a>
-      <a href="#herbs">سبزی و صیفی‌جات</a>
-      <a href="#dairy">لبنیات</a>
-      <a href="#bakery">نان و صبحانه</a>
-      <a href="#proteins">پروتئین</a>
-      <a href="#sweets">شیرینی</a>
-      <a href="#snacks">خواربار و تنقلات</a>
-      <a href="#drinks">نوشیدنی</a>
-      <a href="#about">درباره ما</a>
-    </nav>
+    <nav id="footer-categories" aria-label="دسته‌بندی‌های پایین صفحه"></nav>
 
     <a class="back-to-top" href="#top">بازگشت به بالا <span aria-hidden="true">↑</span></a>
 
-    <p>© ۱۴۰۵ سام مارکت؛ ساخته‌شده توسط سام، با فکر بهترشدن مداوم.</p>
+    <p id="shop-copyright"></p>
   </footer>
 
   <script src="index.js" defer></script>
