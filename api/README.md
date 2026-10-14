@@ -21,15 +21,7 @@ Join by id: `product.id` ↔ `stock.items[product.id]` ↔ `offer.productId`, an
 | Your page | URL |
 |---|---|
 | `shops/<your-slug>/index.html` (online **and** on your machine) | `../../api/products.json` |
-<<<<<<< HEAD
-| `api/starter.html` | `./products.json` |
-| Anywhere else, online | `https://gof.zzb.cx/api/products.json` |
-
-On your machine, serve the **repo root** over http (VS Code Live Server, or `npx serve .`).
-Opened as `file://`, the browser blocks XHR and `fetch`.
-=======
 | Anywhere else (the in-class starter on the syllabus site) | `https://gof.zzb.cx/api/products.json` |
 
 On your machine, serve the **repo root** over http (VS Code Live Server, or `python3 -m http.server`).
 Opened as `file://`, the browser blocks `fetch` to relative paths.
->>>>>>> main
