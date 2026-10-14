@@ -126,8 +126,10 @@ const getProductsWithDetails = async() => {
             ...p,
             off: offerItem ? offerItem.percent : undefined,
             stock: stokeItem,
-            oldPrice: offerItem ?
-                Math.round(p.price / (1 - offerItem.percent / 100)) : undefined
+            oldPrice: offerItem ? p.price : undefined,
+            price: offerItem ?
+                Math.round(p.price * (1 - offerItem.percent / 100)) :
+                p.price
         };
     });
 
@@ -416,7 +418,6 @@ const updateBadge = () => {
 const initAddToCart = () => {
     updateBadge()
     document.addEventListener("click", (e) => {
-        e.preventDefault();
         const btn = e.target.closest(".act-btn.act-cart");
         if (!btn) return;
         if (btn.disabled) return;
