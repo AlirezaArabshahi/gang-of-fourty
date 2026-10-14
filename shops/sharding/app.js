@@ -340,12 +340,17 @@ function renderHero(shop) {
   document.getElementById('dairy-title').textContent = t.dairy;
 }
 
-function setupHeroBannerSkeletons() {
+function setupHeroBannerSkeletons(startedAt) {
+  const ready = () => waitMinSkeleton(startedAt || performance.now());
+
   document.querySelectorAll('[data-hero-banner]').forEach((img) => {
     const slide = img.closest('.hero-carousel__slide');
     if (!slide) return;
 
-    const clear = () => slide.classList.remove('hero-carousel__slide--skeleton');
+    const clear = async () => {
+      await ready();
+      slide.classList.remove('hero-carousel__slide--skeleton');
+    };
 
     if (img.complete && img.naturalWidth > 0) {
       clear();
@@ -478,74 +483,94 @@ async function fetchJson(url) {
   }
 }
 
+function waitMinSkeleton(startedAt) {
+  const remaining = MIN_SKELETON_MS - (performance.now() - startedAt);
+  if (remaining > 0) return new Promise((r) => setTimeout(r, remaining));
+  return Promise.resolve();
+}
+
+function clearShellSkeletons() {
+  document.getElementById('hero-video')?.classList.remove('hero-video--skeleton');
+  document.getElementById('weekly-title')?.classList.remove('hero-carousel__title--skeleton');
+}
+
+function buildStockMap(products, stockData) {
+  const stockMap = new Map();
+  const items = stockData.items || {};
+  for (const product of products) {
+    const qty = items[product.id];
+    stockMap.set(product.id, typeof qty === 'number' ? qty : 0);
+  }
+  return stockMap;
+}
+
+function renderProductSections(products, stockData, offers) {
+  const stockMap = buildStockMap(products, stockData);
+  const offerMap = new Map(offers.map((o) => [o.productId, o]));
+  const byId = new Map(products.map((p) => [p.id, p]));
+
+  const offerProducts = [...offers]
+    .sort((a, b) => b.percent - a.percent)
+    .map((o) => byId.get(o.productId))
+    .filter(Boolean);
+
+  renderSection('offers', offerProducts, offerMap, stockMap);
+  renderSection('fruits', products.filter((p) => p.categoryId === 1), offerMap, stockMap);
+  renderSection('dairy', products.filter((p) => p.categoryId === 2), offerMap, stockMap);
+}
+
+function renderShell(shop, categories) {
+  renderTopbar(shop);
+  renderHeader(shop);
+  renderNavMenus(shop);
+  renderHero(shop);
+  renderFooter(shop);
+  renderCategories(categories);
+  document.title = `${shop.name} | ${shop.slogan}`;
+}
+
 async function init() {
   document.querySelector('.search')?.addEventListener('submit', (e) => e.preventDefault());
-  setupHeroBannerSkeletons();
+  const startedAt = performance.now();
+  setupHeroBannerSkeletons(startedAt);
 
+  // One pipeline: fetch everything in parallel, one min skeleton, one paint.
   const shellPromise = Promise.all([
     fetchJson(API.shop),
     fetchJson(API.categories),
-  ]);
+  ]).then(([shop, categories]) => ({ shop, categories }));
 
-  const productsPromise = Promise.all([
+  const catalogPromise = Promise.all([
     fetchJson(API.products),
     fetchJson(API.stock),
+    fetchJson(API.offers).catch((err) => {
+      console.warn('[shop] offers unavailable:', err);
+      return [];
+    }),
+  ]).then(([products, stockData, offers]) => ({ products, stockData, offers }));
+
+  const [shellSettled, catalogSettled] = await Promise.all([
+    shellPromise.then((data) => ({ ok: true, data })).catch((err) => ({ ok: false, err })),
+    catalogPromise.then((data) => ({ ok: true, data })).catch((err) => ({ ok: false, err })),
   ]);
 
-  const offersPromise = fetchJson(API.offers).catch((err) => {
-    console.warn('[shop] offers unavailable:', err);
-    return [];
-  });
+  await waitMinSkeleton(startedAt);
 
-  try {
-    const [shop, categories] = await shellPromise;
-
-    renderTopbar(shop);
-    renderHeader(shop);
-    renderNavMenus(shop);
-    renderHero(shop);
-    renderFooter(shop);
-    renderCategories(categories);
-
-    document.title = `${shop.name} | ${shop.slogan}`;
-  } catch (err) {
-    console.error('[shop] shell data failed:', err);
-    const heroVideo = document.getElementById('hero-video');
-    if (heroVideo) heroVideo.classList.remove('hero-video--skeleton');
-    document.getElementById('weekly-title')?.classList.remove('hero-carousel__title--skeleton');
+  if (shellSettled.ok) {
+    renderShell(shellSettled.data.shop, shellSettled.data.categories);
+  } else {
+    console.error('[shop] shell data failed:', shellSettled.err);
+    clearShellSkeletons();
   }
 
-  const startedAt = performance.now();
-
-  try {
-    const [products, stockData] = await productsPromise;
-    const offers = await offersPromise;
-
-    const remaining = MIN_SKELETON_MS - (performance.now() - startedAt);
-    if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
-
-    const stockMap = new Map();
-    const items = stockData.items || {};
-    for (const product of products) {
-      const qty = items[product.id];
-      stockMap.set(product.id, typeof qty === 'number' ? qty : 0);
-    }
-
-    const offerMap = new Map(offers.map((o) => [o.productId, o]));
-    const byId = new Map(products.map((p) => [p.id, p]));
-
-    const offerProducts = [...offers]
-      .sort((a, b) => b.percent - a.percent)
-      .map((o) => byId.get(o.productId))
-      .filter(Boolean);
-
-    renderSection('offers', offerProducts, offerMap, stockMap);
-    renderSection('fruits', products.filter((p) => p.categoryId === 1), offerMap, stockMap);
-    renderSection('dairy', products.filter((p) => p.categoryId === 2), offerMap, stockMap);
-  } catch (err) {
-    console.error('[shop] product data failed:', err);
+  if (catalogSettled.ok) {
+    const { products, stockData, offers } = catalogSettled.data;
+    renderProductSections(products, stockData, offers);
+  } else {
+    console.error('[shop] product data failed:', catalogSettled.err);
+    const err = catalogSettled.err;
     const message =
-      err.name === 'AbortError'
+      err && err.name === 'AbortError'
         ? 'زمان انتظار برای دریافت داده به پایان رسید. لطفاً دوباره تلاش کنید.'
         : 'محصولات در دسترس نیست. لطفاً اتصال اینترنت را بررسی کنید.';
     ['offers', 'fruits', 'dairy'].forEach((id) => showError(id, message));

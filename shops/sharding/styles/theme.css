@@ -113,6 +113,11 @@
   background: var(--hero-overlay);
 }
 
+.hero-video.hero-video--skeleton::after {
+  background: none;
+  opacity: 0;
+}
+
 .search:focus-within {
   background: var(--surface);
   border-color: var(--lime);

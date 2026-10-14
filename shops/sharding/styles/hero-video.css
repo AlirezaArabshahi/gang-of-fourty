@@ -109,9 +109,11 @@
 .hero-video--skeleton .hero-video__media {
   visibility: hidden;
 }
-
-.hero-video--skeleton::after {
-  background: none;
+/* TODO: alireza find better solution later plsssss */
+/* Beat theme.css `.hero-video::after { background: overlay }` (same load-order conflict) */
+.hero-video.hero-video--skeleton::after {
+  background: none !important;
+  opacity: 0;
 }
 
 .hero-video--skeleton .hero-video__overlay {
