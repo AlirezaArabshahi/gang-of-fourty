@@ -75,10 +75,11 @@
 }
 
 .products--offers .products__grid {
+  /* Match regular products carousel metrics so card width is identical */
   padding-block-end: 8px;
-  padding-inline: var(--sp-md);
-  margin-inline: 0;
-  scroll-padding-inline: var(--sp-md);
+  padding-inline: 4px;
+  margin-inline: -4px;
+  scroll-padding-inline: 4px;
 
   background-color: var(--offers-bg);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-opacity='0.08'%3E%3Ccircle cx='24' cy='24' r='5.5'/%3E%3Ccircle cx='48' cy='48' r='5.5'/%3E%3Cline x1='52' y1='20' x2='20' y2='52'/%3E%3C/g%3E%3C/svg%3E");
