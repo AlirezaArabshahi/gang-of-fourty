@@ -542,8 +542,10 @@ function renderCategories(items) {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.className = 'category';
-
-    a.href = `#${cat.slug}`;
+    a.dataset.catSlug = cat.slug;
+    a.dataset.categoryId = String(cat.id);
+    // ?cat=slug keeps filter shareable; #slug still jumps to section
+    a.href = `?cat=${encodeURIComponent(cat.slug)}#${cat.slug}`;
 
     if (i === 0) a.id = 'cat-start';
     if (i === items.length - 1) a.id = 'cat-end';
@@ -579,22 +581,36 @@ function renderCategories(items) {
   });
 }
 
+function renderFooterCategories(items) {
+  const ul = document.getElementById('footer-categories-list');
+  if (!ul) return;
+  const links = items.map((cat) => ({
+    label: cat.name,
+    href: `?cat=${encodeURIComponent(cat.slug)}#${cat.slug}`,
+  }));
+  renderListLinks(ul, links);
+}
+
 function renderHero(home) {
   const hero = home.hero || {};
   document.getElementById('hero-title').textContent = hero.title || '';
   document.getElementById('hero-desc').textContent = hero.desc || hero.text || '';
   const cta = document.getElementById('hero-cta');
-  cta.href = hero.ctaHref || (hero.cta && hero.cta.href) || '#fruits';
+  const ctaHref = hero.ctaHref || (hero.cta && hero.cta.href) || '#fruits';
+  const ctaLabel =
+    hero.ctaLabel ||
+    (typeof hero.cta === 'string' ? hero.cta : hero.cta && hero.cta.label) ||
+    '';
+  cta.href = ctaHref;
   cta.removeAttribute('aria-hidden');
   cta.removeAttribute('tabindex');
-  document.getElementById('hero-cta-label').textContent =
-    hero.ctaLabel || (typeof hero.cta === 'string' ? hero.cta : hero.cta && hero.cta.label) || '';
+  document.getElementById('hero-cta-label').textContent = ctaLabel;
 
   document.getElementById('hero-video')?.classList.remove('hero-video--skeleton');
 
   const weekly = document.getElementById('weekly-title');
   if (weekly) {
-    weekly.textContent = home.weeklyTitle || '';
+    weekly.textContent = home.weeklyTitle || (home.side && home.side.title) || '';
     weekly.classList.remove('hero-carousel__title--skeleton');
   }
 
@@ -604,33 +620,80 @@ function renderHero(home) {
   }
 }
 
-function renderBanners(banners) {
+/** Prefer real image banners; keep side/promos in JSON for the exercise schema. */
+function homeBannerSlides(home) {
+  if (Array.isArray(home.banners) && home.banners.length) {
+    return home.banners.map((b) => ({
+      image: b.image,
+      alt: b.alt || '',
+      href: b.href || '#',
+    }));
+  }
+  // fallback only if no image banners
+  const slides = [];
+  if (home.side) {
+    slides.push({
+      text: home.side.title || home.side.text,
+      emoji: home.side.emoji || '🛒',
+      color: '#f3e5f5',
+      href: (home.side.cta && home.side.cta.href) || '#',
+    });
+  }
+  if (Array.isArray(home.promos)) {
+    for (const p of home.promos) {
+      slides.push({
+        text: p.text,
+        emoji: p.emoji || '✨',
+        color: p.color || '#e3f1e7',
+        href: p.href || '#',
+      });
+    }
+  }
+  return slides;
+}
+
+function renderBanners(home) {
   const track = document.getElementById('banner-track');
-  if (!track || !Array.isArray(banners) || banners.length === 0) return;
+  if (!track) return;
+
+  const slides = homeBannerSlides(home);
+  if (!slides.length) return;
 
   track.removeAttribute('aria-busy');
   track.replaceChildren();
 
-  banners.forEach((b, i) => {
+  slides.forEach((b, i) => {
     const li = document.createElement('li');
     li.className = 'hero-carousel__slide' + (i === 0 ? ' is-active' : '');
     if (i === 0) li.id = 'banner-start';
-    if (i === banners.length - 1) li.id = 'banner-end';
+    if (i === slides.length - 1) li.id = 'banner-end';
 
     const a = document.createElement('a');
-    a.className = 'hero-banner';
+    a.className = b.image ? 'hero-banner' : 'hero-banner hero-banner--promo';
     a.href = b.href || '#';
 
-    const img = document.createElement('img');
-    img.src = b.image;
-    img.alt = b.alt || '';
-    img.width = 800;
-    img.height = 500;
-    img.decoding = 'async';
-    if (i === 0) img.fetchPriority = 'high';
-    else img.loading = 'lazy';
+    if (b.image) {
+      const img = document.createElement('img');
+      img.src = b.image;
+      img.alt = b.alt || b.text || '';
+      img.width = 800;
+      img.height = 500;
+      img.decoding = 'async';
+      if (i === 0) img.fetchPriority = 'high';
+      else img.loading = 'lazy';
+      a.appendChild(img);
+    } else {
+      a.style.backgroundColor = b.color || '#e3f1e7';
+      const emoji = document.createElement('span');
+      emoji.className = 'hero-banner__emoji';
+      emoji.setAttribute('aria-hidden', 'true');
+      emoji.textContent = b.emoji || '✨';
+      const text = document.createElement('span');
+      text.className = 'hero-banner__text';
+      text.textContent = b.text || '';
+      a.append(emoji, text);
+    }
 
-    a.appendChild(img);
     li.appendChild(a);
     track.appendChild(li);
   });
@@ -796,9 +859,10 @@ function renderShell(shop, categories, home, productCount) {
   renderHeader(shop, productCount);
   renderNavMenus(shop);
   renderHero(home);
-  renderBanners(home.banners || []);
+  renderBanners(home);
   renderFooter(shop);
   renderCategories(categories);
+  renderFooterCategories(categories);
   document.title = `${shop.name} | ${shop.slogan}`;
 }
 
@@ -855,6 +919,113 @@ function setupCart() {
   });
 }
 
+
+/** Shared catalog after load — used by ?cat= filter */
+let appCatalog = null;
+let appHome = null;
+let appCategories = null;
+
+function getCatParam() {
+  return new URLSearchParams(location.search).get('cat') || '';
+}
+
+function applyCategoryFilter(slug) {
+  if (!appCatalog || !appHome) return;
+
+  const cat = (appCategories || []).find((c) => c.slug === slug);
+  const { products, stockData, offers } = appCatalog;
+
+  if (!slug || !cat) {
+    renderCarousels(appHome, products, stockData, offers);
+    return;
+  }
+
+  // Only products of that category (challenge: ?cat=dairy)
+  const filteredHome = {
+    ...appHome,
+    carousels: [
+      {
+        id: cat.slug,
+        title: cat.name,
+        emoji: cat.emoji,
+        categoryId: cat.id,
+      },
+    ],
+  };
+
+  // Ensure a section shell exists for this slug
+  const root = document.getElementById('carousels-root');
+  if (root) {
+    // hide other static sections, show/create filtered one
+    root.querySelectorAll('section.products').forEach((sec) => {
+      sec.hidden = sec.id !== cat.slug;
+    });
+  }
+
+  renderCarousels(filteredHome, products, stockData, offers);
+
+  const section = document.getElementById(cat.slug);
+  if (section) {
+    section.hidden = false;
+    // hide siblings in root
+    if (root) {
+      root.querySelectorAll('section.products').forEach((sec) => {
+        sec.hidden = sec.id !== cat.slug;
+      });
+    }
+  }
+}
+
+function clearCategoryFilter() {
+  const root = document.getElementById('carousels-root');
+  if (root) {
+    root.querySelectorAll('section.products').forEach((sec) => {
+      sec.hidden = false;
+    });
+  }
+  if (appCatalog && appHome) {
+    renderCarousels(appHome, appCatalog.products, appCatalog.stockData, appCatalog.offers);
+  }
+}
+
+function setupCategoryNavigation() {
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[data-cat-slug], a.category');
+    if (!link) return;
+    const slug = link.dataset.catSlug;
+    if (!slug) return;
+
+    e.preventDefault();
+    const url = new URL(location.href);
+    url.searchParams.set('cat', slug);
+    url.hash = slug;
+    history.pushState({ cat: slug }, '', url);
+
+    applyCategoryFilter(slug);
+
+    const target = document.getElementById(slug);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  window.addEventListener('popstate', () => {
+    const slug = getCatParam();
+    if (slug) applyCategoryFilter(slug);
+    else clearCategoryFilter();
+  });
+}
+
+function showSlowConnection(show) {
+  const el = document.getElementById('slow-connection');
+  if (!el) return;
+  if (show) {
+    el.hidden = false;
+    el.setAttribute('data-visible', 'true');
+  } else {
+    el.hidden = true;
+    el.removeAttribute('data-visible');
+  }
+}
+
 function errorMessage(err) {
   if (err && err.name === 'AbortError') {
     return 'زمان انتظار برای دریافت داده به پایان رسید. لطفاً دوباره تلاش کنید.';
@@ -865,66 +1036,79 @@ function errorMessage(err) {
 async function init() {
   document.querySelector('.search')?.addEventListener('submit', (e) => e.preventDefault());
   setupCart();
+  setupCategoryNavigation();
 
   const startedAt = performance.now();
+  const SLOW_MS = 3000;
 
-  // Parallel fetches; shell and catalog can succeed/fail independently
-  // so a broken products.json still shows an error UI (not endless skeleton).
-  const shellPromise = Promise.all([
-    fetchJson(API.shop),
-    fetchJson(API.categories),
-    fetchJson(API.home),
-  ]).then(([shop, categories, home]) => ({ shop, categories, home }));
+  // Same fetches — one Promise.all (level 4), but shell can paint early
+  // so Slow 3G is not blocked on products.json size.
+  const pShop = fetchJson(API.shop);
+  const pCategories = fetchJson(API.categories);
+  const pHome = fetchJson(API.home);
+  const pProducts = fetchJson(API.products);
+  const pStock = fetchJson(API.stock);
+  const pOffers = fetchJson(API.offers).catch((err) => {
+    console.warn('[shop] offers unavailable:', err);
+    return [];
+  });
 
-  const catalogPromise = Promise.all([
-    fetchJson(API.products),
-    fetchJson(API.stock),
-    fetchJson(API.offers).catch((err) => {
-      console.warn('[shop] offers unavailable:', err);
-      return [];
-    }),
-  ]).then(([products, stockData, offers]) => ({ products, stockData, offers }));
-
-  const [shellSettled, catalogSettled] = await Promise.all([
-    shellPromise.then((data) => ({ ok: true, data })).catch((err) => ({ ok: false, err })),
-    catalogPromise.then((data) => ({ ok: true, data })).catch((err) => ({ ok: false, err })),
+  const allPromise = Promise.all([
+    pShop,
+    pCategories,
+    pHome,
+    pProducts,
+    pStock,
+    pOffers,
   ]);
 
-  await waitMinSkeleton(startedAt);
+  const slowTimer = new Promise((resolve) => {
+    window.setTimeout(() => resolve('slow'), SLOW_MS);
+  });
+  Promise.race([allPromise.then(() => 'done'), slowTimer]).then((result) => {
+    if (result === 'slow') showSlowConnection(true);
+  });
 
-  if (shellSettled.ok) {
-    const { shop, categories, home } = shellSettled.data;
-    const count = catalogSettled.ok ? catalogSettled.data.products.length : undefined;
-    renderShell(shop, categories, home, count);
+  // Progressive shell once — never call renderShell twice (that re-ran card-in).
+  let shellPainted = false;
+  const shellEarlyPromise = Promise.all([pShop, pCategories, pHome])
+    .then(([shop, categories, home]) => {
+      appHome = home;
+      appCategories = categories;
+      renderShell(shop, categories, home);
+      shellPainted = true;
+    })
+    .catch(() => {});
 
-    if (catalogSettled.ok) {
-      const { products, stockData, offers } = catalogSettled.data;
-      renderCarousels(home, products, stockData, offers);
+  try {
+    const [shop, categories, home, products, stockData, offers] = await allPromise;
+    showSlowConnection(false);
+    await shellEarlyPromise;
+    await waitMinSkeleton(startedAt);
+
+    appHome = home;
+    appCategories = categories;
+    appCatalog = { products, stockData, offers };
+
+    if (shellPainted) {
+      // Only update search placeholder — do not rebuild DOM (no second blink)
+      renderHeader(shop, products.length);
     } else {
-      console.error('[shop] catalog failed:', catalogSettled.err);
-      showCarouselErrors(errorMessage(catalogSettled.err));
+      renderShell(shop, categories, home, products.length);
     }
-  } else {
-    console.error('[shop] shell failed:', shellSettled.err);
+
+    renderCarousels(home, products, stockData, offers);
+
+    const catSlug = getCatParam();
+    if (catSlug) applyCategoryFilter(catSlug);
+  } catch (err) {
+    console.error('[shop] data failed:', err);
+    showSlowConnection(false);
+    await waitMinSkeleton(startedAt);
     clearShellSkeletons();
-
-    if (catalogSettled.ok) {
-      // rare: products ok but shop/home failed — still try carousels with empty home
-      try {
-        const { products, stockData, offers } = catalogSettled.data;
-        renderCarousels({ carousels: [
-          { id: 'offers', title: 'پیشنهادهای ویژه امروز', source: 'offers', variant: 'offers' },
-          { id: 'fruits', title: 'میوه و سبزیجات', categoryId: 1 },
-          { id: 'dairy', title: 'لبنیات و تخم‌مرغ', categoryId: 2 },
-        ] }, products, stockData, offers);
-      } catch (e) {
-        showCarouselErrors(errorMessage(shellSettled.err));
-      }
-    } else {
-      console.error('[shop] catalog failed:', catalogSettled.err);
-      showCarouselErrors(errorMessage(catalogSettled.err || shellSettled.err));
-    }
+    showCarouselErrors(errorMessage(err));
   }
 }
+
 
 init();

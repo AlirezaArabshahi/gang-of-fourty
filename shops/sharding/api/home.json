@@ -1,12 +1,36 @@
 {
   "hero": {
     "title": "میوه تازه، فردا صبح دم خونه",
-    "desc": "سفارش تا نیمه‌شب ثبت کن، فردا صبح تحویل بگیر",
-    "cta": "شروع خرید",
-    "ctaHref": "#fruits"
+    "text": "سفارش تا نیمه‌شب ثبت کن، فردا صبح تحویل بگیر",
+    "emoji": "🍉",
+    "cta": {
+      "label": "شروع خرید",
+      "href": "#fruits"
+    }
   },
-  "weeklyTitle": "پیشنهادهای ویژه هفته",
-  "categoriesTitle": "خرید از دسته‌بندی‌ها",
+  "side": {
+    "title": "تا ۲۰٪ تخفیف لبنیات",
+    "text": "فقط تا پایان هفته",
+    "emoji": "🧀",
+    "cta": {
+      "label": "دیدن محصولات",
+      "href": "#dairy"
+    }
+  },
+  "promos": [
+    {
+      "text": "سبد صبحانه خانواده",
+      "emoji": "🍳",
+      "color": "#e3f1e7",
+      "href": "#dairy"
+    },
+    {
+      "text": "نان داغ، هر روز ساعت ۷",
+      "emoji": "🥐",
+      "color": "#fde3dc",
+      "href": "#offers"
+    }
+  ],
   "banners": [
     {
       "image": "assets/banner-1.webp",
@@ -38,19 +62,23 @@
     {
       "id": "offers",
       "title": "پیشنهادهای ویژه امروز",
-      "sub": "تا پایان امشب، تا ۳۰٪ تخفیف",
+      "emoji": "🔥",
       "source": "offers",
-      "variant": "offers"
+      "sub": "تا پایان امشب، تا ۳۰٪ تخفیف"
     },
     {
       "id": "fruits",
       "title": "میوه و سبزیجات",
+      "emoji": "🥬",
       "categoryId": 1
     },
     {
       "id": "dairy",
       "title": "لبنیات و تخم‌مرغ",
+      "emoji": "🥛",
       "categoryId": 2
     }
-  ]
+  ],
+  "weeklyTitle": "پیشنهادهای ویژه هفته",
+  "categoriesTitle": "خرید از دسته‌بندی‌ها"
 }
