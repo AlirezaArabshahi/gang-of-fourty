@@ -71,9 +71,13 @@
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M1 3h15v13H1V3zm16 5h4l3 3v5h-7V8zM5.5 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm13 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
         </svg>
-        <span id="topbar-notice"></span>
+        <span id="topbar-notice" class="skeleton-text skeleton-text--topbar" aria-hidden="true"></span>
       </p>
-      <nav class="topbar__links" id="topbar-links" aria-label="لینک‌های کمکی"></nav>
+      <nav class="topbar__links" id="topbar-links" aria-label="لینک‌های کمکی" aria-busy="true">
+        <span class="skeleton-text skeleton-text--link" aria-hidden="true"></span>
+        <span class="skeleton-text skeleton-text--link" aria-hidden="true"></span>
+        <span class="skeleton-text skeleton-text--link" aria-hidden="true"></span>
+      </nav>
     </div>
   </div>
 
@@ -219,7 +223,15 @@
           </div>
         </div>
 
-        <ul class="nav" id="nav-list"></ul>
+        <ul class="nav" id="nav-list" aria-busy="true">
+          <li aria-hidden="true"><span class="skeleton-text skeleton-text--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton-text skeleton-text--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton-text skeleton-text--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton-text skeleton-text--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton-text skeleton-text--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton-text skeleton-text--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton-text skeleton-text--nav"></span></li>
+        </ul>
 
       </div>
     </nav>
@@ -267,14 +279,22 @@
     </div>
 
     <div class="mobile-menu__body">
-      <ul class="mobile-menu__list" id="mobile-menu-list"></ul>
+      <ul class="mobile-menu__list" id="mobile-menu-list" aria-busy="true">
+        <li aria-hidden="true"><span class="skeleton-text skeleton-text--mobile"></span></li>
+        <li aria-hidden="true"><span class="skeleton-text skeleton-text--mobile"></span></li>
+        <li aria-hidden="true"><span class="skeleton-text skeleton-text--mobile"></span></li>
+        <li aria-hidden="true"><span class="skeleton-text skeleton-text--mobile"></span></li>
+        <li aria-hidden="true"><span class="skeleton-text skeleton-text--mobile"></span></li>
+        <li aria-hidden="true"><span class="skeleton-text skeleton-text--mobile"></span></li>
+        <li aria-hidden="true"><span class="skeleton-text skeleton-text--mobile"></span></li>
+      </ul>
     </div>
   </div>
 
   <section class="hero">
     <div class="container">
 
-      <div class="hero-video">
+      <div class="hero-video hero-video--skeleton" id="hero-video">
         <video
           class="hero-video__media"
           autoplay
@@ -286,10 +306,10 @@
           <source src="assets/hero.mp4" type="video/mp4" media="(min-width: 768px)">
         </video>
         <div class="hero-video__overlay">
-          <h1 class="hero-video__title" id="hero-title"></h1>
-          <p class="hero-video__desc" id="hero-desc"></p>
-          <a href="#fruits" class="hero-video__cta" id="hero-cta">
-            <span id="hero-cta-label"></span>
+          <h1 class="hero-video__title" id="hero-title">—</h1>
+          <p class="hero-video__desc" id="hero-desc">—</p>
+          <a href="#fruits" class="hero-video__cta" id="hero-cta" aria-hidden="true" tabindex="-1">
+            <span id="hero-cta-label">—</span>
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
             </svg>
@@ -299,7 +319,7 @@
 
       <div class="hero-carousel">
         <div class="hero-carousel__head">
-          <h2 class="hero-carousel__title" id="weekly-title"></h2>
+          <h2 class="hero-carousel__title hero-carousel__title--skeleton" id="weekly-title">—</h2>
           <nav class="carousel-nav" aria-label="ناوبری کاروسل پیشنهادها">
             <a href="#banner-start" class="carousel-nav__btn carousel-nav__btn--start" aria-label="رفتن به ابتدای پیشنهادها">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
@@ -311,33 +331,34 @@
         </div>
 
         <ul class="hero-carousel__track" tabindex="0" aria-label="کاروسل پیشنهادهای ویژه">
-          <li class="hero-carousel__slide is-active" id="banner-start">
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton is-active" id="banner-start">
             <a href="#fruits" class="hero-banner">
               <img src="assets/banner-1.webp"
                   alt="میوه‌های فصل با ۳۰٪ تخفیف"
                   width="800" height="500"
                   fetchpriority="high"
-                  decoding="async">
+                  decoding="async"
+                  data-hero-banner>
             </a>
           </li>
-          <li class="hero-carousel__slide">
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton">
             <a href="#dairy" class="hero-banner">
-              <img src="assets/banner-2.webp" alt="لبنیات و تخم‌مرغ" loading="lazy" decoding="async" width="800" height="500">
+              <img src="assets/banner-2.webp" alt="لبنیات و تخم‌مرغ" loading="lazy" decoding="async" width="800" height="500" data-hero-banner>
             </a>
           </li>
-          <li class="hero-carousel__slide">
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton">
             <a href="#offers" class="hero-banner">
-              <img src="assets/banner-3.webp" alt="خواروبار با تخفیف ویژه" loading="lazy" decoding="async" width="800" height="500">
+              <img src="assets/banner-3.webp" alt="خواروبار با تخفیف ویژه" loading="lazy" decoding="async" width="800" height="500" data-hero-banner>
             </a>
           </li>
-          <li class="hero-carousel__slide">
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton">
             <a href="#offers" class="hero-banner">
-              <img src="assets/banner-4.webp" alt="نوشیدنی‌های خنک" loading="lazy" decoding="async" width="800" height="500">
+              <img src="assets/banner-4.webp" alt="نوشیدنی‌های خنک" loading="lazy" decoding="async" width="800" height="500" data-hero-banner>
             </a>
           </li>
-          <li class="hero-carousel__slide" id="banner-end">
+          <li class="hero-carousel__slide hero-carousel__slide--skeleton" id="banner-end">
             <a href="#offers" class="hero-banner">
-              <img src="assets/banner-5.webp" alt="پیشنهاد ویژه هفته" loading="lazy" decoding="async" width="800" height="500">
+              <img src="assets/banner-5.webp" alt="پیشنهاد ویژه هفته" loading="lazy" decoding="async" width="800" height="500" data-hero-banner>
             </a>
           </li>
         </ul>

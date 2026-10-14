@@ -194,6 +194,47 @@
   }
 }
 
+/* ─── Skeleton ─── */
+
+.category--skeleton {
+  pointer-events: none;
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.category--skeleton .category__img {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.category--skeleton .category__name {
+  background: var(--skeleton-text);
+  color: transparent !important;
+  border-top-color: transparent;
+  user-select: none;
+  min-height: 2.8em;
+}
+
+.category--skeleton:hover,
+.category--skeleton:focus-visible {
+  border-color: var(--border);
+  transform: none;
+  box-shadow: none;
+}
+
+.category--skeleton:hover .category__name,
+.category--skeleton:focus-visible .category__name {
+  background: var(--skeleton-text);
+  color: transparent !important;
+  border-top-color: transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .category {
     transition: border-color 0.01ms, box-shadow 0.01ms;
@@ -206,5 +247,10 @@
 
   .category__img img {
     transition: none;
+  }
+
+  .category--skeleton .category__img {
+    animation: none;
+    background: var(--skeleton-base);
   }
 }

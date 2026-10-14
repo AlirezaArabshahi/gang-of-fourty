@@ -98,8 +98,82 @@
   }
 }
 
+/* ─── Skeleton ─── */
+
+.hero-video--skeleton {
+  pointer-events: none;
+  background-color: var(--skeleton-base);
+  background-image: none;
+}
+
+.hero-video--skeleton .hero-video__media {
+  visibility: hidden;
+}
+
+.hero-video--skeleton::after {
+  background: none;
+}
+
+.hero-video--skeleton .hero-video__overlay {
+  gap: 12px;
+}
+
+.hero-video--skeleton .hero-video__title,
+.hero-video--skeleton .hero-video__desc,
+.hero-video--skeleton .hero-video__cta {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  color: transparent !important;
+  text-shadow: none;
+  border-radius: var(--radius-sm);
+  user-select: none;
+}
+
+.hero-video--skeleton .hero-video__title {
+  min-height: 1.35em;
+  width: min(18ch, 70%);
+}
+
+.hero-video--skeleton .hero-video__desc {
+  min-height: 1.1em;
+  width: min(28ch, 85%);
+}
+
+.hero-video--skeleton .hero-video__cta {
+  min-height: 2.4em;
+  width: 8.5em;
+  margin-top: var(--sp-sm);
+  padding: 0;
+  background-color: transparent;
+}
+
+.hero-video--skeleton .hero-video__cta svg,
+.hero-video--skeleton .hero-video__cta span {
+  visibility: hidden;
+}
+
+@media (max-width: 767px) {
+  .hero-video--skeleton {
+    background-image: none;
+    background-color: var(--skeleton-base);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-video__cta {
     transition: none;
+  }
+
+  .hero-video--skeleton .hero-video__title,
+  .hero-video--skeleton .hero-video__desc,
+  .hero-video--skeleton .hero-video__cta {
+    animation: none;
+    background: var(--skeleton-text);
   }
 }

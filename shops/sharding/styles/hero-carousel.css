@@ -121,6 +121,55 @@
   }
 }
 
+/* ─── Skeleton ─── */
+
+.hero-carousel__title--skeleton {
+  display: inline-block;
+  min-height: 1.2em;
+  width: 12em;
+  max-width: 60%;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+  color: transparent !important;
+  user-select: none;
+}
+
+.hero-carousel__slide--skeleton {
+  pointer-events: none;
+  opacity: 1;
+  transform: none;
+}
+
+.hero-carousel__slide--skeleton .hero-banner {
+  border-color: var(--border);
+  box-shadow: none;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 25%,
+    var(--skeleton-highlight) 50%,
+    var(--skeleton-base) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.hero-carousel__slide--skeleton .hero-banner img {
+  opacity: 0;
+}
+
+.hero-carousel__slide--skeleton:hover .hero-banner,
+.hero-carousel__slide--skeleton:focus-within .hero-banner {
+  border-color: var(--border);
+  box-shadow: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-carousel__slide,
   .hero-banner {
@@ -134,5 +183,11 @@
 
   .hero-carousel__track {
     scroll-behavior: auto;
+  }
+
+  .hero-carousel__title--skeleton,
+  .hero-carousel__slide--skeleton .hero-banner {
+    animation: none;
+    background: var(--skeleton-base);
   }
 }

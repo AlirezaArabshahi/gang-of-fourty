@@ -278,8 +278,14 @@ function renderMegaMenu(items) {
 }
 
 function renderTopbar(shop) {
-  document.getElementById('topbar-notice').textContent = shop.notice;
-  renderSimpleLinks(document.getElementById('topbar-links'), shop.topbarLinks);
+  const notice = document.getElementById('topbar-notice');
+  notice.textContent = shop.notice;
+  notice.classList.remove('skeleton-text', 'skeleton-text--topbar');
+  notice.removeAttribute('aria-hidden');
+
+  const links = document.getElementById('topbar-links');
+  links.removeAttribute('aria-busy');
+  renderSimpleLinks(links, shop.topbarLinks);
 }
 
 function renderHeader(shop) {
@@ -296,9 +302,17 @@ function renderHeader(shop) {
 
 function renderNavMenus(shop) {
   document.getElementById('dept-btn-label').textContent = shop.labels.deptButton;
-  renderNavList(document.getElementById('nav-list'), shop.menu);
+
+  const navList = document.getElementById('nav-list');
+  navList.removeAttribute('aria-busy');
+  renderNavList(navList, shop.menu);
+
   document.getElementById('mobile-menu-title').textContent = shop.labels.mobileMenuTitle;
-  renderListLinks(document.getElementById('mobile-menu-list'), shop.menu);
+
+  const mobileList = document.getElementById('mobile-menu-list');
+  mobileList.removeAttribute('aria-busy');
+  renderListLinks(mobileList, shop.menu);
+
   renderMegaMenu(shop.deptMenu);
 }
 
@@ -307,15 +321,40 @@ function renderHero(shop) {
   document.getElementById('hero-desc').textContent = shop.hero.desc;
   const cta = document.getElementById('hero-cta');
   cta.href = shop.hero.ctaHref;
+  cta.removeAttribute('aria-hidden');
+  cta.removeAttribute('tabindex');
   document.getElementById('hero-cta-label').textContent = shop.hero.cta;
 
+  const heroVideo = document.getElementById('hero-video');
+  if (heroVideo) heroVideo.classList.remove('hero-video--skeleton');
+
   const t = shop.sectionTitles;
-  document.getElementById('weekly-title').textContent = t.weekly;
+  const weekly = document.getElementById('weekly-title');
+  weekly.textContent = t.weekly;
+  weekly.classList.remove('hero-carousel__title--skeleton');
+
   document.getElementById('offers-title').textContent = t.offers;
   document.getElementById('offers-sub').textContent = t.offersSub;
   document.getElementById('categories-title').textContent = t.categories;
   document.getElementById('fruits-title').textContent = t.fruits;
   document.getElementById('dairy-title').textContent = t.dairy;
+}
+
+function setupHeroBannerSkeletons() {
+  document.querySelectorAll('[data-hero-banner]').forEach((img) => {
+    const slide = img.closest('.hero-carousel__slide');
+    if (!slide) return;
+
+    const clear = () => slide.classList.remove('hero-carousel__slide--skeleton');
+
+    if (img.complete && img.naturalWidth > 0) {
+      clear();
+      return;
+    }
+
+    img.addEventListener('load', clear, { once: true });
+    img.addEventListener('error', clear, { once: true });
+  });
 }
 
 function renderContactList(shop) {
@@ -441,6 +480,7 @@ async function fetchJson(url) {
 
 async function init() {
   document.querySelector('.search')?.addEventListener('submit', (e) => e.preventDefault());
+  setupHeroBannerSkeletons();
 
   const shellPromise = Promise.all([
     fetchJson(API.shop),
@@ -470,6 +510,9 @@ async function init() {
     document.title = `${shop.name} | ${shop.slogan}`;
   } catch (err) {
     console.error('[shop] shell data failed:', err);
+    const heroVideo = document.getElementById('hero-video');
+    if (heroVideo) heroVideo.classList.remove('hero-video--skeleton');
+    document.getElementById('weekly-title')?.classList.remove('hero-carousel__title--skeleton');
   }
 
   const startedAt = performance.now();
