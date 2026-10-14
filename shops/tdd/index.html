@@ -47,10 +47,11 @@
         <button type="submit">جست‌وجو</button>
       </form>
 
-      <a class="cart" href="#main-content" aria-label="سبد خرید، ۳ کالا">
-        سبد خرید 🛒 <strong>۳</strong>
+      <a class="cart" href="#main-content" aria-label="سبد خرید">
+        سبد خرید 🛒 <strong id="cart-count" aria-live="polite"></strong>
       </a>
     </div>
+    <p id="cart-status" class="page-status" role="status"></p>
 
     <nav class="primary-navigation desktop-navigation" aria-label="منوی اصلی">
       <div class="category-menu">
@@ -71,158 +72,23 @@
   </header>
 
   <main id="main-content" tabindex="-1">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow"><span aria-hidden="true"></span> تازگی، از ارزیابی تا انتخاب</p>
-        <h1 id="hero-title">یک سبد تازه، برای هر روز تو.</h1>
-        <p>از میوه‌های فصل تا نان صبحانه و نیازهای آشپزخانه؛ خرید روزانه‌ات را با تازگی، قیمت‌های روشن و انتخاب‌های به‌صرفه کنار هم بچین. نگاه سام ساده است: اول معیار تازگی، بعد انتخاب برای سبد تو.</p>
-        <div class="hero-actions">
-          <a class="hero-primary-action" href="#special-offers">دیدن پیشنهادهای امروز <span aria-hidden="true">←</span></a>
-          <a class="hero-secondary-action" href="#about">داستان سام مارکت</a>
-        </div>
-        <ul class="hero-benefits">
-          <li>قیمت‌های روشن</li>
-          <li>انتخاب روز</li>
-          <li>سبد به‌صرفه</li>
-        </ul>
-      </div>
-
-      <div class="hero-visual">
-        <div class="hero-image-frame">
-          <img src="1.jpg" alt="نارنگی‌های تازه و رسیده در سبد محصول">
-        </div>
-        <p class="freshness-card"><strong>انتخاب امروز سام</strong><span>تازه، خوش‌رنگ و آماده برای سبد تو</span></p>
-        <div class="tdd-orbit" aria-hidden="true">
-          <span class="orbit-red">معیار</span>
-          <span class="orbit-green">انتخاب</span>
-          <span class="orbit-blue">بهبود</span>
-        </div>
-      </div>
-    </section>
-
+    <p id="page-status" class="page-status" role="status" aria-live="polite"></p>
+    <div id="home-banners"></div>
     <section class="categories" id="categories" aria-labelledby="categories-title">
-      <header class="section-heading">
-        <div>
-          <p class="eyebrow">هر چیزی، سر جای خودش</p>
-          <h2 id="categories-title">دسته‌بندی‌ها</h2>
-        </div>
-        <p>از اولین لقمه صبح تا آخرین فنجان شب؛ هر انتخاب، سر جای خودش.</p>
-      </header>
-
-      <p id="categories-status" class="page-status" role="status"></p>
-      <div class="category-grid" id="category-grid" aria-busy="true"></div>
+      <h2 id="categories-title">دسته‌بندی‌ها</h2>
+      <div class="category-grid" id="category-grid"></div>
     </section>
-
-    <section class="promo-grid" aria-label="پیشنهادهای منتخب">
-      <article class="promo promo-primary">
-        <div>
-          <p>سبد به‌صرفه هفته</p>
-          <h2>خرید حساب‌شده، سفره پربار</h2>
-          <a href="#special-offers">مشاهده پیشنهادها</a>
-        </div>
-        <span aria-hidden="true">🧺</span>
-      </article>
-
-      <article class="promo promo-secondary">
-        <div>
-          <p>شروع روز با عطر نان</p>
-          <h2>شروع خوب، با نان تازه تا ساعت ۱۱</h2>
-          <a href="#bakery">خرید صبحانه</a>
-        </div>
-        <span aria-hidden="true">🥐</span>
-      </article>
-    </section>
-
-    <section class="product-carousel" id="special-offers" aria-labelledby="offers-title">
-      <header class="section-heading">
-        <div>
-          <p class="eyebrow">انتخاب‌های امروز سام</p>
-          <h2 id="offers-title">پیشنهادهای ویژه</h2>
-        </div>
-        <p>برای همان خریدهای همیشگی، انتخاب‌های تازه پیدا کن؛ پیشنهادهای سام برای یک سبد به‌صرفه‌تر.</p>
-      </header>
-      <nav class="carousel-controls" id="offers-controls" aria-label="کنترل‌های پیشنهادهای ویژه" hidden>
-        <a href="#offers-first">اولین محصول <span aria-hidden="true">→</span></a>
-        <a href="#offers-last">آخرین محصول <span aria-hidden="true">←</span></a>
-      </nav>
-
-        <p
-          class="carousel-status"
-          id="offers-status"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        ></p>
-
-      <section class="product-track" id="offers-track" aria-label="محصولات قابل پیمایش پیشنهادهای ویژه" aria-busy="false" tabindex="0">
-      </section>
-    </section>
-
-    <section class="product-carousel" id="dairy-products" aria-labelledby="dairy-title">
-      <header class="section-heading">
-        <div>
-          <p class="eyebrow">شروع یک روز سالم با لبنیات تازه سام مارکت</p>
-          <h2 id="dairy-title">لبنیات</h2>
-        </div>
-        <p>از صبحانه تا شام؛ نیازهای همیشگی، کنار هم برای یک انتخاب راحت.</p>
-      </header>
-      <nav class="carousel-controls" id="dairy-controls" aria-label="کنترل‌های سبد لبنیات" hidden>
-        <a href="#dairy-first">اولین محصول <span aria-hidden="true">→</span></a>
-        <a href="#dairy-last">آخرین محصول <span aria-hidden="true">←</span></a>
-      </nav>
-      <p
-        class="carousel-status"
-        id="dairy-status"
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-      ></p>
-      <section class="product-track" id="dairy-track" aria-label="محصولات قابل پیمایش سبد لبنیات" tabindex="0">
-      </section>
-    </section>
-
-    <section class="story" id="story" aria-labelledby="story-title">
-      <div class="story-image">
-        <img src="2.jpg" alt="پرتقال‌ها و نارنگی‌های تازه و رسیده">
-        <span>تازگی در سبد امروز</span>
-      </div>
-      <div>
-        <p class="eyebrow">تازگی، فقط یک شعار نیست</p>
-        <h2 id="story-title">اول بررسی، بعد راهیِ سبد تو.</h2>
-        <p>برای سام، انتخاب میوه از یک سؤال شروع می‌شود: آیا تازگی‌اش با معیار ما هماهنگ است؟ رسیدگی مناسب، ظاهر سالم و شرایط نگهداری، معیارهای پیشنهادی ما برای ارزیابی‌اند؛ تا طعم و رنگ فصل، با دقت بیشتری به سبدت برسد.</p>
-        <a href="#about">با ایده سام مارکت آشنا شو</a>
-      </div>
-    </section>
-
+    <section id="home-promos" class="promo-grid" aria-label="پیشنهادهای منتخب"></section>
+    <div id="home-carousels"></div>
+    <section id="home-side" class="story" aria-label="پیشنهاد فروشگاه"></section>
     <section class="store-sections" id="category-sections" aria-label="بخش‌های فروشگاه"></section>
-
-    <section id="about" aria-labelledby="about-title">
-      <h2 id="about-title">داستان سام مارکت</h2>
-      <p id="shop-about"></p>
-      <p>سام مارکت، سوپرمارکت سام در پروژه بوتکمپ است؛ با یک سبد برای نیازهای روزمره و یک داستان از دنیای برنامه‌نویسی. نام پروژه، <bdi lang="en" dir="ltr">TDD</bdi>، یادآور هدف سام است: تسلط بر توسعه آزمون‌محور تا پایان بوتکمپ.</p>
-      <p>در توسعه آزمون‌محور، اول یک تست ناموفق می‌نویسیم، بعد کد لازم برای پاس‌شدن آن را می‌سازیم و در پایان ساختار کد را بهبود می‌دهیم. سام از این نگاه برای ایده ارزیابی تازگی الهام گرفته: اول معیار مشخص، بعد بررسی محصول و در ادامه بهبود شیوه انتخاب. این فرایند، طرح پیشنهادی برند در پروژه بوتکمپ فرانت اند است؛ چرخه نرم‌افزاری <bdi lang="en" dir="ltr">TDD</bdi> الهام آن است.</p>
-      <div class="store-sections" role="group" aria-label="از چرخه آزمون‌محور تا ایده ارزیابی تازگی">
-        <article>
-          <span aria-hidden="true">🔴</span>
-          <div><h3>قرمز؛ اول معیار، بعد انتخاب</h3><p>در <bdi lang="en" dir="ltr">TDD</bdi>، تست پیش از راه‌حل نوشته می‌شود. در ایده سام، معیار تازگی را پیش از انتخاب مشخص می‌کنیم؛ محصولی که با معیار هماهنگ نیست، نیاز به بررسی دارد.</p></div>
-        </article>
-        <article>
-          <span aria-hidden="true">🟢</span>
-          <div><h3>سبز؛ انتخاب پس از ارزیابی</h3><p>همان‌طور که کد باید تست را پاس کند، در فرایند پیشنهادی سام هم انتخاب محصول باید با معیارهای تعریف‌شده هماهنگ باشد؛ تازگی، پشتوانه انتخاب است.</p></div>
-        </article>
-        <article>
-          <span aria-hidden="true">🔵</span>
-          <div><h3>آبی؛ بهترشدن فرایند</h3><p>در بازآرایی، ساختار کد بهتر می‌شود و تست‌ها همچنان موفق می‌مانند. در ایده فروشگاه هم بازخوردها به بهترشدن ارزیابی و نگهداری کمک می‌کنند؛ با حفظ معیار تازگی.</p></div>
-        </article>
-      </div>
-    </section>
+    <section id="about" aria-labelledby="about-title"></section>
   </main>
 
   <footer id="contact">
     <section aria-labelledby="footer-about">
       <h2 id="footer-about">سام مارکت</h2>
       <p id="footer-about-text"></p>
-      <p id="shop-status" class="page-status" role="status"></p>
       <address id="shop-address"></address>
       <div id="shop-schedule" role="group" aria-label="ساعت کاری"></div>
     </section>

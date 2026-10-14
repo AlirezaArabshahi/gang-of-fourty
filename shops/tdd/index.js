@@ -4,24 +4,12 @@ const OFFERS_URL = "../../api/offers.json";
 const CATEGORIES_URL = "../../api/categories.json";
 const SHOP_URL = "../../api/shop.json";
 
-const DAIRY_CATEGORY_ID = 2 
 const priceFormatter = new Intl.NumberFormat("fa-IR")
 
-//prefix helps produce unique card IDs. Milk appears in both carousels, so its two cards must not share the same HTML ID.
-const dairyCarousel = {
-  prefix: "dairy",
-  track: document.querySelector("#dairy-track"),
-  status: document.querySelector("#dairy-status"),
-  controls: document.querySelector("#dairy-controls")
-};
-const offersCarousel = {
-  prefix: "offers",
-  track: document.querySelector("#offers-track"),
-  status: document.querySelector("#offers-status"),
-  controls: document.querySelector("#offers-controls")
-};
-const carousels = [dairyCarousel, offersCarousel];
-
+const HOME_URL = "../../api/home.json";
+const CART_KEY = "tdd:w2:cart-count";
+let cartCount = 0;
+const brandStory = {"paragraphs": ["سام مارکت، سوپرمارکت سام در پروژه بوتکمپ است؛ با یک سبد برای نیازهای روزمره و یک داستان از دنیای برنامه‌نویسی. نام پروژه، TDD، یادآور هدف سام است: تسلط بر توسعه آزمون‌محور تا پایان بوتکمپ.", "در توسعه آزمون‌محور، اول یک تست ناموفق می‌نویسیم، بعد کد لازم برای پاس‌شدن آن را می‌سازیم و در پایان ساختار کد را بهبود می‌دهیم. سام از این نگاه برای ایده ارزیابی تازگی الهام گرفته: اول معیار مشخص، بعد بررسی محصول و در ادامه بهبود شیوه انتخاب. این فرایند، طرح پیشنهادی برند در پروژه بوتکمپ فرانت اند است؛ چرخه نرم‌افزاری TDD الهام آن است."], "steps": [{"title": "قرمز؛ اول معیار، بعد انتخاب", "text": "در TDD، تست پیش از راه‌حل نوشته می‌شود. در ایده سام، معیار تازگی را پیش از انتخاب مشخص می‌کنیم؛ محصولی که با معیار هماهنگ نیست، نیاز به بررسی دارد."}, {"title": "سبز؛ انتخاب پس از ارزیابی", "text": "همان‌طور که کد باید تست را پاس کند، در فرایند پیشنهادی سام هم انتخاب محصول باید با معیارهای تعریف‌شده هماهنگ باشد؛ تازگی، پشتوانه انتخاب است."}, {"title": "آبی؛ بهترشدن فرایند", "text": "در بازآرایی، ساختار کد بهتر می‌شود و تست‌ها همچنان موفق می‌مانند. در ایده فروشگاه هم بازخوردها به بهترشدن ارزیابی و نگهداری کمک می‌کنند؛ با حفظ معیار تازگی."}]};
 
 async function loadJSON(url) {
     const response = await fetch(url)
@@ -69,7 +57,7 @@ function createProductCard(product, cardId, quantity, offer) {
     if (offer) {
         const discountBadge = document.createElement("span")
         discountBadge.className = "discount-badge"
-        discountBadge.textContent = `${priceFormatter.format(offer.percent)} % تخفیف`
+        discountBadge.textContent = `${priceFormatter.format(offer.percent)}٪ تخفیف`
         imageContainer.append(discountBadge)
     }
 
@@ -132,6 +120,9 @@ function createProductCard(product, cardId, quantity, offer) {
     addButton.type = "button"
     addButton.setAttribute("aria-label", `افزودن ${product.name} به سبد خرید`)
     addButton.disabled = isUnavailable;
+    addButton.addEventListener("click", () => {
+        if (!isUnavailable) addToCart();
+    });
 
     const buttonIcon = document.createElement("span");
     buttonIcon.setAttribute("aria-hidden", "true");
@@ -198,77 +189,6 @@ function renderProducts(carousel, products, stock, offers) {
     carousel.controls.hidden = false;
 }
 
-//load and display carousel
-async function initcarousels() {
-    carousels.forEach(carousel => {
-        carousel.track.replaceChildren();
-        carousel.controls.hidden = true;
-        carousel.track.setAttribute("aria-busy", "true");
-
-        showStatus(carousel, "در حال بارگذاری محصولات...");
-    });
-
-    try {
-        const [products, stock, offers] = await Promise.all([
-            loadJSON(PRODUCTS_URL),
-            loadJSON(STOCK_URL),
-            loadJSON(OFFERS_URL)
-        ])
-
-        if(!Array.isArray(products) || !Array.isArray(offers)) {
-            throw new Error("Expected products and offers to be arrays.")
-        }
-
-        if (
-            !stock ||
-            !stock.items ||
-            typeof stock.items !== "object" ||
-            Array.isArray(stock.items)
-        ) {
-            throw new Error("Expected a stock.items object.");
-        }
-
-        const dairyProducts = products.filter( product => product.categoryId === DAIRY_CATEGORY_ID)
-        const discountedProducts = products.filter(product => offers.some(offer => offer.productId === product.id))
-
-        renderProducts(
-            dairyCarousel,
-            dairyProducts,
-            stock,
-            offers
-        );
-
-        renderProducts(
-            offersCarousel,
-            discountedProducts,
-            stock,
-            offers
-        );
-
-        return products;
-    } catch (error) {
-
-        console.error(error)
-        carousels.forEach(carousel => {
-            carousel.track.replaceChildren();
-            carousel.controls.hidden = true;
-
-            showStatus(
-                carousel,
-                "بارگذاری اطلاعات محصولات انجام نشد. لطفاً صفحه را دوباره بارگذاری کنید.",
-                true
-                );
-        });
-    } finally {
-       carousels.forEach(carousel => {
-        carousel.track.setAttribute("aria-busy", "false")
-       }) 
-
-    }
-
-}
-
-
 // Level 3: one category dataset supplies all navigation and destinations.
 function createTextElement(tag, text, className) {
     const element = document.createElement(tag);
@@ -307,7 +227,8 @@ function renderCategories(categories, products = []) {
 
         menus.forEach(menu => menu.append(createLink(category.name, href)));
 
-        // Use the API slug as the destination, including newly added categories.
+        if (document.getElementById(category.slug)) return;
+        // Categories without a configured carousel retain their own destination.
         const section = document.createElement("article");
         section.id = category.slug;
         section.setAttribute("aria-labelledby", `category-${category.id}-title`);
@@ -323,22 +244,19 @@ function renderCategories(categories, products = []) {
             copy.append(createTextElement("p", categoryProducts.map(product => product.name).join("، ")));
         }
         section.append(sectionIcon, copy);
-        if (category.id === DAIRY_CATEGORY_ID) {
-            section.append(createLink("مشاهده محصولات لبنیات", "#dairy-products"));
-        }
         sections.append(section);
     });
 }
 
-// The shared shop menu uses #offers; retain this shop's existing carousel ID.
+// Links use the API fragment IDs.
 function shopHref(href) {
-    return href === "#offers" ? "#special-offers" : href;
+    return href;
 }
 
 function renderShop(shop) {
     document.querySelector("#shop-notice").textContent = shop.notice;
     document.querySelector("#shop-slogan").textContent = shop.slogan;
-    document.querySelector("#shop-about").textContent = shop.about;
+    renderAbout(shop.about);
     document.querySelector("#footer-about-text").textContent = shop.about;
 
     const address = document.querySelector("#shop-address");
@@ -382,12 +300,13 @@ function scrollToFragment() {
         return;
     }
     const aliases = {
-        offers: "special-offers",
+        "special-offers": "offers",
+        "dairy-products": "dairy",
         fruit: "fruits",
         herbs: "fruits",
         proteins: "protein",
         sweets: "bakery",
-        "daily-essentials": "dairy-products"
+        "daily-essentials": "dairy"
     };
     const target = document.getElementById(aliases[id] || id);
     if (target) target.scrollIntoView({ block: "start", inline: "nearest", behavior: "instant" });
@@ -401,35 +320,222 @@ document.querySelector(".mobile-navigation").addEventListener("click", event => 
     if (link) document.querySelector(".mobile-menu").open = false;
 });
 
+
+function renderCartCount() {
+    const formatted = priceFormatter.format(cartCount);
+    document.querySelector("#cart-count").textContent = formatted;
+    document.querySelector(".cart").setAttribute("aria-label", `سبد خرید، ${formatted} کالا`);
+}
+
+function restoreCart() {
+    try {
+        const saved = Number(localStorage.getItem(CART_KEY));
+        cartCount = Number.isSafeInteger(saved) && saved >= 0 ? saved : 0;
+    } catch {
+        cartCount = 0;
+    }
+    renderCartCount();
+}
+
+function addToCart() {
+    if (cartCount >= Number.MAX_SAFE_INTEGER) return;
+    cartCount += 1;
+    renderCartCount();
+    const status = document.querySelector("#cart-status");
+    try {
+        localStorage.setItem(CART_KEY, String(cartCount));
+        status.textContent = "";
+    } catch {
+        status.textContent = "کالا اضافه شد؛ ذخیره سبد برای مراجعه بعدی در این مرورگر ممکن نیست.";
+    }
+}
+
+window.addEventListener("storage", event => {
+    if (event.key === CART_KEY || event.key === null) restoreCart();
+});
+
+function renderAbout(about) {
+    const section = document.querySelector("#about");
+    const heading = createTextElement("h2", "داستان سام مارکت");
+    heading.id = "about-title";
+    section.replaceChildren(heading, createTextElement("p", about));
+    brandStory.paragraphs.forEach(text => section.append(createTextElement("p", text)));
+    const steps = document.createElement("div");
+    steps.className = "store-sections";
+    brandStory.steps.forEach(step => {
+        const article = document.createElement("article");
+        const copy = document.createElement("div");
+        copy.append(createTextElement("h3", step.title), createTextElement("p", step.text));
+        article.append(copy);
+        steps.append(article);
+    });
+    section.append(steps);
+}
+
+function renderBanners(home) {
+    const banners = document.querySelector("#home-banners");
+    const hero = document.createElement("section");
+    hero.className = "hero";
+    hero.setAttribute("aria-labelledby", "hero-title");
+    const copy = document.createElement("div");
+    copy.className = "hero-copy";
+    const eyebrow = createTextElement("p", "تازگی، از ارزیابی تا انتخاب", "eyebrow");
+    eyebrow.prepend(document.createElement("span"));
+    const title = createTextElement("h1", home.hero.title);
+    title.id = "hero-title";
+    const actions = document.createElement("div");
+    actions.className = "hero-actions";
+    const primary = createLink(home.hero.cta.label, home.hero.cta.href);
+    primary.className = "hero-primary-action";
+    const secondary = createLink("داستان سام مارکت", "#about");
+    secondary.className = "hero-secondary-action";
+    actions.append(primary, secondary);
+    const benefits = document.createElement("ul");
+    benefits.className = "hero-benefits";
+    ["قیمت‌های روشن", "انتخاب روز", "سبد به‌صرفه"].forEach(text => {
+        benefits.append(createTextElement("li", text));
+    });
+    copy.append(eyebrow, title, createTextElement("p", home.hero.text), actions, benefits);
+
+    const visual = document.createElement("div");
+    visual.className = "hero-visual";
+    const frame = document.createElement("div");
+    frame.className = "hero-image-frame";
+    const image = document.createElement("img");
+    image.src = "1.jpg";
+    image.alt = "نارنگی‌های تازه و رسیده در سبد محصول";
+    frame.append(image);
+    const freshness = createTextElement("p", "", "freshness-card");
+    freshness.append(
+        createTextElement("strong", "انتخاب امروز سام"),
+        createTextElement("span", "تازه، خوش‌رنگ و آماده برای سبد تو")
+    );
+    const orbit = document.createElement("div");
+    orbit.className = "tdd-orbit";
+    orbit.setAttribute("aria-hidden", "true");
+    [["معیار", "orbit-red"], ["انتخاب", "orbit-green"], ["بهبود", "orbit-blue"]]
+        .forEach(([text, className]) => orbit.append(createTextElement("span", text, className)));
+    visual.append(frame, freshness, orbit);
+    hero.append(copy, visual);
+    banners.replaceChildren(hero);
+
+    const promos = document.querySelector("#home-promos");
+    promos.replaceChildren();
+    home.promos.forEach((promo, index) => {
+        const article = document.createElement("article");
+        article.className = index % 2 === 0 ? "promo promo-primary" : "promo promo-secondary";
+        const content = document.createElement("div");
+        content.append(
+            createTextElement("h2", promo.text),
+            createLink("مشاهده محصولات", promo.href)
+        );
+        const emoji = createTextElement("span", promo.emoji);
+        emoji.setAttribute("aria-hidden", "true");
+        article.append(content, emoji);
+        promos.append(article);
+    });
+
+    // The second API banner uses the original photographic story design.
+    const story = document.querySelector("#home-side");
+    story.setAttribute("aria-labelledby", "side-title");
+    const photo = document.createElement("div");
+    photo.className = "story-image";
+    const sideImage = document.createElement("img");
+    sideImage.src = "labaniat.jpg";
+    sideImage.alt = "لبنیات تازه";
+    photo.append(sideImage, createTextElement("span", home.side.title));
+    const sideCopy = document.createElement("div");
+    const sideTitle = createTextElement("h2", home.side.title);
+    sideTitle.id = "side-title";
+    sideCopy.append(
+        sideTitle,
+        createTextElement("p", home.side.text),
+        createLink(home.side.cta.label, home.side.cta.href)
+    );
+    story.replaceChildren(photo, sideCopy);
+}
+
+function renderHomeCarousels(configurations, products, stock, offers) {
+    const container = document.querySelector("#home-carousels");
+    container.replaceChildren();
+    configurations.forEach(config => {
+        const section = document.createElement("section");
+        section.className = "product-carousel";
+        section.id = config.id;
+        const headingId = `${config.id}-title`;
+        section.setAttribute("aria-labelledby", headingId);
+        const header = document.createElement("header");
+        header.className = "section-heading";
+        const heading = createTextElement("h2", `${config.emoji} ${config.title}`);
+        heading.id = headingId;
+        header.append(heading);
+
+        const controls = document.createElement("nav");
+        controls.className = "carousel-controls";
+        controls.id = `${config.id}-controls`;
+        controls.setAttribute("aria-label", `کنترل‌های ${config.title}`);
+        controls.append(
+            createLink("اولین محصول →", `#${config.id}-first`),
+            createLink("آخرین محصول ←", `#${config.id}-last`)
+        );
+        const status = createTextElement("p", "", "carousel-status");
+        status.setAttribute("role", "status");
+        const track = document.createElement("section");
+        track.id = `${config.id}-track`;
+        track.className = "product-track";
+        track.tabIndex = 0;
+        track.setAttribute("aria-label", `محصولات ${config.title}`);
+        section.append(header, controls, status, track);
+        container.append(section);
+
+        const selected = config.source === "offers"
+            ? products.filter(product => offers.some(offer => offer.productId === product.id))
+            : products.filter(product => product.categoryId === config.categoryId);
+        renderProducts({ prefix: config.id, track, controls, status }, selected, stock, offers);
+    });
+}
+
 async function initPage() {
-    const categoriesStatus = document.querySelector("#categories-status");
-    const shopStatus = document.querySelector("#shop-status");
-    categoriesStatus.textContent = "در حال بارگذاری دسته‌بندی‌ها...";
-    shopStatus.textContent = "در حال بارگذاری اطلاعات فروشگاه...";
+    restoreCart();
+    const main = document.querySelector("main");
+    const status = document.querySelector("#page-status");
+    main.setAttribute("aria-busy", "true");
+    status.textContent = "در حال بارگذاری فروشگاه...";
 
-    // Independent outcomes: unavailable shop information must not hide products.
-    const [productResult, categoryResult, shopResult] = await Promise.allSettled([
-        initcarousels(),
-        loadJSON(CATEGORIES_URL),
-        loadJSON(SHOP_URL)
-    ]);
+    try {
+        // All six independent requests start together and are awaited once.
+        const [products, stock, offers, categories, shop, home] = await Promise.all([
+            loadJSON(PRODUCTS_URL),
+            loadJSON(STOCK_URL),
+            loadJSON(OFFERS_URL),
+            loadJSON(CATEGORIES_URL),
+            loadJSON(SHOP_URL),
+            loadJSON(HOME_URL)
+        ]);
+        if (!Array.isArray(products) || !Array.isArray(offers) ||
+            !Array.isArray(categories) || !stock?.items ||
+            !Array.isArray(home?.carousels) || !Array.isArray(home?.promos)) {
+            throw new Error("Unexpected API data structure.");
+        }
 
-    if (categoryResult.status === "fulfilled" && Array.isArray(categoryResult.value)) {
-        renderCategories(categoryResult.value, productResult.value || []);
-        categoriesStatus.textContent = categoryResult.value.length ? "" : "دسته‌بندی‌ای یافت نشد.";
-    } else {
-        categoriesStatus.textContent = "دسته‌بندی‌ها بارگذاری نشدند. لطفاً صفحه را دوباره بارگذاری کنید.";
+        renderBanners(home);
+        renderHomeCarousels(home.carousels, products, stock, offers);
+        renderCategories(categories, products);
+        renderShop(shop);
+        document.querySelector("#site-search").placeholder =
+            `جست‌وجو در میان ${priceFormatter.format(products.length)} کالا...`;
+        status.textContent = "";
+        requestAnimationFrame(scrollToFragment);
+    } catch {
+        ["home-banners", "home-side", "home-promos", "home-carousels", "category-grid",
+            "category-sections", "about"].forEach(id => {
+            document.getElementById(id).replaceChildren();
+        });
+        status.textContent = "بارگذاری فروشگاه انجام نشد. اتصال را بررسی کنید و صفحه را دوباره بارگذاری کنید.";
+        status.classList.add("is-error");
+    } finally {
+        main.setAttribute("aria-busy", "false");
     }
-    document.querySelector("#category-grid").setAttribute("aria-busy", "false");
-
-    if (shopResult.status === "fulfilled") {
-        renderShop(shopResult.value);
-        shopStatus.textContent = "";
-    } else {
-        shopStatus.textContent = "اطلاعات فروشگاه بارگذاری نشد. لطفاً صفحه را دوباره بارگذاری کنید.";
-    }
-
-    requestAnimationFrame(scrollToFragment);
 }
 
 initPage();

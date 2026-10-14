@@ -2842,3 +2842,20 @@ footer { padding-block: clamp(2.5rem, 5vw, 4rem); }
 .category-grid {
   grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
 }
+
+#page-status.is-error {
+  border-inline-start: 4px solid #c94b45;
+}
+
+#cart-status {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+#about .store-sections article > div {
+  grid-column: 1 / -1;
+}
+
+footer #shop-schedule h3 {
+  color: #dff4e9;
+}
