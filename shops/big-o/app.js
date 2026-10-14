@@ -18,11 +18,13 @@ async function getDataObjects(url, objectName) {
 // so total wait time is the slowest request, not the sum.
 // Returns { categories, products }. Any failure is rethrown to the caller.
 async function getData() {
-    const [categories, products] = await Promise.all([
+    const [categories, products, offeredProducts, stock] = await Promise.all([
         getDataObjects('../../api/categories.json', "categories"),
-        getDataObjects('../../api/products.json', "products")]);
-    return { categories, products };
-}
+        getDataObjects('../../api/products.json', "products"),
+        getDataObjects('../../api/offers.json', "offeredProducts"),
+        getDataObjects('../../api/stock.json', "stock")]);
+    return { categories, products, offeredProducts, stock };
+}   
 
 
 // Finds a category by its name and returns its id.
@@ -43,7 +45,7 @@ function filterProductsByCategoryID(id, products) {
 
 
 // Builds one product card element from a product object and returns it.
-function createProductCard(product) {
+function createProductCard(product, label , percent) {
     const carouselItem = document.createElement("li");
 
     const card = document.createElement("article");
@@ -52,6 +54,7 @@ function createProductCard(product) {
     const img = document.createElement("span");
     img.textContent = product.emoji;
     img.classList.add("product-img");
+
 
     const title = document.createElement("h3");
     title.textContent = product.name;
@@ -66,9 +69,25 @@ function createProductCard(product) {
     const priceBox = document.createElement("div");
     priceBox.classList.add("price");
 
-    const price = document.createElement("strong");
-    price.textContent = `${new Intl.NumberFormat('fa-IR').format(product.price)} تومان`;
-    priceBox.append(price);
+  
+    
+    if(percent) {
+        const price = document.createElement("del");
+        price.textContent = `${new Intl.NumberFormat('fa-IR').format(product.price)} تومان`;
+
+        const offeredPrice = document.createElement("strong");
+        offeredPrice.textContent = `${new Intl.NumberFormat('fa-IR').format(Math.round(product.price - (percent*product.price)/100))} تومان`;
+        priceBox.append(price,offeredPrice);
+
+    }
+    else {
+        const price = document.createElement("strong");
+        price.textContent = `${new Intl.NumberFormat('fa-IR').format(product.price)} تومان`;
+        priceBox.append(price);
+    }
+   
+
+    
 
     const button = document.createElement("button");
     button.type = "button";
@@ -82,8 +101,31 @@ function createProductCard(product) {
     plusContent.textContent = "افزودن به سبد خرید";
     plusContent.classList.add("visually-hidden");
     button.append(plus, plusContent);
+    
+    if(label) {
+        let badge = document.createElement("span");
+        badge.classList.add("discount-badge");
 
-    card.append(img, title, unit, cardFooter);
+        let badgeReader = document.createElement("span");
+        badgeReader.classList.add("visually-hidden");
+
+        if(label === "ناموجود") {
+            badge.textContent = label;
+            badgeReader.textContent = label;
+        }
+        else {
+            badge.textContent = `${new Intl.NumberFormat('fa-IR').format(percent)} ٪`;
+            badgeReader.textContent = "تخفیف";
+        }
+
+        badge.append(badgeReader);
+
+        card.append(img,badge, title, unit, cardFooter);
+    }
+    else {
+        card.append(img, title, unit, cardFooter);
+    }
+    
     carouselItem.append(card);
 
     return carouselItem;
@@ -93,9 +135,21 @@ function createProductCard(product) {
 // Renders a list of product cards inside the carousel with the given id.
 // The first and last cards get ids (first-<id>, last-<id>) so the arrows can jump to them.
 // data: array of products, queryId: id of the section (a string).
-function renderProducts(data, queryId) {
+function renderProducts(data, queryId, offeredProducts, stock) {
     const productList = data.map((item, index) => {
-        const productCard = createProductCard(item);
+        const offered = offeredProducts.find(offered => offered.productId == item.id);
+        const productNumber = stock.items[item.id];
+        let label;
+        let percent;
+       
+        if(productNumber === 0 ) {
+            label = "ناموجود";
+        }
+        else if (offered) {
+            label = offered.label;
+            percent = offered.percent
+        }
+        const productCard = createProductCard(item,label, percent);
         if (index === 0) {
             productCard.id = `first-${queryId}`;
         }
@@ -103,6 +157,7 @@ function renderProducts(data, queryId) {
             productCard.id = `last-${queryId}`;
         }
         return productCard;
+        
     });
     const htmlTag = document.querySelector(`#${queryId}`);
     htmlTag.querySelector("ul").append(...productList);
@@ -142,14 +197,14 @@ function clearMessage(container) {
 async function init() {
     try {
         showMessage("#dairy", "در حال بارگذاری…", "load");
-        const { categories, products } = await getData();
+        const { categories, products, offeredProducts, stock } = await getData();
         clearMessage("#dairy");
         //Get "لبنیات" products
         const categoryId = getCategoryID("لبنیات", categories);
         const filteredProducts = filterProductsByCategoryID(categoryId, products);
 
         // Render the dairy carousel
-        renderProducts(filteredProducts, "dairy");
+        renderProducts(filteredProducts, "dairy",offeredProducts, stock);
 
     } catch (error) {
         clearMessage("#dairy");
