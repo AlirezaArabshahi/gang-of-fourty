@@ -1687,3 +1687,154 @@ footer {
     flex-basis: 132px;
   }
 }
+
+
+/* Week 2 - Level 1: API loading and error states */
+.api-status {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.api-status[hidden] {
+  display: none;
+}
+
+.api-status--error {
+  color: var(--red);
+}
+
+.product-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5rem;
+  background-color: var(--light-blue);
+}
+
+/* Week 2 - Level 1 fixes: semantic list, visible controls and centered emoji */
+.dairy-carousel-viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+.dairy-carousel .products {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dairy-carousel .product-icon.product-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  width: 100%;
+  max-width: none;
+  height: 168px;
+  flex: 0 0 168px;
+  box-sizing: border-box;
+  margin: 0 0 14px;
+  padding: 8px;
+  font-size: clamp(3.5rem, 5vw, 5rem);
+  line-height: 1;
+  text-align: center;
+  background-color: var(--light-blue);
+  border-radius: 12px;
+}
+
+.dairy-carousel-controls {
+  top: 50%;
+}
+
+.dairy-carousel .dairy-next-button,
+.dairy-carousel .dairy-prev-button {
+  display: none;
+  z-index: 20;
+}
+
+#slide-2-1:checked ~ .dairy-carousel-controls .next-1,
+#slide-2-2:checked ~ .dairy-carousel-controls .prev-2 {
+  display: flex;
+}
+
+@media (max-width: 700px) {
+  .dairy-carousel .product-icon.product-emoji {
+    height: 140px;
+    flex-basis: 140px;
+  }
+}
+
+@media (max-width: 380px) {
+  .dairy-carousel .product-icon.product-emoji {
+    height: 132px;
+    flex-basis: 132px;
+  }
+}
+
+/* JavaScript-driven dairy carousel: one card per click, including mobile. */
+.dairy-carousel {
+  position: relative;
+}
+
+.dairy-carousel-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.dairy-carousel .products {
+  width: max-content;
+  min-width: 100%;
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+.dairy-carousel-controls {
+  position: absolute;
+  top: 50%;
+  left: -18px;
+  right: -18px;
+  transform: translateY(-50%);
+  z-index: 30;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.dairy-carousel .dairy-prev-button,
+.dairy-carousel .dairy-next-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--yellow);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  pointer-events: auto;
+}
+
+.dairy-carousel .dairy-prev-button:disabled,
+.dairy-carousel .dairy-next-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .dairy-carousel {
+    margin-left: 28px;
+    margin-right: 28px;
+  }
+
+  .dairy-carousel-controls {
+    left: -24px;
+    right: -24px;
+  }
+}
