@@ -70,6 +70,7 @@ loadDairyProducts();
 
 async function loadDailyOffers() {
   const container = document.querySelector("#dailyOffers");
+  
 
   try {
     const [productsResponse, offersResponse, stockResponse] =
