@@ -42,8 +42,8 @@ function createProductCard(product, offer, stockCount){
     if(stockCount === 0){
         article.classList.add('out-of-stock')
         const outOfstock= document.createElement('p')
-        p.classList.add('stock-label')
-        p.textContent = "ناموجود"
+        outOfstock.classList.add('stock-label')
+        outOfstock.textContent = "ناموجود"
         article.append(outOfstock)
         btn.setAttribute('disabled', 'true')
         btn.setAttribute('aria-label','ناموجود')
@@ -60,7 +60,19 @@ async function getJSON(fileName) {
         }
     return await res.json()
 }
+function renderProducts(container, productList, stock, offers){
+    for(let i = 0; i < productList.length; i++){
+            const product = productList[i]
+            const stockCount = stock.items[product.id]
+            const offer = offers.find((o) => o.productId === product.id)
+            //console.log(product, stockCount, offer)
+            const card = createProductCard(product, offer, stockCount)
+            container.append(card)
+            
+        }
+}
 async function loadProducts(){
+    const offersContainer = document.querySelector('#special-offers .carousel') 
     const container = document.querySelector('#tents .carousel')
     const loadingMessage = document.createElement('p')
     loadingMessage.classList.add('carousel-message')
@@ -69,18 +81,13 @@ async function loadProducts(){
     try {
         const[products, stock, offers] = await Promise.all([getJSON('products'), getJSON('stock'), getJSON('offers')])
         const pantryProducts = products.filter((n) => n.categoryId === 4)
+        const offerProducts = products.filter((product) => offers.find((o) => o.productId === product.id))
         loadingMessage.remove()
-        for(let i = 0; i < pantryProducts.length; i++){
-            const product = pantryProducts[i]
-            const stockCount = stock.items[product.id]
-            const offer = offers.find((o) => o.productId === product.id)
-            console.log(product, stockCount, offer)
-            const card = createProductCard(product, offer, stockCount)
-            container.append(card)
-            
-        }
-       
-        
+        renderProducts(container, pantryProducts, stock, offers)
+        renderProducts(offersContainer, offerProducts, stock, offers)
+        offersContainer.firstElementChild.id = 'offer-first'
+        offersContainer.lastElementChild.id = 'offer-last'
+
     } catch (error) {
         loadingMessage.remove()
         console.log(error.message)
