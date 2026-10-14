@@ -49,8 +49,8 @@ function filterProductsByCategoryID(id, products) {
 // offers: array from offers.json, products: array from products.json,
 // stock: object from stock.json (stock.items[id] is the quantity).
 function filterSpecialProducts(offers, products, stock) {
-   const specialProducts = products.filter(item => offers.some(offer => item.id === offer.productId) && stock.items[item.id] > 0);
-   return specialProducts;
+    const specialProducts = products.filter(item => offers.some(offer => item.id === offer.productId) && stock.items[item.id] > 0);
+    return specialProducts;
 }
 
 
@@ -69,6 +69,7 @@ function createProductCard(product, cardInfo = {}) {
     const img = document.createElement("span");
     img.textContent = product.emoji;
     img.classList.add("product-img");
+    img.setAttribute("aria-hidden", "true");
 
 
     const title = document.createElement("h3");
@@ -84,15 +85,15 @@ function createProductCard(product, cardInfo = {}) {
     const priceBox = document.createElement("div");
     priceBox.classList.add("price");
 
-  
-    
-    if(percent) {
+
+
+    if (percent) {
         const price = document.createElement("del");
         price.textContent = `${new Intl.NumberFormat('fa-IR').format(product.price)} تومان`;
 
         const offeredPrice = document.createElement("strong");
-        offeredPrice.textContent = `${new Intl.NumberFormat('fa-IR').format(Math.round(product.price - (percent*product.price)/100))} تومان`;
-        priceBox.append(price,offeredPrice);
+        offeredPrice.textContent = `${new Intl.NumberFormat('fa-IR').format(Math.round(product.price - (percent * product.price) / 100))} تومان`;
+        priceBox.append(price, offeredPrice);
 
     }
     else {
@@ -100,9 +101,9 @@ function createProductCard(product, cardInfo = {}) {
         price.textContent = `${new Intl.NumberFormat('fa-IR').format(product.price)} تومان`;
         priceBox.append(price);
     }
-   
 
-    
+
+
 
     const button = document.createElement("button");
     button.type = "button";
@@ -116,20 +117,20 @@ function createProductCard(product, cardInfo = {}) {
     plusContent.textContent = "افزودن به سبد خرید";
     plusContent.classList.add("visually-hidden");
     button.append(plus, plusContent);
-    
-    if(label || !inStock ) {
+
+    if (label || !inStock) {
         const badge = document.createElement("span");
         const badgeReader = document.createElement("span");
         badgeReader.classList.add("visually-hidden");
 
-        if(!inStock) {
+        if (!inStock) {
             badge.textContent = "ناموجود";
             badgeReader.textContent = "ناموجود";
             card.classList.add("out-of-stock");
             badge.classList.add("stock-badge");
             button.disabled = true;
         }
-        else if(label) {
+        else if (label) {
             badge.textContent = `${new Intl.NumberFormat('fa-IR').format(percent)} ٪`;
             badgeReader.textContent = label;
             badge.classList.add("discount-badge");
@@ -137,12 +138,12 @@ function createProductCard(product, cardInfo = {}) {
 
         badge.append(badgeReader);
 
-        card.append(img,badge, title, unit, cardFooter);
+        card.append(img, badge, title, unit, cardFooter);
     }
     else {
         card.append(img, title, unit, cardFooter);
     }
-    
+
     carouselItem.append(card);
 
     return carouselItem;
@@ -164,7 +165,7 @@ function renderProducts(data, queryId, offeredProducts, stock) {
             percent = offered.percent;
         }
 
-        const cardInfo = {inStock,label,percent};
+        const cardInfo = { inStock, label, percent };
 
         const productCard = createProductCard(item, cardInfo);
         if (index === 0) {
@@ -174,7 +175,7 @@ function renderProducts(data, queryId, offeredProducts, stock) {
             productCard.id = `last-${queryId}`;
         }
         return productCard;
-        
+
     });
     const htmlTag = document.querySelector(`#${queryId}`);
     htmlTag.querySelector("ul").append(...productList);
@@ -187,7 +188,7 @@ function showMessage(container, text, type) {
     const content = document.createElement("p");
     content.textContent = text;
     content.classList.add("msg");
-    
+
     if (type === "load") {
         content.classList.add("load-msg");
         content.setAttribute("role", "status");
@@ -247,6 +248,11 @@ function renderCategoryLinks(categoryData) {
             createLinkItem({ label: category.name, href: `#${category.slug}` })));
 }
 
+// Converts Latin digits in a string to Persian digits.
+function toPersianDigits(text) {
+    return text.replace(/\d/g, digit => "۰۱۲۳۴۵۶۷۸۹"[digit]);
+}
+
 // Fills the notice bar, tagline, phone and opening hours from shop.json.
 // shop: object from shop.json.
 function renderShop(shop) {
@@ -258,11 +264,12 @@ function renderShop(shop) {
     document.querySelector(".title p").textContent = shop.slogan;
 
     const phoneLink = document.querySelector("address a");
-    phoneLink.querySelector("bdi").textContent = shop.phone;
+    phoneLink.querySelector("bdi").textContent = toPersianDigits(shop.phone).replace("-", "\u2011");
     phoneLink.href = `tel:${shop.phone.replace(/[^\d+]/g, "")}`;
-
+    
     const hours = document.createElement("p");
-    hours.textContent = `هر روز ${shop.hours.open} تا ${shop.hours.close}`;
+    hours.textContent = `هر روز ${toPersianDigits(shop.hours.open)} تا ${toPersianDigits(shop.hours.close)}`;
+    
     document.querySelector(".info").append(hours);
 }
 
@@ -272,15 +279,15 @@ async function init() {
     const containers = ["#dairy", "#special-products", ".categories"];
     try {
         containers.forEach(container => {
-            showMessage(container , "در حال بارگذاری…", "load");
+            showMessage(container, "در حال بارگذاری…", "load");
         });
-    
+
         const { categories, products, offeredProducts, stock, shop } = await getData();
 
         containers.forEach(container => {
             clearMessage(container);
         });
-        
+
         renderCategories(categories);
         renderCategoryLinks(categories);
         renderShop(shop);
@@ -288,11 +295,11 @@ async function init() {
         const categoryId = getCategoryID("لبنیات", categories);
         const filteredProducts = filterProductsByCategoryID(categoryId, products);
         //Get "پیشنهاد امروز" products
-        const specialProducts = filterSpecialProducts(offeredProducts,products,stock);
-        
+        const specialProducts = filterSpecialProducts(offeredProducts, products, stock);
+
 
         // Render the dairy and special products carousel
-        renderProducts(filteredProducts, "dairy",offeredProducts, stock);
+        renderProducts(filteredProducts, "dairy", offeredProducts, stock);
         renderProducts(specialProducts, "special-products", offeredProducts, stock);
 
     } catch (error) {
