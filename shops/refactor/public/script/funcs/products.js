@@ -228,7 +228,6 @@ const getAndShowAllProducts = () => {
         });
 };
 
-
 const updateSearchPlaceholders = async() => {
     const searches = document.querySelectorAll('#q-mobile, #q-desktop');
 

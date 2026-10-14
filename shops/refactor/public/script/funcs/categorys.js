@@ -74,7 +74,6 @@ const selectCategory = (category) => {
     openModal(category);
 };
 
-
 const openModal = async(category) => {
     const modal = document.querySelector("#cat-modal");
     const title = modal.querySelector(".cat-modal__title");
@@ -85,24 +84,31 @@ const openModal = async(category) => {
     document.body.style.overflow = "hidden";
     track.textContent = "";
 
-    try {
+    let timerId;
+    const timeoutPromise = new Promise((_, reject) => {
+        timerId = setTimeout(() => reject(new Error("SLOW_CONNECTION")), 3000);
+    });
 
-        const products = await fetchProducts();
-        const filtered = products.filter(p => p.categoryId === category.id);
+    try {
+        const products = await Promise.race([fetchProducts(), timeoutPromise]);
+        const filtered = products.filter((p) => p.categoryId === category.id);
 
         if (filtered.length === 0) {
             showError(track, "محصولی در این دسته وجود ندارد.");
             return;
         }
 
-        const cards = filtered.map(makeCard);
-        track.textContent = "";
-        track.append(...cards);
+        track.append(...filtered.map(makeCard));
     } catch (err) {
-        showError(track, "خطا در بارگیری.");
+        if (err.message === "SLOW_CONNECTION") {
+            showError(track, "اتصال کند است. دوباره تلاش کنید.");
+        } else {
+            showError(track, "خطا در بارگیری.");
+        }
+    } finally {
+        clearTimeout(timerId);
     }
 };
-
 const closeModal = () => {
     const modal = document.querySelector("#cat-modal");
     if (!modal) return;
