@@ -35,4 +35,37 @@
     const toEnd = btn.classList.contains('carousel-nav__btn--end');
     scrollTrack(track, toEnd);
   });
+
+  function setupHeroActiveSlide() {
+    const track = document.querySelector('.hero-carousel__track');
+    if (!track || !('IntersectionObserver' in window)) return;
+
+    const slides = track.querySelectorAll('.hero-carousel__slide');
+    if (!slides.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle(
+            'is-active',
+            entry.intersectionRatio > 0.6
+          );
+        });
+      },
+      {
+        root: track,
+        threshold: [0, 0.6, 1],
+      }
+    );
+
+    slides.forEach((slide) => observer.observe(slide));
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupHeroActiveSlide, {
+      once: true,
+    });
+  } else {
+    setupHeroActiveSlide();
+  }
 })();

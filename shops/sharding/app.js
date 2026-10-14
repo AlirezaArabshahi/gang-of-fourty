@@ -5,13 +5,20 @@ const API = {
 };
 
 const MIN_SKELETON_MS = 700;
+const FETCH_TIMEOUT_MS = 8000;
+
+const priceFormatter = new Intl.NumberFormat('fa-IR');
+const percentFormatter = new Intl.NumberFormat('fa-IR', {
+  style: 'percent',
+  maximumFractionDigits: 0,
+});
 
 function formatPrice(price) {
-  return new Intl.NumberFormat('fa-IR').format(price);
+  return priceFormatter.format(price);
 }
 
 function formatPercent(percent) {
-  return new Intl.NumberFormat('fa-IR').format(percent) + '٪';
+  return percentFormatter.format(percent / 100);
 }
 
 function buildOfferMap(offers) {
@@ -27,6 +34,14 @@ function buildStockMap(stockData) {
   const items = stockData.items || {};
   for (const [id, qty] of Object.entries(items)) {
     map.set(Number(id), qty);
+  }
+  return map;
+}
+
+function buildProductMap(products) {
+  const map = new Map();
+  for (const product of products) {
+    map.set(product.id, product);
   }
   return map;
 }
@@ -51,9 +66,8 @@ function createProductCard(product, options = {}) {
   const article = document.createElement('article');
   article.className = outOfStock ? 'product product--out-of-stock' : 'product';
 
-  const link = document.createElement('a');
-  link.href = '#';
-  link.className = 'product__link';
+  const body = document.createElement('div');
+  body.className = 'product__link';
 
   const imgWrap = document.createElement('span');
   imgWrap.className = 'product__img';
@@ -98,6 +112,7 @@ function createProductCard(product, options = {}) {
     const discountBadge = document.createElement('span');
     discountBadge.className = 'product__discount';
     discountBadge.textContent = formatPercent(offer.percent);
+    discountBadge.setAttribute('aria-label', `${offer.percent} درصد تخفیف`);
     imgWrap.appendChild(discountBadge);
   }
 
@@ -105,7 +120,7 @@ function createProductCard(product, options = {}) {
   name.className = 'product__name';
   name.textContent = `${product.name} — ${product.unit}`;
 
-  link.append(imgWrap, name);
+  body.append(imgWrap, name);
 
   const footer = document.createElement('div');
   footer.className = 'product__footer';
@@ -119,6 +134,10 @@ function createProductCard(product, options = {}) {
     const oldPrice = document.createElement('span');
     oldPrice.className = 'product__old';
     oldPrice.textContent = formatPrice(product.price);
+    oldPrice.setAttribute(
+      'aria-label',
+      `قیمت قبلی ${formatPrice(product.price)} تومان`
+    );
 
     const current = document.createElement('span');
     current.className = 'product__current';
@@ -164,7 +183,7 @@ function createProductCard(product, options = {}) {
   addBtn.appendChild(svg);
 
   footer.append(priceWrap, addBtn);
-  article.append(link, footer);
+  article.append(body, footer);
   li.appendChild(article);
 
   return li;
@@ -173,7 +192,6 @@ function createProductCard(product, options = {}) {
 function showError(statusEl, gridEl, message) {
   gridEl.replaceChildren();
   gridEl.hidden = true;
-  gridEl.style.minHeight = '0';
 
   statusEl.hidden = false;
   statusEl.className = 'products__status products__status--error';
@@ -195,20 +213,33 @@ function showError(statusEl, gridEl, message) {
   statusEl.append(icon, title, text);
 }
 
-function renderCarousel(list, gridId, statusId, sectionId, offerMap, stockMap) {
+function renderCarousel(config) {
+  const {
+    list,
+    gridId,
+    statusId,
+    sectionId,
+    offerMap,
+    stockMap,
+    emptyMessage,
+  } = config;
+
   const grid = document.getElementById(gridId);
   const status = document.getElementById(statusId);
   if (!grid || !status) return;
 
   if (list.length === 0) {
-    showError(status, grid, 'در حال حاضر محصولی برای نمایش نیست.');
+    showError(
+      status,
+      grid,
+      emptyMessage || 'در حال حاضر محصولی برای نمایش نیست.'
+    );
     return;
   }
 
   status.hidden = true;
   status.replaceChildren();
   grid.hidden = false;
-  grid.style.minHeight = '';
   grid.replaceChildren();
 
   list.forEach((product, index) => {
@@ -217,7 +248,7 @@ function renderCarousel(list, gridId, statusId, sectionId, offerMap, stockMap) {
       isLast: index === list.length - 1,
       sectionId,
       offer: offerMap.get(product.id) || null,
-      stock: stockMap.has(product.id) ? stockMap.get(product.id) : 1,
+      stock: stockMap.get(product.id) ?? 1,
     });
     grid.appendChild(card);
   });
@@ -227,33 +258,41 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchJson(url) {
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} — ${url}`);
-  }
-  return res.json();
-}
+async function fetchJson(url, { timeout = FETCH_TIMEOUT_MS } = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
 
-function setupProductLinkGuard() {
-  document.addEventListener('click', (e) => {
-    const link = e.target.closest('a.product__link');
-    if (!link) return;
-
-    const href = link.getAttribute('href');
-    if (href === '#' || href === '') {
-      e.preventDefault();
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} — ${url}`);
     }
-  });
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function init() {
-  setupProductLinkGuard();
-
-  const errorTargets = [
-    { gridId: 'offers-grid', statusId: 'offers-status' },
-    { gridId: 'fruits-grid', statusId: 'fruits-status' },
-    { gridId: 'dairy-grid', statusId: 'dairy-status' },
+  const sectionConfigs = [
+    {
+      sectionId: 'offers',
+      gridId: 'offers-grid',
+      statusId: 'offers-status',
+      emptyMessage: 'در حال حاضر پیشنهاد ویژه‌ای موجود نیست.',
+    },
+    {
+      sectionId: 'fruits',
+      gridId: 'fruits-grid',
+      statusId: 'fruits-status',
+      emptyMessage: 'در حال حاضر محصولی در این دسته موجود نیست.',
+    },
+    {
+      sectionId: 'dairy',
+      gridId: 'dairy-grid',
+      statusId: 'dairy-status',
+      emptyMessage: 'در حال حاضر محصولی در این دسته موجود نیست.',
+    },
   ];
 
   try {
@@ -272,48 +311,36 @@ async function init() {
 
     const offerMap = buildOfferMap(offers);
     const stockMap = buildStockMap(stockData);
+    const productMap = buildProductMap(products);
 
     const offerProducts = [...offers]
       .sort((a, b) => b.percent - a.percent)
-      .map((off) => products.find((p) => p.id === off.productId))
-      .filter(Boolean)
-      .filter((p) => {
-        const qty = stockMap.has(p.id) ? stockMap.get(p.id) : 1;
-        return qty !== 0;
+      .map((off) => productMap.get(off.productId))
+      .filter(Boolean);
+
+    const lists = {
+      offers: offerProducts,
+      fruits: products.filter((p) => p.categoryId === 1),
+      dairy: products.filter((p) => p.categoryId === 2),
+    };
+
+    sectionConfigs.forEach((config) => {
+      renderCarousel({
+        list: lists[config.sectionId] || [],
+        gridId: config.gridId,
+        statusId: config.statusId,
+        sectionId: config.sectionId,
+        offerMap,
+        stockMap,
+        emptyMessage: config.emptyMessage,
       });
-
-    renderCarousel(
-      offerProducts,
-      'offers-grid',
-      'offers-status',
-      'offers',
-      offerMap,
-      stockMap
-    );
-
-    renderCarousel(
-      products.filter((p) => p.categoryId === 1),
-      'fruits-grid',
-      'fruits-status',
-      'fruits',
-      offerMap,
-      stockMap
-    );
-
-    renderCarousel(
-      products.filter((p) => p.categoryId === 2),
-      'dairy-grid',
-      'dairy-status',
-      'dairy',
-      offerMap,
-      stockMap
-    );
+    });
   } catch (err) {
     console.error('خطا در دریافت داده:', err);
     const msg =
       'لطفاً اتصال اینترنت را بررسی کنید و صفحه را دوباره بارگذاری کنید.';
 
-    errorTargets.forEach(({ gridId, statusId }) => {
+    sectionConfigs.forEach(({ gridId, statusId }) => {
       const grid = document.getElementById(gridId);
       const status = document.getElementById(statusId);
       if (grid && status) showError(status, grid, msg);
@@ -321,4 +348,4 @@ async function init() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', init);
+init();

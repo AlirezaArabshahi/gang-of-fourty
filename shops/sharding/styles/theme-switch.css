@@ -39,16 +39,15 @@
   stroke-linejoin: round;
 }
 
-.theme-switch__btn[aria-pressed="true"] {
+.theme-switch__btn[aria-checked="true"] {
   background: var(--lime);
   color: var(--on-lime);
 }
 
-.theme-switch__btn[aria-pressed="true"] svg {
+.theme-switch__btn[aria-checked="true"] svg {
   stroke: var(--on-lime);
 }
 
-/* Header switch: hidden on mobile (drawer has its own) */
 .header .theme-switch {
   display: none;
 }
@@ -59,8 +58,7 @@
   }
 }
 
-/* Drawer switch: slightly larger tap targets */
 .mobile-menu__theme .theme-switch__btn {
   width: 32px;
   height: 32px;
-} 
+}

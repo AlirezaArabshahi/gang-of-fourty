@@ -7,6 +7,9 @@
   const menuOverlay = document.querySelector('.mobile-menu__overlay');
   const menuLinks = menu ? menu.querySelectorAll('a') : [];
 
+  const FOCUSABLE_SELECTOR =
+    'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
   if (menuBtn && menu && menuOverlay) {
     const setOpen = (open) => {
       menu.classList.toggle('is-open', open);
@@ -37,11 +40,32 @@
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && menu.classList.contains('is-open')) {
+      if (!menu.classList.contains('is-open')) return;
+
+      if (e.key === 'Escape') {
         setOpen(false);
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const focusables = Array.from(
+          menu.querySelectorAll(FOCUSABLE_SELECTOR)
+        ).filter((el) => el.offsetParent !== null);
+        if (!focusables.length) return;
+
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     });
-    // Auto-close if user resizes to desktop while drawer open
+
     const mq = window.matchMedia('(min-width: 768px)');
     mq.addEventListener('change', (e) => {
       if (e.matches && menu.classList.contains('is-open')) {
@@ -49,7 +73,6 @@
       }
     });
   }
-
 
   const deptBtn = document.querySelector('.dept-btn[aria-expanded]');
   const dept = deptBtn ? deptBtn.closest('.dept') : null;
@@ -60,28 +83,22 @@
       deptBtn.setAttribute('aria-expanded', String(open));
     };
 
-    deptBtn.addEventListener('click', (e) => {
-      e.preventDefault();
+    deptBtn.addEventListener('click', () => {
       const isOpen = deptBtn.getAttribute('aria-expanded') === 'true';
       setDeptOpen(!isOpen);
     });
-    // Close when focus leaves the entire dept
 
-    dept.addEventListener('focusout', () => {
-      setTimeout(() => {
-        if (!dept.contains(document.activeElement)) {
-          setDeptOpen(false);
-        }
-      }, 0);
+    dept.addEventListener('focusout', (e) => {
+      if (!dept.contains(e.relatedTarget)) {
+        setDeptOpen(false);
+      }
     });
-    // Close on click outside
 
     document.addEventListener('click', (e) => {
       if (!dept.contains(e.target)) {
         setDeptOpen(false);
       }
     });
-    // Close on Escape and return focus to button
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && dept.classList.contains('is-open')) {
