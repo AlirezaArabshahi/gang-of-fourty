@@ -472,6 +472,32 @@ html[dir="ltr"] .carousel-arrows img {
   font-size: 0.75rem;
 }
 
+.out-of-stock {
+  opacity: 0.55;
+}
+
+.out-of-stock:hover,
+.out-of-stock:focus-within {
+  transform: none;
+  box-shadow: none;
+}
+
+.stock-badge {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-start: 0.5rem;
+  border-radius: 0.5rem;
+  color: white;
+  background-color: rgb(17 24 17 / 0.75);
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.card-footer button:disabled {
+  background-color: rgb(190 190 190);
+  cursor: not-allowed;
+}
+
 .product-img{
   font-size: 5rem;
   display: flex;
