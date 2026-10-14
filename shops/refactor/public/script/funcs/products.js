@@ -15,13 +15,13 @@ const createMainCard = (p) => {
     emoji.textContent = "🍉";
 
     const title = el("h2", "hero-title");
-    title.textContent = `${p.title}`
+    title.textContent = `${p.title}`;
 
     const text = el("p", "hero-text");
-    text.textContent = `${p.text}`
+    text.textContent = `${p.text}`;
 
     const btn = el("a", "btn btn-primary");
-    btn.href = `#${p.cta.href}`;
+    btn.href = p.cta && p.cta.href ? `#${p.cta.href}` : "#";
     btn.textContent = `${p.cta?.label ? p.cta.label : "افزودن محصول"}`;
 
     main.append(emoji, title, text, btn);
@@ -42,7 +42,7 @@ const createSideCard = (p) => {
     text.textContent = `${p.text}`;
 
     const btn = el("a", "btn btn-secondary");
-    btn.href = `#${p.cta.href}`;
+    btn.href = p.cta && p.cta.href ? `#${p.cta.href}` : "#";
     btn.textContent = `${p.cta.label}`;
 
     side.append(emoji, title, text, btn);
@@ -80,19 +80,22 @@ const getAndShowHeroBanner = async() => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
-        heroGrid.textContent = ''
+
+        heroGrid.textContent = '';
         heroGrid.append(
             createMainCard(data.hero),
             createSideCard(data.side),
             createPromos(data.promos)
-        )
-        return true
+        );
+
+        return true;
 
     } catch (err) {
+        console.error(err);
         showError(heroGrid, 'خطا در بارگیری.');
         return false;
     }
-}
+};
 
 
 const getProductsWithDetails = async() => {
@@ -100,7 +103,7 @@ const getProductsWithDetails = async() => {
         fetch(`${BASEURL}/products.json`),
         fetch(`${BASEURL}/stock.json`),
         fetch(`${BASEURL}/offers.json`),
-    ])
+    ]);
 
     if (!productsRes.ok || !stocksRes.ok || !offersRes.ok) {
         throw new Error(
@@ -115,28 +118,24 @@ const getProductsWithDetails = async() => {
         offersRes.json(),
     ]);
 
-
     const finalProduct = products.map((p) => {
-        const offerItem = offers.find((o) => o.productId == p.id)
-        const stokeItem = stocks.items[p.id] || 0
+        const offerItem = offers.find((o) => o.productId == p.id);
+        const stokeItem = stocks.items[p.id] || 0;
+
         return {
             ...p,
             off: offerItem ? offerItem.percent : undefined,
             stock: stokeItem,
             oldPrice: offerItem ?
                 Math.round(p.price / (1 - offerItem.percent / 100)) : undefined
+        };
+    });
 
-        }
-    })
-    getAndShowProductTrack(finalProduct)
-    return finalProduct
-}
+    return finalProduct;
+};
 
 const getAndShowProducts = async(trackSelector, categoryId) => {
     const track = document.querySelector(trackSelector);
-
-    if (!track) return;
-
     renderSkeletons(track);
     showError(track, 'در حال بارگیری ...');
 
@@ -144,7 +143,7 @@ const getAndShowProducts = async(trackSelector, categoryId) => {
         const products = await getProductsWithDetails();
 
         const filtered = products.filter(
-            p => p.categoryId === categoryId
+            p => p.categoryId == categoryId
         );
 
         if (filtered.length === 0) {
@@ -158,10 +157,11 @@ const getAndShowProducts = async(trackSelector, categoryId) => {
         track.append(...cards);
 
     } catch (err) {
+        console.error(err);
         showError(track, 'خطا در بارگیری.');
-        return false;
     }
 };
+
 
 
 const getAndShowAllProducts = () => {
@@ -176,55 +176,68 @@ const getAndShowAllProducts = () => {
     ])
 
     .then(responses => {
-            responses.forEach(response => {
-                if (!response.ok) {
-                    showError(productsTrackLatest, 'خطا در دریافت محصولات. لطفاً دوباره تلاش کنید.');
-                }
-            });
-            return Promise.all(responses.map(response => response.json()));
-        })
-        .then(([products, stock, offers]) => {
-            const offerList = offers.map(offer => offer.productId)
-            const enriched = products.map(p => {
-                const offerItem = offers.find(offer => offer.productId === p.id);
-                const stockCount = stock.items[p.id] || 0
-                return {
-                    ...p,
-                    stock: stockCount,
-                    off: offerItem ? offerItem.percent : undefined,
-                    oldPrice: offerItem ?
-                        Math.round(p.price / (1 - offerItem.percent / 100)) : undefined,
-                }
+        responses.forEach(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+        });
 
-            })
+        return Promise.all(responses.map(response => response.json()));
+    })
 
-            const filteredProducts = enriched.filter(product => offerList.includes(product.id));
-            const cards = filteredProducts.map(makeCard);
-            productsTrackLatest.textContent = '';
-            cards.forEach((card) => productsTrackLatest.append(card));
-        })
+    .then(([products, stock, offers]) => {
+        const offerList = offers.map(offer => offer.productId);
+
+        const enriched = products.map(p => {
+            const offerItem = offers.find(offer => offer.productId === p.id);
+            const stockCount = stock.items[p.id] || 0;
+
+            return {
+                ...p,
+                stock: stockCount,
+                off: offerItem ? offerItem.percent : undefined,
+                oldPrice: offerItem ?
+                    Math.round(p.price / (1 - offerItem.percent / 100)) : undefined,
+            };
+        });
+
+        const filteredProducts = enriched.filter(
+            product => offerList.includes(product.id)
+        );
+
+        const cards = filteredProducts.map(makeCard);
+
+        productsTrackLatest.textContent = '';
+        cards.forEach((card) => productsTrackLatest.append(card));
+    })
 
     .catch((error) => {
+        console.error(error);
         showError(productsTrackLatest, 'اتصال اینترنت برقرار نیست.');
+    });
+};
 
-    })
-}
 
+const updateSearchPlaceholders = async() => {
+    const searches = document.querySelectorAll('#q-mobile, #q-desktop');
 
-const getAndShowProductTrack = async(finalProduct) => {
-    const productsTrack = document.querySelector(".products-track")
-    const test = finalProduct.filter((p) => p.categoryId == "1")
-    console.log(test);
+    try {
+        const response = await fetch(`${BASEURL}/products.json`);
 
-}
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
 
-const updateSearchPlaceholders = () => {
-    const searches = document.querySelectorAll('#q-mobile, #q-desktop')
-    searches.forEach(input => {
-        input.placeholder = `جست و جو در میان ${products.length} کالا`
-    })
-}
+        const products = await response.json();
 
+        searches.forEach(input => {
+            input.placeholder = `جست و جو در میان ${toFa(products.length)} کالا`;
+        });
+
+    } catch (err) {
+        console.error('خطا در دریافت تعداد محصولات:', err);
+    }
+};
 
 
 const createQuickLinks = (p) => {
@@ -284,6 +297,7 @@ const createWorkingHours = (p) => {
     title.textContent = "ساعت کاری";
 
     const list = el("ul", "footer-col-list");
+
     p.forEach(({ days, time }) => {
         const li = el("li");
         li.append(document.createTextNode(days));
@@ -298,6 +312,7 @@ const createWorkingHours = (p) => {
     section.append(title, list);
     return section;
 };
+
 
 const createContactRow = (label, value, href) => {
     const row = el("div", "footer-contact-row");
@@ -333,13 +348,15 @@ const createAboutDesc = ({ about, deliveryFee, freeDeliveryOver, currency }) => 
         threshold,
         ` هزار ${currency}، ارسال رایگان است.`
     );
+
     return p;
 };
 
+
 const getndShowFooterInfos = async() => {
-    const footerCols = document.querySelector(".footer-cols")
-    const footerContact = document.querySelector(".footer-contact")
-    const footerAbout = document.querySelector(".footer-about")
+    const footerCols = document.querySelector(".footer-cols");
+    const footerContact = document.querySelector(".footer-contact");
+    const footerAbout = document.querySelector(".footer-about");
 
     showError(footerCols, 'در حال بارگیری ...');
 
@@ -348,27 +365,37 @@ const getndShowFooterInfos = async() => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
+
         footerAbout.append(createAboutDesc(data));
+
         footerContact.append(
             createContactRow("تلفن", data.phone),
             createContactRow("آدرس", data.address)
-        )
-        footerCols.textContent = ''
+        );
+
+        footerCols.textContent = '';
 
         footerCols.append(
             createQuickLinks(data.menu),
             createHelpLinks(data.help),
             createWorkingHours(data.schedule)
-        )
-        return true
+        );
+
+        return true;
 
     } catch (err) {
-        showError(heroGrid, 'خطا در بارگیری.');
+        console.error(err);
+        showError(footerCols, 'خطا در بارگیری.');
         return false;
     }
-}
+};
 
 
-
-getAndShowProducts(".products-track-off", 2)
-export { getAndShowAllProducts, getAndShowHeroBanner, getndShowFooterInfos, updateSearchPlaceholders };
+getAndShowProducts(".products-track-off", 2);
+getAndShowProducts(".product-fruit", 1);
+export {
+    getAndShowAllProducts,
+    getAndShowHeroBanner,
+    getndShowFooterInfos,
+    updateSearchPlaceholders
+};
