@@ -3,10 +3,6 @@ import { formatPrice } from '../utils/format.js';
 
 const makeCard = (p) => {
     const card = el('article', 'card');
-    card.dataset.productId = p.id;
-
-    const top = el('div', 'card-top');
-
     const media = el('div', 'card-media');
     const emoji = el('span', 'card-emoji');
     emoji.textContent = p.emoji;

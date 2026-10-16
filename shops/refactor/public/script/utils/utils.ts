@@ -1,11 +1,13 @@
- const el = (tag, className, text) => {
+ 
+ 
+ const el =<T extends keyof HTMLElementTagNameMap> (tag:T, className?:string | null, text?:string) :HTMLElementTagNameMap[T]=> {
      const node = document.createElement(tag);
      if (className) node.className = className;
      if (text != null) node.textContent = text;
      return node;
  };
 
- const makeIcon = (id, cls = 'icon') => {
+ const makeIcon = (id:string, cls:string = 'icon')=> {
      const NS = 'http://www.w3.org/2000/svg';
      const svg = document.createElementNS(NS, 'svg');
      const use = document.createElementNS(NS, 'use');
@@ -17,7 +19,7 @@
      return svg;
  };
 
- const makeButton = (className, label, iconId, text) => {
+ const makeButton = (className:string, label:string, iconId:string, text:string) => {
      const btn = el('button', className);
      btn.type = 'button';
      btn.setAttribute('aria-label', label);
@@ -26,8 +28,8 @@
      return btn;
  };
 
- const saveToLocalStorage = (count) => {
-     localStorage.setItem("count", String(Number(count)));
+ const saveToLocalStorage = (count:number):void => {
+     localStorage.setItem("count", String((count)));
  };
 
  const getCountBasketFromLocalStorage = () => {

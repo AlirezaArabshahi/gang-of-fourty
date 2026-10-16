@@ -8,15 +8,23 @@ import {
     getCountBasketFromLocalStorage
 } from '../utils/utils.js';
 
-const toFa = (n) => String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹' [d]);
+const toFa = (n: number) => String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
 
 
-const createMainCard = (p) => {
+const createMainCard = (p: {
+    title: string;
+    emoji: string;
+    text: string;
+    cta: {
+        label: string;
+        href: string;
+    };
+}) => {
     const main = el("article", "hero-main");
 
     const emoji = el("span", "hero-emoji");
     emoji.setAttribute("aria-hidden", "true");
-    emoji.textContent = "🍉";
+    emoji.textContent = `${p.emoji}`;
 
     const title = el("h2", "hero-title");
     title.textContent = `${p.title}`;
@@ -32,7 +40,16 @@ const createMainCard = (p) => {
     return main;
 };
 
-const createSideCard = (p) => {
+const createSideCard = (p: {
+    title: string;
+    emoji: string;
+    text: string;
+    cta: {
+        label: string;
+        href: string;
+    };
+}
+) => {
     const side = el("article", "hero-side");
 
     const emoji = el("span", "hero-emoji");
@@ -53,7 +70,12 @@ const createSideCard = (p) => {
     return side;
 };
 
-const createPromos = (p) => {
+const createPromos = (p: {
+    color: string,
+    emoji: string,
+    href: string,
+    text: string
+}) => {
     const promos = el("div", "hero-promos");
 
     p.forEach(({ href, bg, emoji, text }) => {
@@ -75,30 +97,34 @@ const createPromos = (p) => {
     return promos;
 };
 
-const getAndShowHeroBanner = async() => {
-    const heroGrid = document.querySelector('.hero-grid');
-    showError(heroGrid, 'در حال بارگیری ...');
+const getAndShowHeroBanner = async () => {
+    const heroGrid = document.querySelector<HTMLDivElement>('.hero-grid');
+    if (heroGrid) {
+        showError(heroGrid, 'در حال بارگیری ...');
 
-    try {
-        const response = await fetch(`${BASEURL}/home.json`);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        try {
+            const response = await fetch(`${BASEURL}/home.json`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        const data = await response.json();
+            const data = await response.json();
+            console.log(data);
 
-        heroGrid.textContent = '';
-        heroGrid.append(
-            createMainCard(data.hero),
-            createSideCard(data.side),
-            createPromos(data.promos)
-        );
-        return true;
-    } catch (err) {
-        showError(heroGrid, 'خطا در بارگیری.');
-        return false;
+
+            heroGrid.textContent = '';
+            heroGrid.append(
+                createMainCard(data.hero),
+                createSideCard(data.side),
+                createPromos(data.promos)
+            );
+            return true;
+        } catch (err) {
+            showError(heroGrid, 'خطا در بارگیری.');
+            return false;
+        }
     }
 };
 
-const getProductsWithDetails = async() => {
+const getProductsWithDetails = async () => {
     const [productsRes, stocksRes, offersRes] = await Promise.all([
         fetch(`${BASEURL}/products.json`),
         fetch(`${BASEURL}/stock.json`),
@@ -135,8 +161,9 @@ const getProductsWithDetails = async() => {
     return finalProduct;
 };
 
-const getAndShowProducts = async(trackSelector, categoryId) => {
+const getAndShowProducts = async (trackSelector:string, categoryId:number) => {
     const track = document.querySelector(trackSelector);
+    if(track){
     renderSkeletons(track);
     showError(track, 'در حال بارگیری ...');
 
@@ -160,14 +187,15 @@ const getAndShowProducts = async(trackSelector, categoryId) => {
     } catch (err) {
         showError(track, 'خطا در بارگیری.');
     }
+}
 };
 
 const getProductsData = () => {
     return Promise.all([
-            fetch(`${BASEURL}/products.json`),
-            fetch(`${BASEURL}/stock.json`),
-            fetch(`${BASEURL}/offers.json`),
-        ])
+        fetch(`${BASEURL}/products.json`),
+        fetch(`${BASEURL}/stock.json`),
+        fetch(`${BASEURL}/offers.json`),
+    ])
         .then(responses => {
             responses.forEach(response => {
                 if (!response.ok) {
@@ -182,54 +210,57 @@ const getProductsData = () => {
 };
 
 const getAndShowAllProducts = () => {
-    const productsTrackLatest = document.querySelector('.products-track-latest');
+    const productsTrackLatest = document.querySelector<HTMLUListElement>('.products-track-latest');
 
-    renderSkeletons(productsTrackLatest);
-    showError(productsTrackLatest, 'در حال بارگیری ...');
+    if (productsTrackLatest) {
+        renderSkeletons(productsTrackLatest);
+        showError(productsTrackLatest, 'در حال بارگیری ...');
 
-    getProductsData()
-        .then(([products, stock, offers]) => {
-            const enriched = products.map(p => {
-                const offerItem = offers.find(
-                    offer => offer.productId === p.id
+        getProductsData()
+            .then(([products, stock, offers]) => {
+                const enriched = products.map(p => {
+                    const offerItem = offers.find(
+                        offer => offer.productId === p.id
+                    );
+
+                    const stockCount = stock.items[p.id] || 0;
+
+                    return {
+                        ...p,
+                        stock: stockCount,
+                        off: offerItem ? offerItem.percent : undefined,
+                        oldPrice: offerItem ?
+                            Math.round(p.price / (1 - offerItem.percent / 100)) : undefined,
+                    };
+                });
+
+                const offerList = offers.map(
+                    offer => offer.productId
                 );
 
-                const stockCount = stock.items[p.id] || 0;
+                const filteredProducts = enriched.filter(
+                    product => offerList.includes(product.id)
+                );
 
-                return {
-                    ...p,
-                    stock: stockCount,
-                    off: offerItem ? offerItem.percent : undefined,
-                    oldPrice: offerItem ?
-                        Math.round(p.price / (1 - offerItem.percent / 100)) : undefined,
-                };
+                const cards = filteredProducts.map(makeCard);
+
+                productsTrackLatest.textContent = '';
+
+                cards.forEach(card => {
+                    productsTrackLatest.append(card);
+                });
+            })
+            .catch(error => {
+                showError(
+                    productsTrackLatest,
+                    'اتصال اینترنت برقرار نیست.'
+                );
             });
 
-            const offerList = offers.map(
-                offer => offer.productId
-            );
+    };
+}
 
-            const filteredProducts = enriched.filter(
-                product => offerList.includes(product.id)
-            );
-
-            const cards = filteredProducts.map(makeCard);
-
-            productsTrackLatest.textContent = '';
-
-            cards.forEach(card => {
-                productsTrackLatest.append(card);
-            });
-        })
-        .catch(error => {
-            showError(
-                productsTrackLatest,
-                'اتصال اینترنت برقرار نیست.'
-            );
-        });
-};
-
-const updateSearchPlaceholders = async() => {
+const updateSearchPlaceholders = async () => {
     const searches = document.querySelectorAll('#q-mobile, #q-desktop');
 
     try {
@@ -245,8 +276,10 @@ const updateSearchPlaceholders = async() => {
             input.placeholder = `جست و جو در میان ${toFa(products.length)} کالا`;
         });
 
-    } catch (err) {
-        console.error('خطا در دریافت تعداد محصولات:', err);
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.error('خطا در دریافت تعداد محصولات:', err.message)
+        }
     }
 };
 
@@ -364,40 +397,39 @@ const createAboutDesc = ({ about, deliveryFee, freeDeliveryOver, currency }) => 
 };
 
 
-const getndShowFooterInfos = async() => {
-    const footerCols = document.querySelector(".footer-cols");
-    const footerContact = document.querySelector(".footer-contact");
-    const footerAbout = document.querySelector(".footer-about");
+const getndShowFooterInfos = async () => {
+    const footerCols = document.querySelector<HTMLDivElement>(".footer-cols");
+    const footerContact = document.querySelector<HTMLDivElement>(".footer-contact");
+    const footerAbout = document.querySelector<HTMLDivElement>(".footer-about");
 
-    showError(footerCols, 'در حال بارگیری ...');
+    if (footerAbout && footerContact && footerCols) {
+        showError(footerCols, 'در حال بارگیری ...');
 
-    try {
-        const response = await fetch(`${BASEURL}/shop.json`);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        try {
+            const response = await fetch(`${BASEURL}/shop.json`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        const data = await response.json();
+            const data = await response.json();
+            footerAbout.append(createAboutDesc(data));
 
-        footerAbout.append(createAboutDesc(data));
+            footerContact.append(
+                createContactRow("تلفن", data.phone),
+                createContactRow("آدرس", data.address)
+            );
 
-        footerContact.append(
-            createContactRow("تلفن", data.phone),
-            createContactRow("آدرس", data.address)
-        );
+            footerCols.textContent = '';
 
-        footerCols.textContent = '';
+            footerCols.append(
+                createQuickLinks(data.menu),
+                createHelpLinks(data.help),
+                createWorkingHours(data.schedule)
+            );
 
-        footerCols.append(
-            createQuickLinks(data.menu),
-            createHelpLinks(data.help),
-            createWorkingHours(data.schedule)
-        );
-
-        return true;
-
-    } catch (err) {
-        console.error(err);
-        showError(footerCols, 'خطا در بارگیری.');
-        return false;
+            return true;
+        } catch (err) {
+            showError(footerCols, 'خطا در بارگیری.');
+            return false;
+        }
     }
 };
 
@@ -424,7 +456,6 @@ const initAddToCart = () => {
         let count = getCountBasketFromLocalStorage();
         count += 1;
         saveToLocalStorage(count);
-
         updateBadge()
     });
 }
