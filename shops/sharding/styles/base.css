@@ -221,7 +221,7 @@ textarea:focus-visible {
     scroll-behavior: auto;
   }
 }
-/* Slow connection notice (Promise.race challenge) */
+
 .slow-connection {
   position: fixed;
   top: 12px;

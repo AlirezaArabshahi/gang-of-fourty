@@ -38,8 +38,6 @@
   fill: currentColor;
 }
 
-/* ─── Search ─── */
-
 .search {
   position: relative;
   order: 4;
@@ -105,8 +103,6 @@
   color: var(--faint);
   line-height: normal;
 }
-
-/* ─── Actions ─── */
 
 .actions {
   order: 3;
@@ -178,8 +174,6 @@
   display: none;
 }
 
-/* ─── Desktop nav ─── */
-
 .header-nav {
   display: none;
   border-top: 1px solid var(--border);
@@ -236,8 +230,6 @@
   color: var(--navy);
   font-weight: 800;
 }
-
-/* ─── Responsive ─── */
 
 @media (min-width: 768px) {
   .header__inner {

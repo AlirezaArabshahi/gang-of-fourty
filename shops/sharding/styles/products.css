@@ -42,8 +42,6 @@
   border-radius: 2px;
 }
 
-/* ─── Grid / carousel track ─── */
-
 .products__grid {
   display: flex;
   gap: var(--sp-sm);
@@ -85,8 +83,6 @@
     flex: 0 0 calc((100% - var(--sp-sm) * 5) / 5.5);
   }
 }
-
-/* ─── Status / error ─── */
 
 .products__status {
   padding: var(--sp-xl) var(--sp-lg);

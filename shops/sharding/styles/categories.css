@@ -173,8 +173,6 @@
   box-shadow: var(--shadow-lime);
 }
 
-/* ─── Responsive ─── */
-
 @media (min-width: 768px) {
   .categories__list {
     -webkit-mask-image: none;
@@ -193,8 +191,6 @@
     scroll-snap-stop: normal;
   }
 }
-
-/* ─── Skeleton ─── */
 
 .category--skeleton {
   pointer-events: none;

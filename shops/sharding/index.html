@@ -20,10 +20,6 @@
   </script>
   <title>شاردینگ مارکت | سوپرمارکت فوری محله شما</title>
   <meta name="description" content="خرید آنلاین و ارسال سریع محصولات سوپرمارکتی با تخفیف از شاردینگ مارکت">
-<!-- 
-  <link rel="preload" href="api/shop.json" as="fetch" crossorigin>
-  <link rel="preload" href="api/categories.json" as="fetch" crossorigin>
-  <link rel="preload" href="api/home.json" as="fetch" crossorigin> -->
 
   <link rel="preload" href="assets/fonts/Vazirmatn-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/Vazirmatn-Bold.woff2" as="font" type="font/woff2" crossorigin>
@@ -296,6 +292,7 @@
     <div class="container">
 
       <div class="hero-video hero-video--skeleton" id="hero-video">
+        <!-- base on documents its muted video, so autoplay is fine; needed to pass validation. -->
         <!-- [html-validate-disable-next no-autoplay] -->
         <video
           class="hero-video__media"
@@ -305,7 +302,7 @@
           playsinline
           preload="none"
           aria-hidden="true">
-          <source src="assets/hero.mp4" type="video/mp4" media="(min-width: 768px)">
+          <source src="assets/video/hero.mp4" type="video/mp4" media="(min-width: 768px)">
         </video>
         <div class="hero-video__overlay">
           <h1 class="hero-video__title" id="hero-title">—</h1>

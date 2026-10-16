@@ -89,6 +89,15 @@ function makeEmoji(emoji) {
   return span;
 }
 
+function createSvgIcon(pathD) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', pathD);
+  svg.appendChild(path);
+  return svg;
+}
 
 function renderCardActions(container, qty) {
   container.replaceChildren();
@@ -544,7 +553,6 @@ function renderCategories(items) {
     a.className = 'category';
     a.dataset.catSlug = cat.slug;
     a.dataset.categoryId = String(cat.id);
-    // ?cat=slug keeps filter shareable; #slug still jumps to section
     a.href = `?cat=${encodeURIComponent(cat.slug)}#${cat.slug}`;
 
     if (i === 0) a.id = 'cat-start';
@@ -620,7 +628,6 @@ function renderHero(home) {
   }
 }
 
-/** Prefer real image banners; keep side/promos in JSON for the exercise schema. */
 function homeBannerSlides(home) {
   if (Array.isArray(home.banners) && home.banners.length) {
     return home.banners.map((b) => ({
@@ -629,7 +636,6 @@ function homeBannerSlides(home) {
       href: b.href || '#',
     }));
   }
-  // fallback only if no image banners
   const slides = [];
   if (home.side) {
     slides.push({
@@ -704,12 +710,40 @@ function skeletonCards(count) {
   for (let i = 0; i < count; i++) {
     const li = document.createElement('li');
     li.className = 'products__item';
+
     const article = document.createElement('article');
     article.className = 'product product--skeleton';
     article.setAttribute('aria-hidden', 'true');
-    article.innerHTML =
-      '<div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div>' +
-      '<div class="product__footer"><span class="product__price"><span class="product__current">—</span></span><span class="product__add"></span></div>';
+
+    const link = document.createElement('div');
+    link.className = 'product__link';
+
+    const img = document.createElement('span');
+    img.className = 'product__img';
+
+    const name = document.createElement('h3');
+    name.className = 'product__name';
+    name.textContent = '—';
+
+    link.append(img, name);
+
+    const footer = document.createElement('div');
+    footer.className = 'product__footer';
+
+    const price = document.createElement('span');
+    price.className = 'product__price';
+
+    const current = document.createElement('span');
+    current.className = 'product__current';
+    current.textContent = '—';
+
+    price.appendChild(current);
+
+    const add = document.createElement('span');
+    add.className = 'product__add';
+
+    footer.append(price, add);
+    article.append(link, footer);
     li.appendChild(article);
     frag.appendChild(li);
   }
@@ -764,15 +798,17 @@ function buildCarouselSection(cfg) {
   btnStart.href = `#${cfg.id}-start`;
   btnStart.className = 'carousel-nav__btn carousel-nav__btn--start';
   btnStart.setAttribute('aria-label', `رفتن به ابتدای ${cfg.title}`);
-  btnStart.innerHTML =
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>';
+  btnStart.appendChild(
+    createSvgIcon('M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z')
+  );
 
   const btnEnd = document.createElement('a');
   btnEnd.href = `#${cfg.id}-end`;
   btnEnd.className = 'carousel-nav__btn carousel-nav__btn--end';
   btnEnd.setAttribute('aria-label', `رفتن به انتهای ${cfg.title}`);
-  btnEnd.innerHTML =
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>';
+  btnEnd.appendChild(
+    createSvgIcon('M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z')
+  );
 
   nav.append(btnStart, btnEnd);
   head.appendChild(nav);
@@ -832,8 +868,6 @@ function renderCarousels(home, products, stockData, offers) {
   const offerMap = new Map((offers || []).map((o) => [o.productId, o]));
   const list = Array.isArray(home.carousels) ? home.carousels : [];
 
-  // Keep HTML skeleton sections until we fill them.
-  // Only append brand-new carousels that are not already in the DOM.
   for (const cfg of list) {
     let section = document.getElementById(cfg.id);
     if (!section) {
@@ -908,19 +942,15 @@ function setupCart() {
     const qty = setCartQty(id, next);
     renderCardActions(actions, qty);
 
-    // brief feedback on the card
     const card = actions.closest('.product');
     if (card) {
       card.classList.remove('product--cart-pulse');
-      // reflow to restart animation
       void card.offsetWidth;
       card.classList.add('product--cart-pulse');
     }
   });
 }
 
-
-/** Shared catalog after load — used by ?cat= filter */
 let appCatalog = null;
 let appHome = null;
 let appCategories = null;
@@ -940,7 +970,6 @@ function applyCategoryFilter(slug) {
     return;
   }
 
-  // Only products of that category (challenge: ?cat=dairy)
   const filteredHome = {
     ...appHome,
     carousels: [
@@ -953,10 +982,8 @@ function applyCategoryFilter(slug) {
     ],
   };
 
-  // Ensure a section shell exists for this slug
   const root = document.getElementById('carousels-root');
   if (root) {
-    // hide other static sections, show/create filtered one
     root.querySelectorAll('section.products').forEach((sec) => {
       sec.hidden = sec.id !== cat.slug;
     });
@@ -967,7 +994,6 @@ function applyCategoryFilter(slug) {
   const section = document.getElementById(cat.slug);
   if (section) {
     section.hidden = false;
-    // hide siblings in root
     if (root) {
       root.querySelectorAll('section.products').forEach((sec) => {
         sec.hidden = sec.id !== cat.slug;
@@ -1041,8 +1067,6 @@ async function init() {
   const startedAt = performance.now();
   const SLOW_MS = 3000;
 
-  // Same fetches — one Promise.all (level 4), but shell can paint early
-  // so Slow 3G is not blocked on products.json size.
   const pShop = fetchJson(API.shop);
   const pCategories = fetchJson(API.categories);
   const pHome = fetchJson(API.home);
@@ -1069,7 +1093,6 @@ async function init() {
     if (result === 'slow') showSlowConnection(true);
   });
 
-  // Progressive shell once — never call renderShell twice (that re-ran card-in).
   let shellPainted = false;
   const shellEarlyPromise = Promise.all([pShop, pCategories, pHome])
     .then(([shop, categories, home]) => {
@@ -1091,7 +1114,6 @@ async function init() {
     appCatalog = { products, stockData, offers };
 
     if (shellPainted) {
-      // Only update search placeholder — do not rebuild DOM (no second blink)
       renderHeader(shop, products.length);
     } else {
       renderShell(shop, categories, home, products.length);
@@ -1110,5 +1132,5 @@ async function init() {
   }
 }
 
-
 init();
+

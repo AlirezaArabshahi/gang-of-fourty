@@ -91,8 +91,6 @@
   object-fit: cover;
 }
 
-/* ─── Responsive ─── */
-
 @media (min-width: 640px) {
   .hero-carousel__slide {
     flex: 0 0 calc((100% - 24px) / 2.5);
@@ -120,8 +118,6 @@
     scroll-snap-stop: normal;
   }
 }
-
-/* ─── Skeleton ─── */
 
 .hero-carousel__title--skeleton {
   display: inline-block;

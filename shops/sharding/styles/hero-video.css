@@ -91,14 +91,12 @@
   }
 
   .hero-video {
-    background-image: url("../assets/hero-poster.webp");
+    background-image: url("../assets/video/hero-poster.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
   }
 }
-
-/* ─── Skeleton ─── */
 
 .hero-video--skeleton {
   pointer-events: none;
@@ -109,7 +107,7 @@
 .hero-video--skeleton .hero-video__media {
   visibility: hidden;
 }
-/* TODO: alireza find better solution later plsssss */
+
 /* Beat theme.css `.hero-video::after { background: overlay }` (same load-order conflict) */
 .hero-video.hero-video--skeleton::after {
   background: none !important;

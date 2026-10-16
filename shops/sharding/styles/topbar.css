@@ -1,5 +1,3 @@
-/* ─── Topbar ─── */
-
 .topbar {
   background: var(--navy);
   color: var(--faint);
@@ -32,8 +30,6 @@
   display: none;
 }
 
-/* ─── Desktop ─── */
-
 @media (min-width: 640px) {
   .topbar__inner {
     justify-content: space-between;
@@ -59,7 +55,6 @@
     color: var(--lime);
   }
 }
-/* ─── Skeleton (shared shell placeholders) ─── */
 
 .skeleton-text {
   display: inline-block;
