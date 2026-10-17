@@ -1,7 +1,6 @@
 :root {
   color-scheme: light;
 
-  /* Brand */
   --navy: light-dark(#0F1319, #F0F3F8);
   --navy-2: light-dark(#1A2030, #D4DAE5);
   --lime: #B5C400;
@@ -11,12 +10,10 @@
   --lime-hover: light-dark(#A8B800, #C8D62A);
   --on-lime: #0F1319;
 
-  /* Text */
   --text: light-dark(#12161F, #E8ECF2);
   --muted: light-dark(#59617A, #A8B0C0);
   --faint: light-dark(#A5AAB8, #7A8295);
 
-  /* Surfaces */
   --border: light-dark(#E6E9EE, #2E3444);
   --white: light-dark(#FFFFFF, #151A24);
   --surface: light-dark(#FAFBFC, #1A1F2B);
@@ -25,7 +22,6 @@
   --dough: light-dark(#F5EBD8, #1F2532);
   --topbar-bg: light-dark(#0F1319, #05070B);
 
-  /* Elevation */
   --shadow: light-dark(
     0 2px 8px -2px rgba(18, 22, 31, 0.08),
     0 2px 8px -2px rgba(0, 0, 0, 0.6)
@@ -43,7 +39,6 @@
     0 10px 28px -12px rgba(181, 196, 0, 0.25)
   );
 
-  /* Gradients */
   --hero-overlay: light-dark(
     linear-gradient(
       270deg,
@@ -68,26 +63,21 @@
     rgba(181, 196, 0, 0.1)
   );
 
-  /* Scrollbars */
   --scrollbar-thumb: light-dark(#B5C400, #2E3444);
   --scrollbar-thumb-hover: light-dark(#8A9700, #7A8295);
   --scrollbar-track: light-dark(#F6F7F9, transparent);
 
-  /* Skeleton (loading placeholder) */
   --skeleton-base: light-dark(#eef0f3, #1a1f2b);
   --skeleton-highlight: light-dark(#dde1e8, #252b3a);
   --skeleton-text: light-dark(#e8ebf0, #252b3a);
 
-  /* Offers section — intentional fixed color (not theme-driven) */
+  /* fixed, not themed */
   --offers-bg: #5a1e28;
   --offers-accent: #FFD84D;
 
-  /* Hero video poster bg — always dark */
+  /* always dark */
   --video-bg: #0F1319;
 }
-
-/* ─── Theme activation ─── */
-/* Only color-scheme changes; light-dark() handles the rest. */
 
 :root[data-theme="dark"] {
   color-scheme: dark;
@@ -99,12 +89,6 @@
   }
 }
 
-/* ─── Component overrides ─── */
-/* Things light-dark() alone can't handle:
-   - Picking a token for a specific element
-   - Hover state color shifts
-   - Transition timing */
-
 .topbar {
   background: var(--topbar-bg);
 }
@@ -113,6 +97,7 @@
   background: var(--hero-overlay);
 }
 
+/* beats theme overlay */
 .hero-video.hero-video--skeleton::after {
   background: none;
   opacity: 0;
@@ -129,7 +114,6 @@
   border-color: var(--categories-border);
 }
 
-/* Key CTAs always use on-lime text on lime background */
 .dept-btn,
 .hero-video__cta,
 .badge,
@@ -145,7 +129,6 @@
   fill: var(--on-lime);
 }
 
-/* Hover states */
 .hero-video__cta:hover {
   color: #fff;
 }
@@ -162,7 +145,6 @@
   fill: #fff;
 }
 
-/* Smooth theme transition */
 body {
   transition:
     background-color 0.3s var(--ease),

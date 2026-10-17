@@ -1,18 +1,13 @@
-/* ─── Offers section (wine shell only) ─── */
-/* Cards are normal .product — same size, hover, footer as other carousels.
-   Only the section chrome (bg + pattern + white titles) differs. */
-
 .products--offers .products__inner {
   background: var(--offers-bg);
   border: 1px solid var(--offers-bg);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  /* don't inherit layout containment — it fights transform hover */
+  /* keep hover transform */
   contain: none;
 }
 
 .products--offers .products__main {
-  /* same horizontal rhythm as regular .products__main */
   padding: 0 0 var(--sp-md);
   min-width: 0;
 }
@@ -80,7 +75,6 @@
   color: var(--offers-bg);
 }
 
-/* Grid: same item flex as products.css; padding gives room for hover lift */
 .products--offers .products__grid {
   padding-block: 14px 16px;
   padding-inline: var(--sp-md);
@@ -92,9 +86,7 @@
   background-size: 72px 72px;
 }
 
-/* Card lift: .products__item:hover in product-card.css */
-
-/* Error state on wine background — no solid white slab */
+/* error on dark bg */
 .products--offers .products__status--error {
   margin-inline: var(--sp-md);
   margin-block-end: var(--sp-md);

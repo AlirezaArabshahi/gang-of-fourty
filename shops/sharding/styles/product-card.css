@@ -276,7 +276,6 @@
   100% { background-position: -200% 0; }
 }
 
-
 @media (prefers-reduced-motion: reduce) {
   .product,
   .product__img img,
@@ -304,8 +303,6 @@
   }
 }
 
-
-/* ─── Cart qty stepper ─── */
 /* + alone = 36px wide; stepper = 80px. No fixed 88px when empty — that
    crushed Persian prices on narrow mobile cards. */
 

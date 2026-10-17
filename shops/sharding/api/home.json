@@ -33,27 +33,27 @@
   ],
   "banners": [
     {
-      "image": "assets/banner-1.webp",
+      "image": "assets/images/banners/banner-1.webp",
       "alt": "میوه‌های فصل با ۳۰٪ تخفیف",
       "href": "#fruits"
     },
     {
-      "image": "assets/banner-2.webp",
+      "image": "assets/images/banners/banner-2.webp",
       "alt": "لبنیات و تخم‌مرغ",
       "href": "#dairy"
     },
     {
-      "image": "assets/banner-3.webp",
+      "image": "assets/images/banners/banner-3.webp",
       "alt": "خواروبار با تخفیف ویژه",
       "href": "#offers"
     },
     {
-      "image": "assets/banner-4.webp",
+      "image": "assets/images/banners/banner-4.webp",
       "alt": "نوشیدنی‌های خنک",
       "href": "#offers"
     },
     {
-      "image": "assets/banner-5.webp",
+      "image": "assets/images/banners/banner-5.webp",
       "alt": "پیشنهاد ویژه هفته",
       "href": "#offers"
     }
