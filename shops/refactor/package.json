@@ -13,5 +13,9 @@
     "devDependencies": {
         "typescript": "^7.0.2",
         "vite": "^8.3.4"
+    },
+    "dependencies": {
+        "motion": "^14.3.0",
+        "swiper": "^14.3.0"
     }
 }

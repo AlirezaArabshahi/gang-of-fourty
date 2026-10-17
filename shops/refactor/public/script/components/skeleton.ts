@@ -1,6 +1,6 @@
 import { el } from '../utils/utils.js';
 
-const showError = (track, msg) => {
+const showError = (track:HTMLElement, msg:string):void => {
     track.textContent = '';
     track.appendChild(el('li', 'error-msg', msg));
 };
@@ -17,7 +17,7 @@ const makeSkeleton = () => {
     return li;
 };
 
-const renderSkeletons = (container, count = 4) =>
+const renderSkeletons = (container:HTMLElement, count = 4):void =>
     container.append(
         ...Array.from({ length: count }, () => makeSkeleton())
     );

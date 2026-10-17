@@ -2,14 +2,57 @@ import { BASEURL } from '../config.js';
 import { showError, renderSkeletons } from '../components/skeleton.js';
 import { formatPrice } from '../utils/format.js';
 import { makeCard } from '../components/productcard.js';
+import initSwiper from "../vender/swiper/swiper.js"
+import initScrollAnimation from "../vender/motion/motion.js"
 import {
     el,
     saveToLocalStorage,
     getCountBasketFromLocalStorage
 } from '../utils/utils.js';
 
+
+
 const toFa = (n: number) => String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
 
+
+const createMainSlide = (p: {
+    title: string;
+    emoji: string;
+    text: string;
+    cta: {
+        label: string;
+        href: string;
+    };
+}) => {
+    const slide = el("div", "swiper-slide");
+
+    slide.append(createMainCard(p));
+
+    return slide;
+};
+
+
+const createHeroSlider = (data: {
+    title: string;
+    emoji: string;
+    text: string;
+    cta: {
+        label: string;
+        href: string;
+    };
+}) => {
+    const swiper = el("div", "swiper");
+    const swiperWrapper = el("div", "swiper-wrapper");
+    const swiperPagination = el("div", "swiper-pagination");
+
+    for (let i = 0; i < 4; i++) {
+
+        swiperWrapper.append(createMainSlide(data));
+    }
+    swiper.append(swiperWrapper, swiperPagination);
+
+    return swiper;
+};
 
 const createMainCard = (p: {
     title: string;
@@ -20,8 +63,8 @@ const createMainCard = (p: {
         href: string;
     };
 }) => {
-    const main = el("article", "hero-main");
 
+    const main = el("article", "hero-main");
     const emoji = el("span", "hero-emoji");
     emoji.setAttribute("aria-hidden", "true");
     emoji.textContent = `${p.emoji}`;
@@ -37,6 +80,7 @@ const createMainCard = (p: {
     btn.textContent = `${p.cta?.label ? p.cta.label : "افزودن محصول"}`;
 
     main.append(emoji, title, text, btn);
+
     return main;
 };
 
@@ -107,17 +151,15 @@ const getAndShowHeroBanner = async () => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data = await response.json();
-            console.log(data);
-
-
             heroGrid.textContent = '';
             heroGrid.append(
-                createMainCard(data.hero),
+                createHeroSlider(data.hero),
                 createSideCard(data.side),
                 createPromos(data.promos)
             );
+            initSwiper()
             return true;
-        } catch (err) {
+        } catch (err: unknown) {
             showError(heroGrid, 'خطا در بارگیری.');
             return false;
         }
@@ -161,33 +203,33 @@ const getProductsWithDetails = async () => {
     return finalProduct;
 };
 
-const getAndShowProducts = async (trackSelector:string, categoryId:number) => {
+const getAndShowProducts = async (trackSelector: string, categoryId: number) => {
     const track = document.querySelector(trackSelector);
-    if(track){
-    renderSkeletons(track);
-    showError(track, 'در حال بارگیری ...');
+    if (track) {
+        renderSkeletons(track);
+        showError(track, 'در حال بارگیری ...');
 
-    try {
-        const products = await getProductsWithDetails();
+        try {
+            const products = await getProductsWithDetails();
 
-        const filtered = products.filter(
-            p => p.categoryId == categoryId
-        );
+            const filtered = products.filter(
+                p => p.categoryId == categoryId
+            );
 
-        if (filtered.length === 0) {
-            showError(track, 'محصولی برای نمایش وجود ندارد.');
-            return;
+            if (filtered.length === 0) {
+                showError(track, 'محصولی برای نمایش وجود ندارد.');
+                return;
+            }
+
+            const cards = filtered.map(makeCard);
+
+            track.textContent = '';
+            track.append(...cards);
+            initScrollAnimation();
+        } catch (err:unknown) {
+            showError(track, 'خطا در بارگیری.');
         }
-
-        const cards = filtered.map(makeCard);
-
-        track.textContent = '';
-        track.append(...cards);
-
-    } catch (err) {
-        showError(track, 'خطا در بارگیری.');
     }
-}
 };
 
 const getProductsData = () => {
@@ -278,7 +320,7 @@ const updateSearchPlaceholders = async () => {
 
     } catch (err: unknown) {
         if (err instanceof Error) {
-            console.error('خطا در دریافت تعداد محصولات:', err.message)
+            showError('خطا در دریافت تعداد محصولات:', err.message)
         }
     }
 };
@@ -426,7 +468,7 @@ const getndShowFooterInfos = async () => {
             );
 
             return true;
-        } catch (err) {
+        } catch (err: unknown) {
             showError(footerCols, 'خطا در بارگیری.');
             return false;
         }
@@ -448,10 +490,11 @@ const updateBadge = () => {
 
 const initAddToCart = () => {
     updateBadge()
-    document.addEventListener("click", (e) => {
-        const btn = e.target.closest(".act-btn.act-cart");
-        if (!btn) return;
-        if (btn.disabled) return;
+    document.addEventListener("click", (e: MouseEvent) => {
+        if (!(e.target instanceof HTMLElement)) return
+        const btn = e.target.closest<HTMLButtonElement>(".act-btn.act-cart");
+        if (!(btn instanceof HTMLButtonElement)) return
+        if (btn?.disabled) return;
 
         let count = getCountBasketFromLocalStorage();
         count += 1;

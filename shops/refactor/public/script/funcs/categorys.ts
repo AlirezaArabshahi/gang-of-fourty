@@ -24,7 +24,7 @@ const makeCategory = (category: {
     a.append(span, strong)
     li.append(a)
 
-    a.addEventListener("click", (e) => {
+    a.addEventListener("click", (e:MouseEvent) => {
         e.preventDefault();
         selectCategory(category);
     });
@@ -34,7 +34,7 @@ const makeCategory = (category: {
 const makeSubMenu = (category: {
     name: string,
     slug: string,
-}) => {
+}):HTMLLIElement=> {
     const li = el("li")
     const a = el("a")
     a.setAttribute("href", `#${category.slug}`)
@@ -51,8 +51,10 @@ const fetchJSON = async (endpoint:string, options = {}) => {
     return response.json();
 };
 
-const renderCategoriesInto = async (selector: string,builder) => {
+const renderCategoriesInto = async (selector,builder) => {
+
     const categoryLists = document.querySelectorAll(selector);
+
     categoryLists.forEach((list) =>
         showError(list, 'در حال بارگیری ...')
     );
@@ -66,10 +68,6 @@ const renderCategoriesInto = async (selector: string,builder) => {
             categories.slice(0, 6).forEach((category) => {
                 categoryList.append(builder(category));
             })
-            // categories
-            //     .slice(0, 6)
-            // .map(builder)
-            // .forEach((card) => categoryList.append(card));
         });
     } catch (error) {
         categoryLists.forEach((list) =>
@@ -135,7 +133,7 @@ const openModal = async (category: {
     }
 };
 
-const closeModal = () => {
+const closeModal = ():void => {
     const modal = document.querySelector<HTMLDivElement>("#cat-modal");
     if (!modal) return;
     modal.hidden = true;
@@ -144,8 +142,8 @@ const closeModal = () => {
 
 const closeBtn = document.querySelector<HTMLButtonElement>(".cat-modal__close")
 
-if (closeBtn) {
-    closeBtn.addEventListener("click", closeModal)
+if (closeBtn){
+   closeBtn.addEventListener("click", closeModal);
 }
 
 const getAndShowCategories = () => renderCategoriesInto('.cat-list', makeCategory);
