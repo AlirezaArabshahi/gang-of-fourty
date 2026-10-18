@@ -5,14 +5,13 @@
   const menuClose = document.querySelector<HTMLButtonElement>('[data-menu-close]');
   const menu = document.getElementById('mobile-menu');
   const menuOverlay = document.querySelector<HTMLElement>('.mobile-menu__overlay');
-  const menuLinks = menu
-    ? menu.querySelectorAll<HTMLAnchorElement>('a')
-    : ([] as unknown as NodeListOf<HTMLAnchorElement>);
 
   const FOCUSABLE_SELECTOR =
     'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   if (menuBtn && menu && menuOverlay) {
+    const menuLinks = menu.querySelectorAll<HTMLAnchorElement>('a');
+
     const setOpen = (open: boolean): void => {
       menu.classList.toggle('is-open', open);
       menuOverlay.classList.toggle('is-open', open);

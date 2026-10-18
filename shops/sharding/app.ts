@@ -1,3 +1,7 @@
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import Fuse from 'fuse.js';
+
 import {
   enrichShop,
   enrichCategories,
@@ -6,13 +10,14 @@ import {
 } from './overrides';
 
 const API = {
-  products: '../../api/products.json',
-  stock: '../../api/stock.json',
-  offers: '../../api/offers.json',
-  shop: '../../api/shop.json',
-  categories: '../../api/categories.json',
-  home: '../../api/home.json',
+  products: '/api/products.json',
+  stock: '/api/stock.json',
+  offers: '/api/offers.json',
+  shop: '/api/shop.json',
+  categories: '/api/categories.json',
+  home: '/api/home.json',
 };
+
 const MIN_SKELETON_MS = 300;
 const TIMEOUT_MS = 8000;
 
@@ -21,6 +26,22 @@ const percentFmt = new Intl.NumberFormat('fa-IR', {
   style: 'percent',
   maximumFractionDigits: 0,
 });
+
+const notyf = new Notyf({
+  duration: 2200,
+  ripple: true,
+  position: { x: 'left', y: 'bottom' },
+  dismissible: true,
+  types: [
+    {
+      type: 'error',
+      background: '#e11d48', 
+      icon: false
+    }
+  ]
+});
+
+let productFuse: Fuse<any> | null = null;
 
 function getShopSlug() {
   const parts = location.pathname.split('/').filter(Boolean);
@@ -1035,6 +1056,13 @@ function setupCart() {
     const qty = setCartQty(id, next);
     renderCardActions(actions, qty);
 
+    const name = actions.dataset.productName || 'کالا';
+    if (btn.dataset.action === 'inc') {
+      notyf.success(`${name} به سبد اضافه شد`);
+    } else if (qty === 0) {
+      notyf.error(`${name} از سبد حذف شد`);
+    }
+
     const card = actions.closest('.product');
     if (card) {
       card.classList.remove('product--cart-pulse');
@@ -1145,6 +1173,153 @@ function setupCategoryNavigation() {
   });
 }
 
+function setupSearch() {
+  const search = document.querySelector<HTMLInputElement>('#search-input');
+  const box = document.getElementById('search-results');
+  if (!search || !box) return;
+
+  const close = () => {
+    box.hidden = true;
+    box.replaceChildren();
+  };
+
+  search.addEventListener('input', () => {
+    if (!productFuse || !appCatalog) return;
+
+    const q = search.value.trim();
+    if (!q) {
+      close();
+      return;
+    }
+
+    const hits = productFuse.search(q).map((r) => r.item).slice(0, 8);
+    box.replaceChildren();
+
+    if (hits.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'search-results__empty';
+      empty.textContent = 'نتیجه‌ای یافت نشد';
+      box.appendChild(empty);
+      box.hidden = false;
+      return;
+    }
+
+    hits.forEach((p) => {
+      const offer = appCatalog?.offers.find((o) => o.productId === p.id);
+      const hasDiscount = offer && offer.percent > 0;
+      const finalPrice = hasDiscount
+        ? Math.round(p.price * (1 - offer.percent / 100))
+        : p.price;
+
+      const itemWrapper = document.createElement('div');
+      itemWrapper.className = 'search-results__item';
+      itemWrapper.dataset.productId = String(p.id);
+
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'search-results__img';
+      
+      if (p.image) {
+        const img = document.createElement('img');
+        img.src = p.image;
+        img.alt = p.name;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'contain';
+        img.onerror = () => {
+          img.remove();
+          imgWrap.textContent = p.emoji || '🛒';
+          imgWrap.style.display = 'grid';
+          imgWrap.style.placeItems = 'center';
+          imgWrap.style.fontSize = '1.5rem';
+        };
+        imgWrap.appendChild(img);
+      } else {
+        imgWrap.textContent = p.emoji || '🛒';
+        imgWrap.style.display = 'grid';
+        imgWrap.style.placeItems = 'center';
+        imgWrap.style.fontSize = '1.5rem';
+      }
+
+      const info = document.createElement('div');
+      info.className = 'search-results__info';
+
+      const nameEl = document.createElement('span');
+      nameEl.className = 'search-results__name';
+      nameEl.textContent = p.name;
+
+      const priceEl = document.createElement('span');
+      priceEl.className = 'search-results__price';
+      priceEl.textContent = `${priceFmt.format(finalPrice)} تومان`;
+
+      info.append(nameEl, priceEl);
+
+      const actions = document.createElement('div');
+      actions.className = 'product__actions search-results__actions';
+      actions.dataset.productId = String(p.id);
+      actions.dataset.productName = p.name;
+
+      const currentQty = getCartQty(p.id);
+      renderCardActions(actions, currentQty);
+
+      actions.addEventListener('click', (e) => {
+        if (!(e.target instanceof Element)) return;
+        const btn = e.target.closest<HTMLButtonElement>('[data-action="inc"], [data-action="dec"]');
+        if (!btn || btn.disabled) return;
+
+        e.stopPropagation(); 
+
+        const current = getCartQty(p.id);
+        const next = btn.dataset.action === 'inc' ? current + 1 : current - 1;
+        const qty = setCartQty(p.id, next);
+        renderCardActions(actions, qty);
+
+        if (btn.dataset.action === 'inc') {
+          notyf.success(`${p.name} به سبد اضافه شد`);
+        } else if (qty === 0) {
+          notyf.error(`${p.name} از سبد حذف شد`); 
+        }
+      });
+
+      itemWrapper.append(imgWrap, info, actions);
+      box.appendChild(itemWrapper);
+    });
+
+    box.hidden = false;
+  });
+
+  box.addEventListener('click', (e: MouseEvent) => {
+    if (!(e.target instanceof Element)) return;
+    
+    const item = e.target.closest<HTMLElement>('.search-results__item');
+    if (!item) return;
+
+    if (e.target.closest('.search-results__actions')) return;
+
+    const productId = item.dataset.productId;
+    if (!productId) return;
+
+    const next = getCartQty(productId) + 1;
+    setCartQty(productId, next);
+    
+    const productName = item.querySelector('.search-results__name')?.textContent || 'کالا';
+    notyf.success(`${productName} به سبد اضافه شد`);
+
+    const actions = item.querySelector<HTMLElement>('.search-results__actions');
+    if (actions) renderCardActions(actions, next);
+
+    item.style.backgroundColor = 'var(--lime-soft)';
+    setTimeout(() => { item.style.backgroundColor = ''; }, 300);
+  });
+
+  document.addEventListener('click', (e: MouseEvent) => {
+    if (!(e.target instanceof Node)) return;
+    if (!box.contains(e.target) && e.target !== search) close();
+  });
+
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape') close();
+  });
+}
 function showSlowConnection(show: boolean) {
   const el = document.getElementById('slow-connection');
   if (!el) return;
@@ -1175,6 +1350,7 @@ async function init() {
     ?.addEventListener('submit', (e) => e.preventDefault());
   setupCart();
   setupCategoryNavigation();
+  setupSearch();
 
   const startedAt = performance.now();
   const slowTimer = setTimeout(() => showSlowConnection(true), 3000);
@@ -1194,6 +1370,12 @@ async function init() {
     const categories = enrichCategories(categoriesRaw);
     const home = enrichHome(homeRaw);
     const products = productsRaw.map(enrichProduct);
+
+    productFuse = new Fuse(products, {
+      keys: ['name', 'tags'],
+      threshold: 0.4,
+      ignoreLocation: true,
+    });
 
     clearTimeout(slowTimer);
     showSlowConnection(false);
