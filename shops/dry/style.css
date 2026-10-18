@@ -321,7 +321,8 @@ html {
   transition: .2s;
 }
 
-.product-card:hover {
+.product-card:hover,
+.product-card:has(:focus-visible) {
   transform: translateY(-5px);
   box-shadow: 0 15px 30px rgba(0, 0, 0, .08);
 }
@@ -348,7 +349,8 @@ html {
 
   position: absolute;
   top: 20px;
-  right: 20px;
+  inset-inline-start: 20px; 
+  z-index: 1;
   width: 34px;
   height: 34px;
   border: none;
@@ -365,7 +367,7 @@ html {
 
   position: absolute;
   bottom: 15px;
-  left: 15px;
+  inset-inline-end: 15px;
   width: 38px;
   height: 38px;
   border-radius: 12px;
@@ -639,7 +641,7 @@ html {
 .discount {
   position: absolute;
   top: 20px;
-  left: 20px;
+  inset-inline-end: 20px;
   background: var(--accent-color);
   color: var(--on-accent);
   padding: 5px 10px;
@@ -677,6 +679,7 @@ html {
   }
 
   .product-card:hover,
+  .product-card:has(:focus-visible),
   .category-card:hover,
   .promo-card:hover { transform: none; }
 }
@@ -684,7 +687,7 @@ html {
 .skip-link {
   position: absolute;
   top: -100px;
-  right: 16px;
+  inset-inline-start: 16px;
   z-index: 100;
   padding: 10px 18px;
   border-radius: 12px;
@@ -779,7 +782,8 @@ address { font-style: normal; color: var(--secondary-color); line-height: 2; mar
 
 .product-card.out { opacity: .55; }
 
-.product-card.out:hover {
+.product-card.out:hover,
+.product-card.out:has(:focus-visible) {
   transform: none;
   box-shadow: none;
 }
@@ -834,4 +838,10 @@ address { font-style: normal; color: var(--secondary-color); line-height: 2; mar
 
 .add-btn:not(:disabled):active {
   transform: scale(.88);
+}
+
+:is(.products, .categories, .blog, .promo-card, .product-card, .footer):target {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 4px;
+  border-radius: 20px;
 }
