@@ -1,17 +1,19 @@
 (function () {
   'use strict';
 
-  const menuBtn = document.querySelector('[data-menu-open]');
-  const menuClose = document.querySelector('[data-menu-close]');
+  const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const menuClose = document.querySelector<HTMLButtonElement>('[data-menu-close]');
   const menu = document.getElementById('mobile-menu');
-  const menuOverlay = document.querySelector('.mobile-menu__overlay');
-  const menuLinks = menu ? menu.querySelectorAll('a') : [];
+  const menuOverlay = document.querySelector<HTMLElement>('.mobile-menu__overlay');
+  const menuLinks = menu
+    ? menu.querySelectorAll<HTMLAnchorElement>('a')
+    : ([] as unknown as NodeListOf<HTMLAnchorElement>);
 
   const FOCUSABLE_SELECTOR =
     'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   if (menuBtn && menu && menuOverlay) {
-    const setOpen = (open) => {
+    const setOpen = (open: boolean): void => {
       menu.classList.toggle('is-open', open);
       menuOverlay.classList.toggle('is-open', open);
       menuBtn.setAttribute('aria-expanded', String(open));
@@ -39,7 +41,7 @@
       link.addEventListener('click', () => setOpen(false));
     });
 
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
       if (!menu.classList.contains('is-open')) return;
 
       if (e.key === 'Escape') {
@@ -49,8 +51,9 @@
 
       if (e.key === 'Tab') {
         const focusables = Array.from(
-          menu.querySelectorAll(FOCUSABLE_SELECTOR)
+          menu.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
         ).filter((el) => el.offsetParent !== null);
+
         if (!focusables.length) return;
 
         const first = focusables[0];
@@ -67,18 +70,20 @@
     });
 
     const mq = window.matchMedia('(min-width: 768px)');
-    mq.addEventListener('change', (e) => {
+    mq.addEventListener('change', (e: MediaQueryListEvent) => {
       if (e.matches && menu.classList.contains('is-open')) {
         setOpen(false);
       }
     });
   }
 
-  const deptBtn = document.querySelector('.dept-btn[aria-expanded]');
-  const dept = deptBtn ? deptBtn.closest('.dept') : null;
+  const deptBtn = document.querySelector<HTMLButtonElement>(
+    '.dept-btn[aria-expanded]'
+  );
+  const dept = deptBtn ? deptBtn.closest<HTMLElement>('.dept') : null;
 
   if (deptBtn && dept) {
-    const setDeptOpen = (open) => {
+    const setDeptOpen = (open: boolean): void => {
       dept.classList.toggle('is-open', open);
       deptBtn.setAttribute('aria-expanded', String(open));
     };
@@ -88,19 +93,23 @@
       setDeptOpen(!isOpen);
     });
 
-    dept.addEventListener('focusout', (e) => {
-      if (!dept.contains(e.relatedTarget)) {
+    dept.addEventListener('focusout', (e: FocusEvent) => {
+      if (
+        !(e.relatedTarget instanceof Node) ||
+        !dept.contains(e.relatedTarget)
+      ) {
         setDeptOpen(false);
       }
     });
 
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', (e: MouseEvent) => {
+      if (!(e.target instanceof Node)) return;
       if (!dept.contains(e.target)) {
         setDeptOpen(false);
       }
     });
 
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape' && dept.classList.contains('is-open')) {
         setDeptOpen(false);
         deptBtn.focus();

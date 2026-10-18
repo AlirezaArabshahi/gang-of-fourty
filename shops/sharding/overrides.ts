@@ -1,4 +1,4 @@
-const IMAGE_MAP = {
+const IMAGE_MAP: Record<number, string> = {
   101: 'assets/images/products/p-apple.webp',
   102: 'assets/images/products/p-orange.webp',
   103: 'assets/images/products/p-banana.webp',
@@ -14,7 +14,7 @@ const IMAGE_MAP = {
   502: 'assets/images/products/p-dough.webp',
 };
 
-const CATEGORY_IMAGE_MAP = {
+const CATEGORY_IMAGE_MAP: Record<string, string> = {
   fruits: 'assets/images/categories/cat-fruits.webp',
   dairy: 'assets/images/categories/cat-dairy.webp',
   grocery: 'assets/images/categories/cat-grocery.webp',
@@ -37,18 +37,18 @@ const CATEGORY_IMAGE_MAP = {
 };
 
 const CATEGORIES_EXTRA = [
-  { id: 8,  slug: 'nuts',     name: 'خشکبار و شیرینی',    emoji: '🥜', color: '#fbe9d8' },
-  { id: 9,  slug: 'protein',  name: 'پروتئین و تخم‌مرغ',  emoji: '🍗', color: '#fbe0e6' },
-  { id: 10, slug: 'canned',   name: 'کنسرو و غذای آماده', emoji: '🥫', color: '#e7eef7' },
-  { id: 11, slug: 'spice',    name: 'چاشنی و افزودنی',    emoji: '🧂', color: '#f7e6da' },
-  { id: 12, slug: 'kalabarg', name: 'محصولات کالابرگی',   emoji: '🎁', color: '#e9e6f7' },
-  { id: 13, slug: 'baby',     name: 'کودک و نوزاد',       emoji: '🍼', color: '#fce6ef' },
-  { id: 14, slug: 'pet',      name: 'پت شاپ',             emoji: '🐾', color: '#e5f1ec' },
-  { id: 15, slug: 'tissue',   name: 'دستمال و شوینده',    emoji: '🧻', color: '#e3edf5' },
-  { id: 16, slug: 'home',     name: 'خانه و سبک زندگی',   emoji: '🏠', color: '#f0e9e0' },
-  { id: 17, slug: 'digital',  name: 'لوازم برقی',         emoji: '🔌', color: '#e0e8f0' },
-  { id: 18, slug: 'fashion',  name: 'مد و پوشاک',         emoji: '👕', color: '#f3e4ec' },
-  { id: 19, slug: 'smoking',  name: 'دخانیات',            emoji: '🚬', color: '#e8e8e8' },
+  { id: 8, slug: 'nuts', name: 'خشکبار و شیرینی', emoji: '🥜', color: '#fbe9d8' },
+  { id: 9, slug: 'protein', name: 'پروتئین و تخم‌مرغ', emoji: '🍗', color: '#fbe0e6' },
+  { id: 10, slug: 'canned', name: 'کنسرو و غذای آماده', emoji: '🥫', color: '#e7eef7' },
+  { id: 11, slug: 'spice', name: 'چاشنی و افزودنی', emoji: '🧂', color: '#f7e6da' },
+  { id: 12, slug: 'kalabarg', name: 'محصولات کالابرگی', emoji: '🎁', color: '#e9e6f7' },
+  { id: 13, slug: 'baby', name: 'کودک و نوزاد', emoji: '🍼', color: '#fce6ef' },
+  { id: 14, slug: 'pet', name: 'پت شاپ', emoji: '🐾', color: '#e5f1ec' },
+  { id: 15, slug: 'tissue', name: 'دستمال و شوینده', emoji: '🧻', color: '#e3edf5' },
+  { id: 16, slug: 'home', name: 'خانه و سبک زندگی', emoji: '🏠', color: '#f0e9e0' },
+  { id: 17, slug: 'digital', name: 'لوازم برقی', emoji: '🔌', color: '#e0e8f0' },
+  { id: 18, slug: 'fashion', name: 'مد و پوشاک', emoji: '👕', color: '#f3e4ec' },
+  { id: 19, slug: 'smoking', name: 'دخانیات', emoji: '🚬', color: '#e8e8e8' },
 ];
 
 const BANNER_IMAGE_MAP = [
@@ -67,7 +67,8 @@ const SHOP_OVERRIDES = {
   phoneLink: '+982191000000',
   email: 'support@sharding.ir',
   address: 'تهران، خیابان ولیعصر',
-  about: 'سوپرمارکت فوری محله شما با ارسال سریع و تازه. سفارش خود را تا نیمه‌شب ثبت کنید و فردا صبح تحویل بگیرید.',
+  about:
+    'سوپرمارکت فوری محله شما با ارسال سریع و تازه. سفارش خود را تا نیمه‌شب ثبت کنید و فردا صبح تحویل بگیرید.',
   copyright: 'کلیه حقوق اين سايت متعلق به شرکت فناوران شاردینگ است.',
   notice: 'ارسال رایگان برای سفارش‌های بالای ۵۰۰٬۰۰۰ تومان',
   searchPlaceholder: 'جستجوی محصول، برند یا دسته‌بندی…',
@@ -96,9 +97,7 @@ const SHOP_OVERRIDES = {
     { label: 'قوانین و مقررات', href: '#' },
   ],
 
-  schedule: [
-    { days: 'شنبه تا پنجشنبه', time: '۸ صبح تا ۱۰ شب' },
-  ],
+  schedule: [{ days: 'شنبه تا پنجشنبه', time: '۸ صبح تا ۱۰ شب' }],
 
   labels: {
     location: 'موقعیت',
@@ -149,7 +148,11 @@ const DEPT_MENU_OVERRIDE = [
       { title: 'سبزیجات', links: ['کاهو', 'اسفناج', 'جعفری', 'ریحان', 'تره'] },
       { title: 'صیفی‌جات', links: ['گوجه', 'خیار', 'فلفل دلمه', 'بادمجان', 'کدو'] },
     ],
-    promo: { image: 'assets/images/promos/promo-fruits.webp', title: 'تازه از مزرعه', desc: 'تا ۳۰٪ تخفیف روی میوه‌های فصل' },
+    promo: {
+      image: 'assets/images/promos/promo-fruits.webp',
+      title: 'تازه از مزرعه',
+      desc: 'تا ۳۰٪ تخفیف روی میوه‌های فصل',
+    },
   },
   {
     label: 'لبنیات و تخم‌مرغ',
@@ -160,7 +163,11 @@ const DEPT_MENU_OVERRIDE = [
       { title: 'پنیر', links: ['پنیر سفید', 'پنیر پیتزا', 'پنیر خامه‌ای', 'پنیر لیقوان'] },
       { title: 'ماست و تخم‌مرغ', links: ['ماست پرچرب', 'ماست کم‌چرب', 'دوغ سنتی', 'تخم‌مرغ محلی'] },
     ],
-    promo: { image: 'assets/images/promos/promo-dairy.webp', title: 'لبنیات و تخم‌مرغ', desc: 'ارسال روزانه از دامداری‌های محلی' },
+    promo: {
+      image: 'assets/images/promos/promo-dairy.webp',
+      title: 'لبنیات و تخم‌مرغ',
+      desc: 'ارسال روزانه از دامداری‌های محلی',
+    },
   },
   {
     label: 'خواروبار',
@@ -171,7 +178,11 @@ const DEPT_MENU_OVERRIDE = [
       { title: 'روغن و سرکه', links: ['روغن زیتون', 'روغن آفتابگردان', 'سرکه سیب', 'سرکه بالزامیک'] },
       { title: 'ماکارونی و ادویه', links: ['ماکارونی رشته', 'ماکارونی فرمی', 'زردچوبه', 'فلفل سیاه'] },
     ],
-    promo: { image: 'assets/images/promos/promo-grocery.webp', title: 'خرید عمده', desc: 'تخفیف ویژه روی بسته‌های خانواده' },
+    promo: {
+      image: 'assets/images/promos/promo-grocery.webp',
+      title: 'خرید عمده',
+      desc: 'تخفیف ویژه روی بسته‌های خانواده',
+    },
   },
   {
     label: 'نوشیدنی',
@@ -182,7 +193,11 @@ const DEPT_MENU_OVERRIDE = [
       { title: 'چای و قهوه', links: ['چای سیاه', 'چای سبز', 'قهوه ترک', 'قهوه اسپرسو'] },
       { title: 'نوشابه و آب', links: ['نوشابه خانواده', 'آب معدنی', 'دمنوش گیاهی'] },
     ],
-    promo: { image: 'assets/images/promos/promo-beverages.webp', title: 'خنک و تازه', desc: 'نوشیدنی‌های سرد با تخفیف ویژه' },
+    promo: {
+      image: 'assets/images/promos/promo-beverages.webp',
+      title: 'خنک و تازه',
+      desc: 'نوشیدنی‌های سرد با تخفیف ویژه',
+    },
   },
   {
     label: 'شوینده و بهداشتی',
@@ -193,7 +208,11 @@ const DEPT_MENU_OVERRIDE = [
       { title: 'شوینده لباس', links: ['پودر ماشین', 'مایع دستشویی', 'نرم‌کننده'] },
       { title: 'بهداشت شخصی', links: ['شامپو', 'صابون', 'خمیردندان', 'دستمال کاغذی'] },
     ],
-    promo: { image: 'assets/images/promos/promo-hygiene.webp', title: 'خانه تمیز', desc: 'ست کامل شوینده با قیمت ویژه' },
+    promo: {
+      image: 'assets/images/promos/promo-hygiene.webp',
+      title: 'خانه تمیز',
+      desc: 'ست کامل شوینده با قیمت ویژه',
+    },
   },
   {
     label: 'تخفیف‌ها و پیشنهادها',
@@ -204,36 +223,46 @@ const DEPT_MENU_OVERRIDE = [
       { title: 'پیشنهاد هفته', links: ['جعبه میوه', 'سبد صبحانه', 'بسته خانواده'] },
       { title: 'کوپن‌ها', links: ['کوپن تخفیف', 'ارسال رایگان', 'هدیه خرید'] },
     ],
-    promo: { image: 'assets/images/promos/promo-deals.webp', title: 'تا ۴۰٪ تخفیف', desc: 'فرصت محدود — همین حالا خرید کنید' },
+    promo: {
+      image: 'assets/images/promos/promo-deals.webp',
+      title: 'تا ۴۰٪ تخفیف',
+      desc: 'فرصت محدود — همین حالا خرید کنید',
+    },
   },
 ];
 
-
-function enrichProduct(product) {
+export function enrichProduct(product: any) {
   return { ...product, image: product.image || IMAGE_MAP[product.id] || null };
 }
 
-function enrichCategory(category) {
-  return { ...category, image: category.image || CATEGORY_IMAGE_MAP[category.slug] || null };
+export function enrichCategory(category: any) {
+  return {
+    ...category,
+    image: category.image || CATEGORY_IMAGE_MAP[category.slug] || null,
+  };
 }
 
-function enrichCategories(apiCategories) {
+export function enrichCategories(apiCategories: any[]) {
   const existingSlugs = new Set(apiCategories.map((c) => c.slug));
   const extra = CATEGORIES_EXTRA.filter((c) => !existingSlugs.has(c.slug));
   return [...apiCategories, ...extra].map(enrichCategory);
 }
 
-function enrichHome(home) {
-  const banners = Array.isArray(home.banners) && home.banners.length
-    ? home.banners.map((b, i) => ({ ...b, image: b.image || BANNER_IMAGE_MAP[i] || null }))
-    : BANNER_IMAGE_MAP.map((image, i) => ({
-        image,
-        alt: `بنر ${i + 1}`,
-        href: '#offers',
-      }));
+export function enrichHome(home: any) {
+  const banners =
+    Array.isArray(home.banners) && home.banners.length
+      ? home.banners.map((b: any, i: number) => ({
+          ...b,
+          image: b.image || BANNER_IMAGE_MAP[i] || null,
+        }))
+      : BANNER_IMAGE_MAP.map((image, i) => ({
+          image,
+          alt: `بنر ${i + 1}`,
+          href: '#offers',
+        }));
   return { ...home, ...HOME_OVERRIDES, banners };
 }
 
-function enrichShop(shop) {
+export function enrichShop(shop: any) {
   return { ...shop, ...SHOP_OVERRIDES, deptMenu: DEPT_MENU_OVERRIDE };
 }
