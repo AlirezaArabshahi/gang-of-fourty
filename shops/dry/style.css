@@ -823,3 +823,15 @@ address { font-style: normal; color: var(--secondary-color); line-height: 2; mar
 }
 
 .svg-sprite { position: absolute; }
+
+.add-btn {
+  transition: transform .15s;
+}
+
+.add-btn:not(:disabled):hover {
+  transform: scale(1.08);
+}
+
+.add-btn:not(:disabled):active {
+  transform: scale(.88);
+}

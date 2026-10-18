@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "dev": "vite", 
+    "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview" ,
+    "preview": "vite preview",
     "check": "tsc --noEmit"
   },
   "keywords": [],
@@ -15,7 +15,12 @@
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.4"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "notyf": "^3.10.0"
   }
 }

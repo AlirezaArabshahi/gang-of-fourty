@@ -1,3 +1,16 @@
+import { Notyf } from 'notyf'
+import 'notyf/notyf.min.css'
+import confetti from 'canvas-confetti'
+
+import orangeImg from './assets/products/orange.png'
+import bananaImg from './assets/products/banana.png'
+import milkImg from './assets/products/milk.png'
+import paneerImg from './assets/products/panir-sefid.png'
+import mastImg from './assets/products/mast.png'
+import honeyImg from './assets/products/honey.png'
+
+const notyf: Notyf = new Notyf()
+
 const API = '../../api/'
 const DAIRY_CATEGORY_ID = 2
 
@@ -5,7 +18,7 @@ type Product = {
   id: number
   categoryId: number
   name: string
-  emoji:string
+  emoji: string
   unit: string
   price: number
   tags: string[]
@@ -18,20 +31,49 @@ type Offer = {
 }
 
 type Stock = {
-  updateAt: string
+  updatedAt: string
   items: Record<number, number> 
 }
-  const IMAGES: Record<number, string> = {
-      102: './assets/products/orange.png',
-      103: './assets/products/banana.png',
-      201: './assets/products/milk.png',
-      202: './assets/products/panir-sefid.png',
-      203: './assets/products/mast.png',
-      402: './assets/products/honey.png',
-  }
+const IMAGES: Record<number, string> = {
+  102: orangeImg,
+  103: bananaImg,
+  201: milkImg,
+  202: paneerImg,
+  203: mastImg,
+  402: honeyImg,
+}
 
   const faNumber = new Intl.NumberFormat('fa-IR')
-  const toman = (n: number): string => faNumber.format(n) + 'تومان'
+  const toman = (n: number): string => faNumber.format(n) + ' تومان'
+
+  const CART_KEY = 'dry-cart'
+
+const cartCount = document.querySelector<HTMLElement>('#cart-count')
+if (!cartCount) throw new Error('index.html is missing #cart-count')
+
+const savedCart: number = Number(localStorage.getItem(CART_KEY))
+let cart: number = Number.isFinite(savedCart) ? savedCart : 0
+
+const renderCart = (): void => {
+  cartCount.textContent = faNumber.format(cart)
+}
+
+const bumpCart = (): void => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  cartCount.animate(
+    [{ transform: 'scale(1)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }],
+    { duration: 300, easing: 'ease-out' },
+  )
+}
+
+const addToCart = (): void => {
+  cart += 1
+  localStorage.setItem(CART_KEY, String(cart))
+  renderCart()
+  bumpCart()
+}
+
+renderCart()
 
   async function getJSON<T>(file: string): Promise<T> {
     const res: Response = await fetch(API + file)
@@ -84,6 +126,7 @@ function createCard(product: Product, inStock: boolean, offer: Offer | undefined
 
   const add = el('button', 'add-btn', '+')
   add.type = 'button'
+  add.dataset.name = product.name
   add.setAttribute('aria-label', `افزودن ${product.name} به سبد`)
   add.disabled = !inStock
 
@@ -123,9 +166,12 @@ async function init(): Promise<void> {
   const boxes: HTMLElement[] = [dairyBox, offersBox]
 
   for (const box of boxes) {
+    box.addEventListener('click', onAddClick)
     box.setAttribute('aria-busy', 'true')
     showStatus(box, 'در حال بارگذاری…')
   }
+
+  
 
   try {
     const [products, stock, offers] = await Promise.all([
@@ -152,5 +198,18 @@ async function init(): Promise<void> {
     }
   }
 }
+
+function onAddClick(e: MouseEvent): void {
+  if (!(e.target instanceof Element)) return
+  const button = e.target.closest<HTMLButtonElement>('.add-btn')
+  if (!button || button.disabled) return
+
+  notyf.success((button.dataset.name ?? 'محصول') + ' به سبد اضافه شد')
+  confetti({ particleCount: 60, spread: 70 })
+  
+  addToCart()
+
+}
+
 
 init()
