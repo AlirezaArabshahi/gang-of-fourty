@@ -11,8 +11,9 @@ import honeyImg from './assets/products/honey.png'
 
 const notyf: Notyf = new Notyf()
 
-const API = '../../api/'
-const DAIRY_CATEGORY_ID = 2
+const API: string = '../../api/'
+const DAIRY_CATEGORY_ID: number = 2
+const CART_KEY: string = 'dry-cart'
 
 type Product = {
   id: number
@@ -32,8 +33,9 @@ type Offer = {
 
 type Stock = {
   updatedAt: string
-  items: Record<number, number> 
+  items: Record<number, number>
 }
+
 const IMAGES: Record<number, string> = {
   102: orangeImg,
   103: bananaImg,
@@ -43,12 +45,10 @@ const IMAGES: Record<number, string> = {
   402: honeyImg,
 }
 
-  const faNumber = new Intl.NumberFormat('fa-IR')
-  const toman = (n: number): string => faNumber.format(n) + ' تومان'
+const faNumber: Intl.NumberFormat = new Intl.NumberFormat('fa-IR')
+const toman = (n: number): string => faNumber.format(n) + ' تومان'
 
-  const CART_KEY = 'dry-cart'
-
-const cartCount = document.querySelector<HTMLElement>('#cart-count')
+const cartCount: HTMLElement | null = document.querySelector<HTMLElement>('#cart-count')
 if (!cartCount) throw new Error('index.html is missing #cart-count')
 
 const savedCart: number = Number(localStorage.getItem(CART_KEY))
@@ -75,56 +75,55 @@ const addToCart = (): void => {
 
 renderCart()
 
-  async function getJSON<T>(file: string): Promise<T> {
-    const res: Response = await fetch(API + file)
-    if (!res.ok) throw new Error('خطا: ' + res.status)
-      return res.json()
-  }
+async function getJSON<T>(file: string): Promise<T> {
+  const res: Response = await fetch(API + file)
+  if (!res.ok) throw new Error('خطا: ' + res.status)
+  return res.json()
+}
 
-  function el<K extends keyof HTMLElementTagNameMap>(
-    tag: K,
-    className?: string,
-    text?: string,
-  ): HTMLElementTagNameMap[K] {
-    const node = document.createElement(tag)
-    if (className) node.className = className
-    if (text !== undefined) node.textContent = text
-    return node
-  }
+function el<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  className?: string,
+  text?: string,
+): HTMLElementTagNameMap[K] {
+  const node: HTMLElementTagNameMap[K] = document.createElement(tag)
+  if (className) node.className = className
+  if (text !== undefined) node.textContent = text
+  return node
+}
 
 function createCard(product: Product, inStock: boolean, offer: Offer | undefined): HTMLDivElement {
-  const card = el('div', 'product-card')
+  const card: HTMLDivElement = el('div', 'product-card')
   if (!inStock) card.classList.add('out')
 
   if (offer) card.append(el('span', 'discount', faNumber.format(offer.percent) + '٪'))
 
-  const fav = el('button', 'favorite', '♡')
+  const fav: HTMLButtonElement = el('button', 'favorite', '♡')
   fav.type = 'button'
   fav.setAttribute('aria-label', 'علاقه‌مندی')
 
-  const pic = el('div', 'product-emoji')
+  const pic: HTMLDivElement = el('div', 'product-emoji')
   if (IMAGES[product.id]) {
-    const img = el('img')
+    const img: HTMLImageElement = el('img')
     img.src = IMAGES[product.id]
-    img.alt = '' 
+    img.alt = ''
     pic.append(img)
   } else {
-    const emoji = el('span', '', product.emoji)
+    const emoji: HTMLSpanElement = el('span', '', product.emoji)
     emoji.setAttribute('aria-hidden', 'true')
     pic.append(emoji)
   }
   if (!inStock) pic.append(el('span', 'sold-out', 'ناموجود'))
 
-  const price = el('div', 'price')
+  const price: HTMLDivElement = el('div', 'price')
   if (offer) {
-
-    const newPrice = Math.round((product.price * (100 - offer.percent)) / 100 / 1000) * 1000
+    const newPrice: number = Math.round((product.price * (100 - offer.percent)) / 100 / 1000) * 1000
     price.append(el('span', 'old-price', toman(product.price)), el('span', '', toman(newPrice)))
   } else {
     price.append(el('span', '', toman(product.price)))
   }
 
-  const add = el('button', 'add-btn', '+')
+  const add: HTMLButtonElement = el('button', 'add-btn', '+')
   add.type = 'button'
   add.dataset.name = product.name
   add.setAttribute('aria-label', `افزودن ${product.name} به سبد`)
@@ -135,11 +134,10 @@ function createCard(product: Product, inStock: boolean, offer: Offer | undefined
 }
 
 function showStatus(box: HTMLElement, message: string, isError: boolean = false): void {
-  const p = el('p', isError ? 'status error' : 'status', message)
+  const p: HTMLParagraphElement = el('p', isError ? 'status error' : 'status', message)
   p.setAttribute('role', isError ? 'alert' : 'status')
   box.replaceChildren(p)
 }
-
 
 function renderCarousel(box: HTMLElement, cards: HTMLDivElement[], prefix: string): void {
   box.setAttribute('aria-busy', 'false')
@@ -152,16 +150,16 @@ function renderCarousel(box: HTMLElement, cards: HTMLDivElement[], prefix: strin
   })
   box.replaceChildren(...cards)
 
-  const section = box.closest('.products')
+  const section: Element | null = box.closest('.products')
   if (!section) return
-  const links = section.querySelectorAll<HTMLAnchorElement>('.carousel-nav a')
+  const links: NodeListOf<HTMLAnchorElement> = section.querySelectorAll<HTMLAnchorElement>('.carousel-nav a')
   links[0].href = `#${prefix}-1`
   links[1].href = `#${prefix}-${cards.length}`
 }
 
 async function init(): Promise<void> {
-  const dairyBox = document.querySelector<HTMLElement>('#dairy .carousel')
-  const offersBox = document.querySelector<HTMLElement>('#offers .carousel')
+  const dairyBox: HTMLElement | null = document.querySelector<HTMLElement>('#dairy .carousel')
+  const offersBox: HTMLElement | null = document.querySelector<HTMLElement>('#offers .carousel')
   if (!dairyBox || !offersBox) throw new Error('index.html is missing a carousel')
   const boxes: HTMLElement[] = [dairyBox, offersBox]
 
@@ -171,23 +169,25 @@ async function init(): Promise<void> {
     showStatus(box, 'در حال بارگذاری…')
   }
 
-  
-
   try {
-    const [products, stock, offers] = await Promise.all([
+    const [products, stock, offers]: [Product[], Stock, Offer[]] = await Promise.all([
       getJSON<Product[]>('products.json'),
       getJSON<Stock>('stock.json'),
       getJSON<Offer[]>('offers.json'),
     ])
 
-    const offerByProduct = new Map<number, Offer>(
+    const offerByProduct: Map<number, Offer> = new Map<number, Offer>(
       offers.map((o: Offer): [number, Offer] => [o.productId, o]),
     )
     const makeCard = (p: Product): HTMLDivElement =>
       createCard(p, (stock.items[p.id] ?? 0) > 0, offerByProduct.get(p.id))
 
-    const dairy = products.filter((p: Product): boolean => p.categoryId === DAIRY_CATEGORY_ID).map(makeCard)
-    const offered = products.filter((p: Product): boolean => offerByProduct.has(p.id)).map(makeCard)
+    const dairy: HTMLDivElement[] = products
+      .filter((p: Product): boolean => p.categoryId === DAIRY_CATEGORY_ID)
+      .map(makeCard)
+    const offered: HTMLDivElement[] = products
+      .filter((p: Product): boolean => offerByProduct.has(p.id))
+      .map(makeCard)
 
     renderCarousel(dairyBox, dairy, 'dairy')
     renderCarousel(offersBox, offered, 'offer')
@@ -201,15 +201,12 @@ async function init(): Promise<void> {
 
 function onAddClick(e: MouseEvent): void {
   if (!(e.target instanceof Element)) return
-  const button = e.target.closest<HTMLButtonElement>('.add-btn')
+  const button: HTMLButtonElement | null = e.target.closest<HTMLButtonElement>('.add-btn')
   if (!button || button.disabled) return
 
   notyf.success((button.dataset.name ?? 'محصول') + ' به سبد اضافه شد')
   confetti({ particleCount: 60, spread: 70 })
-  
   addToCart()
-
 }
-
 
 init()
