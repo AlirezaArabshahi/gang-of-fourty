@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
+    "fuse.js": "^7.5.0",
     "notyf": "^3.10.0"
   }
 }

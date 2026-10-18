@@ -38,7 +38,7 @@
   </a>
 
   <div class="header-actions">
-    <input type="search" placeholder="جستجوی محصولات..." aria-label="جستجوی محصولات">
+   <input type="search" id="search" placeholder="جستجوی محصولات..." aria-label="جستجوی محصولات">
     <button type="button"><span aria-hidden="true">🛒</span> سبد خرید <span class="cart-count" id="cart-count" aria-live="polite">۰</span></button>
   </div>
 
@@ -54,6 +54,13 @@
  </nav>
 
  <main id="main">
+    <section class="products" id="search-results" hidden>
+    <div class="section-title">
+      <h2>نتایج جستجو</h2>
+    </div>
+    <p class="results-status" id="results-status" role="status"></p>
+    <div class="results-grid" id="results"></div>
+  </section>
 
   <section class="hero">
     <img class="hero-bg" src="./assets/banners/Hero-image.png" alt="محصولات MARTO">

@@ -1,6 +1,7 @@
 import { Notyf } from 'notyf'
 import 'notyf/notyf.min.css'
 import confetti from 'canvas-confetti'
+import Fuse, { type FuseResult } from 'fuse.js'
 
 import orangeImg from './assets/products/orange.png'
 import bananaImg from './assets/products/banana.png'
@@ -36,6 +37,12 @@ type Stock = {
   items: Record<number, number>
 }
 
+type SearchItem = {
+  product: Product
+  name: string
+  tags: string
+}
+
 const IMAGES: Record<number, string> = {
   102: orangeImg,
   103: bananaImg,
@@ -47,6 +54,15 @@ const IMAGES: Record<number, string> = {
 
 const faNumber: Intl.NumberFormat = new Intl.NumberFormat('fa-IR')
 const toman = (n: number): string => faNumber.format(n) + ' تومان'
+const normalize = (text: string): string =>
+  text
+    .replace(/ي/g, 'ی')
+    .replace(/ك/g, 'ک')
+    .replace(/\u200c/g, ' ')
+    .replace(/[۰-۹]/g, (d: string): string => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+    .replace(/[٠-٩]/g, (d: string): string => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+    .toLowerCase()
+    .trim()
 
 const cartCount: HTMLElement | null = document.querySelector<HTMLElement>('#cart-count')
 if (!cartCount) throw new Error('index.html is missing #cart-count')
@@ -160,7 +176,18 @@ function renderCarousel(box: HTMLElement, cards: HTMLDivElement[], prefix: strin
 async function init(): Promise<void> {
   const dairyBox: HTMLElement | null = document.querySelector<HTMLElement>('#dairy .carousel')
   const offersBox: HTMLElement | null = document.querySelector<HTMLElement>('#offers .carousel')
-  if (!dairyBox || !offersBox) throw new Error('index.html is missing a carousel')
+  const dairySection: HTMLElement | null = document.querySelector<HTMLElement>('#dairy')
+  const offersSection: HTMLElement | null = document.querySelector<HTMLElement>('#offers')
+  const searchInput: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#search')
+  const resultsSection: HTMLElement | null = document.querySelector<HTMLElement>('#search-results')
+  const resultsBox: HTMLElement | null = document.querySelector<HTMLElement>('#results')
+  const resultsStatus: HTMLElement | null = document.querySelector<HTMLElement>('#results-status')
+  if (
+    !dairyBox || !offersBox || !dairySection || !offersSection ||
+    !searchInput || !resultsSection || !resultsBox || !resultsStatus
+  ) {
+    throw new Error('index.html is missing an element')
+  }
   const boxes: HTMLElement[] = [dairyBox, offersBox]
 
   for (const box of boxes) {
@@ -168,6 +195,7 @@ async function init(): Promise<void> {
     box.setAttribute('aria-busy', 'true')
     showStatus(box, 'در حال بارگذاری…')
   }
+  resultsBox.addEventListener('click', onAddClick)
 
   try {
     const [products, stock, offers]: [Product[], Stock, Offer[]] = await Promise.all([
@@ -191,6 +219,50 @@ async function init(): Promise<void> {
 
     renderCarousel(dairyBox, dairy, 'dairy')
     renderCarousel(offersBox, offered, 'offer')
+
+
+      const searchItems: SearchItem[] = products.map(
+      (p: Product): SearchItem => ({
+        product: p,
+        name: normalize(p.name),
+        tags: normalize(p.tags.join(' ')),
+      }),
+    )
+    const fuse: Fuse<SearchItem> = new Fuse<SearchItem>(searchItems, {
+      keys: [
+        { name: 'name', weight: 3 },
+        { name: 'tags', weight: 1 },
+      ],
+      threshold: 0.35,
+      ignoreLocation: true,
+    })
+
+    const runSearch = (): void => {
+      const query: string = normalize(searchInput.value)
+      if (query === '') {
+        resultsSection.hidden = true
+        offersSection.hidden = false
+        dairySection.hidden = false
+        return
+      }
+
+      const found: FuseResult<SearchItem>[] = fuse.search(query)
+      const cards: HTMLDivElement[] = found.map(
+        (r: FuseResult<SearchItem>): HTMLDivElement => makeCard(r.item.product),
+      )
+      resultsBox.replaceChildren(...cards)
+      resultsStatus.textContent =
+        cards.length === 0
+          ? `نتیجه‌ای برای «${searchInput.value.trim()}» پیدا نشد.`
+          : `${faNumber.format(cards.length)} محصول پیدا شد.`
+
+      resultsSection.hidden = false
+      offersSection.hidden = true
+      dairySection.hidden = true
+    }
+
+    searchInput.addEventListener('input', runSearch)
+    runSearch()
   } catch {
     for (const box of boxes) {
       box.setAttribute('aria-busy', 'false')
