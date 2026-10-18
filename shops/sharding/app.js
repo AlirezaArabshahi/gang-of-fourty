@@ -1,10 +1,10 @@
 const API = {
-  products: './api/products.json',
-  stock: './api/stock.json',
-  offers: './api/offers.json',
-  shop: './api/shop.json',
-  categories: './api/categories.json',
-  home: './api/home.json',
+  products: '../../api/products.json',
+  stock: '../../api/stock.json',
+  offers: '../../api/offers.json',
+  shop: '../../api/shop.json',
+  categories: '../../api/categories.json',
+  home: '../../api/home.json',
 };
 // deploy test
 const MIN_SKELETON_MS = 300;
@@ -837,10 +837,7 @@ function buildCarouselSection(cfg) {
 function productsForCarousel(cfg, products, offerMap) {
   if (cfg.source === 'offers') {
     return [...offerMap.keys()]
-      .map((id) => {
-        const p = products.find((x) => x.id === id);
-        return p;
-      })
+      .map((id) => products.find((x) => x.id === id))
       .filter(Boolean)
       .sort((a, b) => {
         const pa = offerMap.get(a.id)?.percent || 0;
@@ -858,15 +855,12 @@ function renderCarousels(home, products, stockData, offers) {
   const root = document.getElementById('carousels-root');
   if (!root) return;
 
-  const stockMap = new Map();
-  const items = (stockData && stockData.items) || {};
-  for (const product of products) {
-    const qty = items[product.id];
-    stockMap.set(product.id, typeof qty === 'number' ? qty : 0);
-  }
+  const stockMap = new Map(
+    products.map((product) => [product.id, stockData.items[product.id] ?? 0])
+  );
 
-  const offerMap = new Map((offers || []).map((o) => [o.productId, o]));
-  const list = Array.isArray(home.carousels) ? home.carousels : [];
+  const offerMap = new Map(offers.map((o) => [o.productId, o]));
+  const list = home.carousels;
 
   for (const cfg of list) {
     let section = document.getElementById(cfg.id);
@@ -1033,8 +1027,12 @@ function setupCategoryNavigation() {
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
+  let lastCat = getCatParam();
+
   window.addEventListener('popstate', () => {
     const slug = getCatParam();
+    if (slug === lastCat) return;  
+    lastCat = slug;
     if (slug) applyCategoryFilter(slug);
     else clearCategoryFilter();
   });
@@ -1065,67 +1063,42 @@ async function init() {
   setupCategoryNavigation();
 
   const startedAt = performance.now();
-  const SLOW_MS = 3000;
-
-  const pShop = fetchJson(API.shop);
-  const pCategories = fetchJson(API.categories);
-  const pHome = fetchJson(API.home);
-  const pProducts = fetchJson(API.products);
-  const pStock = fetchJson(API.stock);
-  const pOffers = fetchJson(API.offers).catch((err) => {
-    console.warn('[shop] offers unavailable:', err);
-    return [];
-  });
-
-  const allPromise = Promise.all([
-    pShop,
-    pCategories,
-    pHome,
-    pProducts,
-    pStock,
-    pOffers,
-  ]);
-
-  const slowTimer = new Promise((resolve) => {
-    window.setTimeout(() => resolve('slow'), SLOW_MS);
-  });
-  Promise.race([allPromise.then(() => 'done'), slowTimer]).then((result) => {
-    if (result === 'slow') showSlowConnection(true);
-  });
-
-  let shellPainted = false;
-  const shellEarlyPromise = Promise.all([pShop, pCategories, pHome])
-    .then(([shop, categories, home]) => {
-      appHome = home;
-      appCategories = categories;
-      renderShell(shop, categories, home);
-      shellPainted = true;
-    })
-    .catch(() => {});
+  const slowTimer = setTimeout(() => showSlowConnection(true), 3000);
 
   try {
-    const [shop, categories, home, products, stockData, offers] = await allPromise;
+    const [shopRaw, categoriesRaw, homeRaw, productsRaw, stockData, offers] = await Promise.all([
+      fetchJson(API.shop),
+      fetchJson(API.categories),
+      fetchJson(API.home),
+      fetchJson(API.products),
+      fetchJson(API.stock),
+      fetchJson(API.offers),
+    ]);
+
+    // غنی‌سازی داده API مشترک با فیلدهای محلی (image، هویت برند، deptMenu)
+    const shop = enrichShop(shopRaw);
+    const categories = enrichCategories(categoriesRaw);
+    const home = enrichHome(homeRaw);
+    const products = productsRaw.map(enrichProduct);
+
+    clearTimeout(slowTimer);
     showSlowConnection(false);
-    await shellEarlyPromise;
     await waitMinSkeleton(startedAt);
 
     appHome = home;
     appCategories = categories;
     appCatalog = { products, stockData, offers };
 
-    if (shellPainted) {
-      renderHeader(shop, products.length);
-    } else {
-      renderShell(shop, categories, home, products.length);
-    }
-
+    renderShell(shop, categories, home, products.length);
     renderCarousels(home, products, stockData, offers);
 
     const catSlug = getCatParam();
     if (catSlug) applyCategoryFilter(catSlug);
+
   } catch (err) {
-    console.error('[shop] data failed:', err);
+    clearTimeout(slowTimer);
     showSlowConnection(false);
+    console.error('[shop] data failed:', err);
     await waitMinSkeleton(startedAt);
     clearShellSkeletons();
     showCarouselErrors(errorMessage(err));
@@ -1133,4 +1106,3 @@ async function init() {
 }
 
 init();
-
