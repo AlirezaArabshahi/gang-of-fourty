@@ -845,3 +845,23 @@ address { font-style: normal; color: var(--secondary-color); line-height: 2; mar
   outline-offset: 4px;
   border-radius: 20px;
 }
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 12px 4px 30px;
+}
+
+.results-status {
+  margin: 0 0 16px;
+  color: var(--secondary-color);
+}
+
+@media (max-width: 900px) {
+  .results-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .results-grid { grid-template-columns: 1fr; }
+}
