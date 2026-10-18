@@ -5,8 +5,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1" ,
-    "dev":"vite",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "check": "tsc --noEmit"
@@ -16,7 +16,12 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.4"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "notyf": "^3.10.0"
   }
 }
