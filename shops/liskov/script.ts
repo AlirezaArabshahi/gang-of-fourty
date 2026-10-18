@@ -22,15 +22,25 @@ const toFaDigits = (text) => text.replace(/\d/g, (digit) => FA_DIGITS[digit]);
 
 const $ = (selector) => document.querySelector(selector);
 
-function el(tag, className, text) {
+function el<K extends keyof HTMLElementTagNameMap>(
+    tag: K,
+    className?: string,
+    text?: string,
+): HTMLElementTagNameMap[K] {
     const node = document.createElement(tag);
     if (className) node.className = className;
     if (text !== undefined) node.textContent = text;
     return node;
 }
 
-function createLink(href, text, className) {
-    const link = el('a', className, text);
+function createLink(
+    href: string,
+    text?: string,
+    className?: string,
+): HTMLAnchorElement {
+    const link = document.createElement('a');
+    if (className) link.className = className;
+    if (text !== undefined) link.textContent = text;
     link.href = href;
     return link;
 }
@@ -90,9 +100,11 @@ function buildContext({categories, products, stock, offers}) {
 /* ---------- سبد خرید (localStorage) ---------- */
 
 // Stored format: { "201": 2, "104": 1 } means product ID → quantity.
-function loadCart() {
+type Cart = Record<string, number>;
+function loadCart(): Cart {
     try {
-        const saved = JSON.parse(localStorage.getItem(CART_KEY));
+        const raw = localStorage.getItem(CART_KEY);
+        const saved = raw ? JSON.parse(raw) : null;
         return saved && typeof saved === 'object' && !Array.isArray(saved)
             ? saved
             : {};
@@ -101,7 +113,7 @@ function loadCart() {
     }
 }
 
-function saveCart(cart) {
+function saveCart(cart: Cart): void {
     try {
         localStorage.setItem(CART_KEY, JSON.stringify(cart));
     } catch {
@@ -111,8 +123,8 @@ function saveCart(cart) {
 
 let cart = loadCart();
 
-function cartCount() {
-    return Object.values(cart).reduce(
+function cartCount(): number {
+    return Object.values(cart).reduce<number>(
         (sum, qty) => sum + (Number(qty) || 0),
         0,
     );
