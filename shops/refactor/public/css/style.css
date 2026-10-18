@@ -4,6 +4,7 @@
 @import "./support.css";
 @import "./varible.css";
 *,
+*,
 *::before,
 *::after {
     box-sizing: border-box;
@@ -13,13 +14,11 @@ html {
     scroll-behavior: smooth;
     scroll-padding-top: var(--sticky-offset);
     -webkit-text-size-adjust: 100%;
-    overflow-x: clip;
 }
 
 body {
     margin: 0;
     max-width: 100%;
-    overflow-x: clip;
     overflow-wrap: break-word;
     font-family: var(--font-body);
     font-size: 0.9375rem;
@@ -223,6 +222,19 @@ main>section+section {
     scroll-snap-align: start;
 }
 
+.track>.track-edge {
+    width: 0;
+    scroll-snap-align: none;
+}
+
+.track>.track-edge[data-edge="start"] {
+    margin-inline-end: calc(var(--gap) * -1);
+}
+
+.track>.track-edge[data-edge="end"] {
+    margin-inline-start: calc(var(--gap) * -1);
+}
+
 .track img {
     -webkit-user-drag: none;
     user-select: none;
@@ -280,20 +292,28 @@ main>section+section {
     transform: scaleX(-1);
 }
 
-
-/* ---------- hero grid ---------- */
-
-
-/* .hero-grid {
-    display: grid;
-    gap: var(--gap, 1rem);
-    grid-template-columns: 1fr;
-    grid-template-areas: "main" "side" "promos";
+.car-nav {
+    display: flex;
+    gap: 8px;
+    margin-inline-start: auto;
 }
 
-.hero-main {
-    grid-area: main;
-} */
+.track>* {
+    scroll-margin-block: 30vh;
+}
+
+.track>.card:target {
+    outline: 3px solid var(--orange);
+    outline-offset: 2px;
+}
+
+.card-weight {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+
+/* ---------- hero grid ---------- */
 
 .hero-grid {
     display: grid;
@@ -581,15 +601,6 @@ main>section+section {
 
 .card:focus-within::after {
     opacity: 1;
-}
-
-@media (hover: hover) {
-    .card:hover {
-        transform: translateY(-4px);
-    }
-    .card:hover::after {
-        opacity: 1;
-    }
 }
 
 .card-link {
@@ -952,6 +963,19 @@ main>section+section {
     overflow: hidden;
 }
 
+.season-promo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 22px 18px 58px;
+    border-radius: var(--radius-lg);
+    background: var(--green);
+    color: #fff;
+    overflow: hidden;
+}
+
 .season-promo-text {
     flex: 1 1 0;
     min-width: 0;
@@ -1052,7 +1076,7 @@ main>section+section {
 }
 
 
-/*  Cat Modal  */
+/* ---------- category modal ---------- */
 
 .cat-modal {
     position: fixed;
@@ -1180,5 +1204,14 @@ main>section+section {
     }
     100% {
         background-position: -200% 0;
+    }
+}
+
+@media (hover: hover) {
+    .card:hover {
+        transform: translateY(-4px);
+    }
+    .card:hover::after {
+        opacity: 1;
     }
 }

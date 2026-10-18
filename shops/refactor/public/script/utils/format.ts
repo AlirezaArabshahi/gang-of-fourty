@@ -1,1 +1,2 @@
-export const formatPrice = (n:number) => new Intl.NumberFormat('fa-IR').format(n);
+export const formatPrice = (n: number): string =>
+    new Intl.NumberFormat('fa-IR').format(n);

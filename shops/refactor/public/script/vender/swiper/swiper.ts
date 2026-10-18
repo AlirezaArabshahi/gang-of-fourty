@@ -1,25 +1,33 @@
+
 import Swiper from "swiper/bundle";
 import "swiper/css/bundle";
 import "./swiper.css"
 
+const initSwiper = (): void => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const initSwiper = () => {
-    new Swiper(".swiper", {
+    new Swiper('.swiper', {
         slidesPerView: 1,
         loop: true,
         speed: 800,
-        effect: "fade",
+        effect: 'fade',
         fadeEffect: {
             crossFade: true,
         },
-        autoplay: {
-            delay: 3500,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-        },
+        autoplay: reduceMotion
+            ? false
+            : {
+                  delay: 3500,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+              },
         pagination: {
-            el: ".swiper-pagination",
+            el: '.swiper-pagination',
             clickable: true,
+        },
+        keyboard: {
+            enabled: true,
+            onlyInViewport: true,
         },
     });
 };

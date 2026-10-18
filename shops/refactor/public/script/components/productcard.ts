@@ -1,61 +1,75 @@
 import { el, makeButton } from '../utils/utils.js';
 import { formatPrice } from '../utils/format.js';
 
-const makeCard = (p) => {
-    const card = el('article', 'card');
+import type {ProductView}from '.././type.js';
+
+const makeCard = (product: ProductView): HTMLLIElement => {
+    const card = el('li', 'card');
     const media = el('div', 'card-media');
-    const emoji = el('span', 'card-emoji');
-    emoji.textContent = p.emoji;
+    const emoji = el('span', 'card-emoji', product.emoji);
     media.append(emoji);
 
-    if (p.off) {
-        const chipOff = el('span', 'chip-off');
-        chipOff.textContent = `${p.off}٪`;
-        media.append(chipOff);
+    if (product.off !== undefined) {
+        media.append(el('span', 'chip-off', `${formatPrice(product.off)}٪`));
     }
 
-    if (p.stock === 0) {
-        const chipOut = el('span', 'chip-out', 'ناموجود');
-        media.append(chipOut);
+    if (product.stock === 0) {
+        media.append(el('span', 'chip-out', 'ناموجود'));
     }
 
     const title = el('h3', 'card-title');
-    const titleLink = el('a', null, p.name);
-    titleLink.href = `#product-${p.id}`;
+    const titleLink = el('a', null, product.name);
+    titleLink.href = `#product-${product.id}`;
     title.append(titleLink);
 
     const body = el('div', 'card-body');
     body.append(title);
 
+      if (product.unit) {
+        body.append(el('p', 'card-weight', product.unit));
+    }
+
     const price = el('p', 'price');
 
-    if (p.oldPrice) {
+    if (product.oldPrice !== undefined) {
         const del = el('del');
         del.append(
             el('span', 'sr-only', 'قیمت قبل از تخفیف '),
-            formatPrice(p.oldPrice)
+            formatPrice(product.oldPrice)
         );
         price.append(del);
     }
 
-    const strong = el('strong', null, formatPrice(p.price));
+    const strong = el('strong', null, formatPrice(product.price));
     strong.append(el('small', null, 'تومان'));
     price.append(strong);
 
-    const pair = el('div', 'act-pair');
-    const favBtn = makeButton('act-btn', `افزودن ${p.name} به علاقه‌مندی‌ها`, 'i-heart');
-    const cartBtn = makeButton('act-btn act-cart', `افزودن ${p.name} به سبد خرید`, 'i-cart', 'افزودن');
+    const favButton = makeButton({
+        className: 'act-btn',
+        iconId: 'i-heart',
+        label: `افزودن ${product.name} به علاقه‌مندی‌ها`,
+    });
 
-    if (p.stock === 0) {
+    const cartButton = makeButton({
+        className: 'act-btn act-cart',
+        iconId: 'i-cart',
+        label: `افزودن ${product.name} به سبد خرید`,
+        text: 'افزودن',
+    });
+
+    if (product.stock === 0) {
         card.classList.add('card--out');
-        cartBtn.disabled = true;
+        cartButton.disabled = true;
     }
 
+    const pair = el('div', 'act-pair');
+    pair.append(favButton, cartButton);
+
     const actions = el('div', 'card-actions');
-    pair.append(favBtn, cartBtn);
     actions.append(price, pair);
 
     card.append(media, body, actions);
+
     return card;
 };
 

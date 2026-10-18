@@ -1,155 +1,227 @@
 import { BASEURL } from '../config.js';
 import { el } from '../utils/utils.js';
-import { showError } from '../components/skeleton.js';
+import { showError, setBusy } from '../components/skeleton.js';
 import { makeCard } from '../components/productcard.js';
+import type { Category, ProductView } from '.././type.js';
 
-const makeCategory = (category: {
-    emoji: string,
-    id: number,
-    name: string,
-    slug: string,
-}) => {
-    const li = el("li")
-    const a = el("a", "cat")
-    a.setAttribute("href", `?cat=${category.slug}`)
 
-    const span = el("span", "cat-img")
-    span.setAttribute("role", "img")
-    span.setAttribute("aria-label", category.name)
-    span.textContent = category.emoji
+const TILE_COUNT = 6; 
 
-    const strong = el("strong")
-    strong.textContent = category.name
+let allCategories: Category[] = [];
+let allProducts: ProductView[] = [];
 
-    a.append(span, strong)
-    li.append(a)
+let lastFocused: HTMLElement | null = null;
 
-    a.addEventListener("click", (e:MouseEvent) => {
-        e.preventDefault();
-        selectCategory(category);
-    });
-    return li
-}
+const getModal = (): HTMLElement | null => document.querySelector<HTMLElement>('#cat-modal');
 
-const makeSubMenu = (category: {
-    name: string,
-    slug: string,
-}):HTMLLIElement=> {
-    const li = el("li")
-    const a = el("a")
-    a.setAttribute("href", `#${category.slug}`)
-    a.textContent = category.name
-    li.append(a)
-    return li
-}
 
-const fetchJSON = async (endpoint:string, options = {}) => {
-    const response = await fetch(`${BASEURL}${endpoint}`, options);
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-};
+const renderModalProducts = (modal: HTMLElement, category: Category): void => {
+    const title = modal.querySelector<HTMLElement>('.cat-modal__title');
+    const grid = modal.querySelector<HTMLElement>('.cat-modal__grid');
 
-const renderCategoriesInto = async (selector,builder) => {
+    if (title && grid) {
+        title.textContent = category.name;
 
-    const categoryLists = document.querySelectorAll(selector);
+        const products = allProducts.filter((product) => product.categoryId === category.id);
 
-    categoryLists.forEach((list) =>
-        showError(list, 'در حال بارگیری ...')
-    );
-
-    try {
-        const categories = await fetchCategories();
-        console.log(categories);
-        
-        categoryLists.forEach((categoryList) => {
-            categoryList.textContent = '';
-            categories.slice(0, 6).forEach((category) => {
-                categoryList.append(builder(category));
-            })
-        });
-    } catch (error) {
-        categoryLists.forEach((list) =>
-            showError(list, 'خطا در دریافت دسته‌بندی‌ها. لطفاً دوباره تلاش کنید.')
-        );
-    }
-};
-
-const selectCategory = (category) => {
-    const url = new URL(window.location);
-    url.searchParams.set("cat", category.slug);
-    history.pushState({ cat: category.slug }, "", url);
-    openModal(category);
-};
-
-const openModal = async (category: {
-    id: number,
-    name: string,
-}) => {
-    const modal = document.querySelector<HTMLDivElement>("#cat-modal");
-    if (modal) {
-        const title = modal.querySelector<HTMLHeadingElement>(".cat-modal__title");
-        const track = modal.querySelector<HTMLUListElement>(".cat-modal__grid");
-
-        if (title && track) {
-            title.textContent = category.name;
-            modal.hidden = false;
-            document.body.style.overflow = "hidden";
-            track.textContent = "";
-
-            let timerId;
-            const timeoutPromise = new Promise((_, reject) => {
-                timerId = setTimeout(() => reject(new Error("SLOW_CONNECTION")), 3000);
-            });
-
-            try {
-                const products = await Promise.race([fetchProducts(), timeoutPromise]);
-                console.log(products);
-                const filtered = products.filter((p) => p.categoryId === category.id);
-
-                if (filtered.length === 0) {
-                    showError(track, "محصولی در این دسته وجود ندارد.");
-                    return;
-                }
-
-                track.append(...filtered.map(makeCard));
-
-            } catch (err: unknown) {
-
-                if (err instanceof Error && err.message === "SLOW_CONNECTION") {
-
-                    showError(track, "اتصال کند است. دوباره تلاش کنید.");
-
-                } else {
-
-                    showError(track, "خطا در بارگیری.");
-
-                }
-            } finally {
-                clearTimeout(timerId);
-            }
+        if (products.length === 0) {
+            showError(grid, 'محصولی در این دسته وجود ندارد.');
+        } else {
+            grid.textContent = '';
+            grid.append(...products.map(makeCard));
+            setBusy(grid, false);
         }
     }
 };
 
-const closeModal = ():void => {
-    const modal = document.querySelector<HTMLDivElement>("#cat-modal");
-    if (!modal) return;
-    modal.hidden = true;
-    document.body.style.overflow = "";
+const openModal = (category: Category): void => {
+    const modal = getModal();
+
+    if (modal) {
+        if (modal.hidden) {
+            lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        }
+
+        renderModalProducts(modal, category);
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+        modal.querySelector<HTMLElement>('.cat-modal__close')?.focus();
+    }
 };
 
-const closeBtn = document.querySelector<HTMLButtonElement>(".cat-modal__close")
+const hideModal = (): void => {
+    const modal = getModal();
 
-if (closeBtn){
-   closeBtn.addEventListener("click", closeModal);
-}
+    if (modal && !modal.hidden) {
+        modal.hidden = true;
+        document.body.style.overflow = '';
+        lastFocused?.focus();
+        lastFocused = null;
+    }
+};
 
-const getAndShowCategories = () => renderCategoriesInto('.cat-list', makeCategory);
-const getAndShowSubMenus = () => renderCategoriesInto('.sub-menu', makeSubMenu);
-const fetchProducts = () => fetchJSON('/product.json');
+const selectCategory = (category: Category): void => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('cat', category.slug);
+    history.pushState({ cat: category.slug }, '', url);
+
+    document.querySelectorAll<HTMLInputElement>('.nav-toggle').forEach((toggle) => {
+        toggle.checked = false;
+    });
+
+    openModal(category);
+};
+
+const closeModal = (): void => {
+    if (history.state?.cat) {
+        history.back();
+    } else {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('cat');
+        history.replaceState(null, '', url);
+        hideModal();
+    }
+};
+
+const syncModalWithUrl = (): void => {
+    const slug = new URLSearchParams(window.location.search).get('cat');
+    const category = allCategories.find((item) => item.slug === slug);
+
+    if (category) {
+        openModal(category);
+    } else {
+        hideModal();
+    }
+};
+
+const initModalControls = (): void => {
+    const modal = getModal();
+
+    if (modal) {
+        modal.querySelectorAll<HTMLElement>('[data-close]').forEach((control) => {
+            control.addEventListener('click', closeModal);
+        });
+
+        document.addEventListener('keydown', (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && !modal.hidden) {
+                closeModal();
+            }
+        });
+
+        window.addEventListener('popstate', syncModalWithUrl);
+    }
+};
+
+
+const bindCategoryLink = (link: HTMLAnchorElement, category: Category): void => {
+    link.href = `?cat=${encodeURIComponent(category.slug)}`;
+
+    link.addEventListener('click', (event: MouseEvent) => {
+        const isPlainClick =
+            event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+
+        if (isPlainClick) {
+            event.preventDefault();
+            selectCategory(category);
+        }
+    });
+};
+
+const makeCategory = (category: Category): HTMLLIElement => {
+    const li = el('li');
+    const a = el('a', 'cat');
+    bindCategoryLink(a, category);
+
+    const icon = el('span', 'cat-img', category.emoji);
+    icon.setAttribute('role', 'img');
+    icon.setAttribute('aria-label', category.name);
+
+    a.append(icon, el('strong', null, category.name));
+    li.append(a);
+
+    return li;
+};
+
+const makeSubMenu = (category: Category): HTMLLIElement => {
+    const li = el('li');
+    const a = el('a', null, category.name);
+    bindCategoryLink(a, category);
+    li.append(a);
+
+    return li;
+};
+
+const fillLists = (
+    selector: string,
+    categories: Category[],
+    build: (category: Category) => HTMLLIElement
+): void => {
+    document.querySelectorAll<HTMLElement>(selector).forEach((list) => {
+        if (categories.length === 0) {
+            showError(list, 'دسته‌بندی‌ای وجود ندارد.');
+        } else {
+            list.textContent = '';
+            list.append(...categories.map(build));
+            setBusy(list, false);
+        }
+    });
+};
+
+const initCategories = (categories: Category[], products: ProductView[]): void => {
+    allCategories = categories;
+    allProducts = products;
+
+    fillLists('.cat-list', categories.slice(0, TILE_COUNT), makeCategory);
+    fillLists('.sub-menu', categories, makeSubMenu);
+
+    initModalControls();
+    syncModalWithUrl();
+};
+const fetchJSON = async (endpoint: string) => {
+    const response = await fetch(`${BASEURL}${endpoint}`);
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+};
+
+const loadCategoriesAndProducts = async (): Promise<void> => {
+    const catList = document.querySelector<HTMLUListElement>('.cat-list');
+
+    let timerId;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+        timerId = setTimeout(() => {
+            reject(new Error('SLOW_CONNECTION'));
+        }, 3000);
+    });
+
+    try {
+        const [products, categories] = await Promise.race([
+            Promise.all([
+                fetchProducts(),
+                fetchCategories()
+            ]),
+            timeoutPromise
+        ]);
+
+        initCategories(categories, products);
+
+    } catch (err: unknown) {
+        if (err instanceof Error && err.message === 'SLOW_CONNECTION') {
+            if (catList) {
+                showError(catList, 'اتصال کند است. دوباره تلاش کنید.');
+            }
+        } else {
+            console.error('خطا در بارگیری اطلاعات:', err);
+        }
+    } finally {
+        clearTimeout(timerId);
+    }
+};
+
+const fetchProducts = () => fetchJSON('/products.json');
 const fetchCategories = () => fetchJSON('/categories.json');
 
-
-export { getAndShowCategories, getAndShowSubMenus };
+export { loadCategoriesAndProducts };

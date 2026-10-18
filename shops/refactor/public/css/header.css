@@ -185,15 +185,8 @@
     background: var(--green-deep);
 }
 
-.site-header--desktop {
+.site-header .promo {
     display: none;
-}
-
-.site-header--mobile {
-    display: block;
-}
-
-.site-header--desktop .promo {
     padding: 10px 16px;
     background: var(--green);
     color: #fff;
@@ -204,20 +197,12 @@
     line-height: 1.6;
 }
 
-.site-header--desktop .promo p {
+.site-header .promo p {
     margin: 0;
 }
 
-.site-header--desktop .brand {
-    gap: 10px;
-}
-
-.site-header--desktop .nav-links li+li a {
-    border-top: 0;
-}
-
-.site-header--desktop .contact {
-    display: flex;
+.site-header .contact {
+    display: none;
     flex-wrap: wrap;
     align-items: center;
     gap: 0 18px;
@@ -227,7 +212,7 @@
     color: var(--muted);
 }
 
-.site-header--desktop .contact a {
+.site-header .contact a {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -239,16 +224,16 @@
     line-height: var(--nav-line-height);
 }
 
-.site-header--desktop .contact a:hover {
+.site-header .contact a:hover {
     color: var(--green);
     background: transparent;
 }
 
-.site-header--desktop .contact .icon {
+.site-header .contact .icon {
     color: var(--green);
 }
 
-.site-header--desktop .contact bdi {
+.site-header .contact bdi {
     direction: ltr;
     unicode-bidi: isolate;
 }
