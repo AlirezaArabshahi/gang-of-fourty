@@ -1166,8 +1166,12 @@ function setupCategoryNavigation() {
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
+  let lastCat = getCatParam();
+
   window.addEventListener('popstate', () => {
     const slug = getCatParam();
+    if (slug === lastCat) return;  
+    lastCat = slug;
     if (slug) applyCategoryFilter(slug);
     else clearCategoryFilter();
   });

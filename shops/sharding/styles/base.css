@@ -120,7 +120,7 @@ textarea:focus-visible {
 
 @media (min-width: 768px) {
   [id] {
-    scroll-margin-top: 220px;
+    scroll-margin-top: 260px;
   }
 }
 

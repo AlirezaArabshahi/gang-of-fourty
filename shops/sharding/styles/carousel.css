@@ -44,3 +44,9 @@
     height: 40px;
   }
 }
+
+.carousel-nav__btn.is-disabled {
+  opacity: 0.2;
+  pointer-events: none;
+  cursor: default;
+}
