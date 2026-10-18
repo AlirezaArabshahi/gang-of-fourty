@@ -1,12 +1,11 @@
 const API = {
-  products: '../../api/products.json',
-  stock: '../../api/stock.json',
-  offers: '../../api/offers.json',
-  shop: '../../api/shop.json',
-  categories: '../../api/categories.json',
-  home: '../../api/home.json',
+  products:   './api/products.json',
+  stock:      './api/stock.json',
+  offers:     './api/offers.json',
+  shop:       './api/shop.json',
+  categories: './api/categories.json',
+  home:       './api/home.json',
 };
-// deploy test
 const MIN_SKELETON_MS = 300;
 const TIMEOUT_MS = 8000;
 
