@@ -19,6 +19,8 @@ export async function fetchJson<T>(url: string): Promise<T> {
   try {
     const res = await fetch(url, { signal: controller.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    // The single trust boundary of the app: the API contract defines T.
+    // A runtime schema validator would be the only way to remove this assertion.
     return (await res.json()) as T;
   } finally {
     clearTimeout(timer);
