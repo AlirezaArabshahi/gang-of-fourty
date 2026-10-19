@@ -1,11 +1,18 @@
 const offerContainer = document.querySelectorAll(".special-offer-items")[0];
 const snacksContainer = document.querySelectorAll(".special-offer-items")[1];
+const SNACKS_SLUG = "snacks";
 const snacksHeading = snacksContainer.closest("article").querySelector(".items-header");
 const noticeBar = document.getElementById("notice");
+const addressBar=document.querySelector(".address");
+const about =document.querySelector(".footer-top-info-text");
+const slogan=document.querySelector(".footer-top-info-header");
 const phoneLink = document.querySelector("#phonenumber");
 const menuList = document.querySelector("#menu-categories");
 const footerList = document.querySelector("#footer-categories");
 const categoriesGrid = document.querySelector("#categories-grid");
+const nav=document.querySelector(".nav")
+
+
 function showMessage(container, text) {
     const p = document.createElement("p");
     p.textContent = text;
@@ -22,7 +29,7 @@ async function fetchJson(url) {
     if (!response.ok) {
         throw new Error("خطای سرور: " + response.status);
     }
-    return await response.json();
+    return response.json();
 }
 
 function createProductCard(product, offer, stockCount) {
@@ -81,7 +88,7 @@ function createProductCard(product, offer, stockCount) {
         const prices = document.createElement("div");
         prices.className = "special-offer-item-prices";
 
-        const oldPrice = document.createElement("p");
+        const oldPrice = document.createElement("del");
         oldPrice.className = "price-old";
         oldPrice.textContent = formatNumber(product.price);
 
@@ -151,9 +158,23 @@ function renderCategories(categories) {
         ...categories.map((cat) => createCategoryListItem(cat, false, "footer-top-categories-list-item"))
     );
 }
+
+
+function renderMenu(menu){
+   
+const items=menu.map(function(entry){
+         const li=document.createElement("li")
+    const a =document.createElement("a")
+        a.href=entry.href;
+        a.textContent=entry.label;
+        li.append(a);
+                return li;
+    })
+    const allCategory=document.querySelector("#allcategory")
+    nav.replaceChildren(allCategory,...items);
+}
 function scrollToHash() {
-    if (!location.hash) return;
-    const target = document.getElementById(location.hash.slice(1));
+   const target=location.hash && document.getElementById(location.hash.slice(1));
     if (target) {
         target.scrollIntoView();
     }
@@ -172,9 +193,11 @@ async function loadProducts() {
             fetchJson("../../api/categories.json"),
             fetchJson("../../api/shop.json")
         ]);
+       
 
         const stockItems = stockData.items;
-        const offers = Array.isArray(offersData) ? offersData : offersData.offers;
+        const offers = offersData;
+       // const offers = Array.isArray(offersData) ? offersData : offersData.offers;
         const offerByProductId = new Map(offers.map((offer) => [offer.productId, offer]));
 
         const makeCard = (product) =>
@@ -182,7 +205,7 @@ async function loadProducts() {
 
         const offerProducts = products.filter((product) => offerByProductId.has(product.id));
         offerContainer.replaceChildren(...offerProducts.map(makeCard));
-               const snacks = categories.find((category) => category.name.includes("تنقلات"));
+               const snacks = categories.find((category) => category.slug === SNACKS_SLUG);
         if (!snacks) {
             throw new Error("دسته‌ی تنقلات پیدا نشد");
         }
@@ -190,12 +213,19 @@ async function loadProducts() {
         snacksContainer.replaceChildren(...snackProducts.map(makeCard));
         snacksHeading.textContent = "خشکبار و تنقلات";
         snacksHeading.closest("article").id = snacks.slug;
+        
 
         renderCategories(categories);
 
 
         noticeBar.textContent = shop.notice;
         phoneLink.textContent = shop.phone;
+        addressBar.textContent = shop.address;
+        renderMenu(shop.menu)
+        about.textContent=shop.about;
+        slogan.textContent=shop.slogan;
+    
+
 
         scrollToHash();
 
@@ -226,9 +256,12 @@ function setupViewAll() {
             event.preventDefault();
 
             if (atEnd()) {
-                items.scrollTo({ left: 0, behavior: "smooth" });
-                return;
-            }
+        items.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+        const gap = parseFloat(getComputedStyle(items).columnGap) || 0;
+        const page = items.clientWidth + gap;
+        items.scrollBy({ left: isRtl ? -page : page, behavior: "smooth" });
+    }
 
             const gap = parseFloat(getComputedStyle(items).columnGap) || 0;
             const page = items.clientWidth + gap;
