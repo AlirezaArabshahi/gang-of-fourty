@@ -20,7 +20,8 @@
   </script>
   <title>شاردینگ مارکت | سوپرمارکت فوری محله شما</title>
   <meta name="description" content="خرید آنلاین و ارسال سریع محصولات سوپرمارکتی با تخفیف از شاردینگ مارکت">
-
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="apple-touch-icon" href="./favicon.svg">
   <link rel="stylesheet" href="styles/fonts.css?v=2">
   <link rel="stylesheet" href="styles/base.css?v=11">
 
@@ -143,7 +144,7 @@
         <div
             id="search-results"
             class="search-results"
-            role="listbox"
+            role="list"
             hidden
           ></div>
         <button type="submit" class="visually-hidden">جستجو</button>
@@ -303,7 +304,7 @@
           playsinline
           preload="none"
           aria-hidden="true">
-          <source src="assets/video/hero.mp4" type="video/mp4" media="(min-width: 768px)">
+          <source src="assets/video/hero.mp4" type="video/mp4">
         </video>
         <div class="hero-video__overlay">
           <h1 class="hero-video__title" id="hero-title">—</h1>
@@ -568,9 +569,9 @@
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
   </template>
 
-  <script type="module" src="theme.ts"></script>
-  <script type="module" src="menu.ts"></script>
-  <script type="module" src="carousel.ts"></script>
-  <script type="module" src="app.ts"></script>
+  <script type="module" src="./src/theme.ts"></script>
+  <script type="module" src="./src/menu.ts"></script>
+  <script type="module" src="./src/carousel.ts"></script>
+  <script type="module" src="./src/app.ts"></script>
 </body>
 </html>

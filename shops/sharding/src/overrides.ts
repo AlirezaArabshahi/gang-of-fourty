@@ -1,42 +1,52 @@
+import type {
+  Product,
+  Category,
+  Home,
+  Shop,
+  HomeBanner,
+  ShopLink,
+  DeptMenuItem,
+} from './types';
+
 const IMAGE_MAP: Record<number, string> = {
-  101: 'assets/images/products/p-apple.webp',
-  102: 'assets/images/products/p-orange.webp',
-  103: 'assets/images/products/p-banana.webp',
-  106: 'assets/images/products/p-grape.webp',
-  108: 'assets/images/products/p-strawberry.webp',
-  109: 'assets/images/products/p-mango.webp',
-  201: 'assets/images/products/p-milk.webp',
-  202: 'assets/images/products/p-cheese.webp',
-  203: 'assets/images/products/p-yogurt.webp',
-  204: 'assets/images/products/p-butter.webp',
-  206: 'assets/images/products/p-egg.webp',
-  207: 'assets/images/products/p-cream.webp',
-  502: 'assets/images/products/p-dough.webp',
+  101: '/assets/images/products/p-apple.webp',
+  102: '/assets/images/products/p-orange.webp',
+  103: '/assets/images/products/p-banana.webp',
+  106: '/assets/images/products/p-grape.webp',
+  108: '/assets/images/products/p-strawberry.webp',
+  109: '/assets/images/products/p-mango.webp',
+  201: '/assets/images/products/p-milk.webp',
+  202: '/assets/images/products/p-cheese.webp',
+  203: '/assets/images/products/p-yogurt.webp',
+  204: '/assets/images/products/p-butter.webp',
+  206: '/assets/images/products/p-egg.webp',
+  207: '/assets/images/products/p-cream.webp',
+  502: '/assets/images/products/p-dough.webp',
 };
 
 const CATEGORY_IMAGE_MAP: Record<string, string> = {
-  fruits: 'assets/images/categories/cat-fruits.webp',
-  dairy: 'assets/images/categories/cat-dairy.webp',
-  grocery: 'assets/images/categories/cat-grocery.webp',
-  beverages: 'assets/images/categories/cat-beverages.webp',
-  hygiene: 'assets/images/categories/cat-hygiene.webp',
-  snacks: 'assets/images/categories/cat-snacks.webp',
-  breakfast: 'assets/images/categories/cat-breakfast.webp',
-  nuts: 'assets/images/categories/cat-nuts.webp',
-  protein: 'assets/images/categories/cat-meat.webp',
-  canned: 'assets/images/categories/cat-canned.webp',
-  spice: 'assets/images/categories/cat-spice.webp',
-  kalabarg: 'assets/images/categories/cat-kalabarg.webp',
-  baby: 'assets/images/categories/cat-baby.webp',
-  pet: 'assets/images/categories/cat-pet.webp',
-  tissue: 'assets/images/categories/cat-tissue.webp',
-  home: 'assets/images/categories/cat-home.webp',
-  digital: 'assets/images/categories/cat-digital.webp',
-  fashion: 'assets/images/categories/cat-fashion.webp',
-  smoking: 'assets/images/categories/cat-smoking.webp',
+  fruits: '/assets/images/categories/cat-fruits.webp',
+  dairy: '/assets/images/categories/cat-dairy.webp',
+  grocery: '/assets/images/categories/cat-grocery.webp',
+  beverages: '/assets/images/categories/cat-beverages.webp',
+  hygiene: '/assets/images/categories/cat-hygiene.webp',
+  snacks: '/assets/images/categories/cat-snacks.webp',
+  breakfast: '/assets/images/categories/cat-breakfast.webp',
+  nuts: '/assets/images/categories/cat-nuts.webp',
+  protein: '/assets/images/categories/cat-meat.webp',
+  canned: '/assets/images/categories/cat-canned.webp',
+  spice: '/assets/images/categories/cat-spice.webp',
+  kalabarg: '/assets/images/categories/cat-kalabarg.webp',
+  baby: '/assets/images/categories/cat-baby.webp',
+  pet: '/assets/images/categories/cat-pet.webp',
+  tissue: '/assets/images/categories/cat-tissue.webp',
+  home: '/assets/images/categories/cat-home.webp',
+  digital: '/assets/images/categories/cat-digital.webp',
+  fashion: '/assets/images/categories/cat-fashion.webp',
+  smoking: '/assets/images/categories/cat-smoking.webp',
 };
 
-const CATEGORIES_EXTRA = [
+const CATEGORIES_EXTRA: Category[] = [
   { id: 8, slug: 'nuts', name: 'خشکبار و شیرینی', emoji: '🥜', color: '#fbe9d8' },
   { id: 9, slug: 'protein', name: 'پروتئین و تخم‌مرغ', emoji: '🍗', color: '#fbe0e6' },
   { id: 10, slug: 'canned', name: 'کنسرو و غذای آماده', emoji: '🥫', color: '#e7eef7' },
@@ -52,17 +62,16 @@ const CATEGORIES_EXTRA = [
 ];
 
 const BANNER_IMAGE_MAP = [
-  'assets/images/banners/banner-1.webp',
-  'assets/images/banners/banner-2.webp',
-  'assets/images/banners/banner-3.webp',
-  'assets/images/banners/banner-4.webp',
-  'assets/images/banners/banner-5.webp',
+  '/assets/images/banners/banner-1.webp',
+  '/assets/images/banners/banner-2.webp',
+  '/assets/images/banners/banner-3.webp',
+  '/assets/images/banners/banner-4.webp',
+  '/assets/images/banners/banner-5.webp',
 ];
 
-const SHOP_OVERRIDES = {
+const SHOP_OVERRIDES: Partial<Shop> = {
   name: 'شاردینگ مارکت',
   slogan: 'سوپرمارکت فوری محله شما',
-  owner: 'شرکت فناوران شاردینگ',
   phone: '۰۲۱-۹۱۰۰۰۰۰۰',
   phoneLink: '+982191000000',
   email: 'support@sharding.ir',
@@ -112,7 +121,7 @@ const SHOP_OVERRIDES = {
   },
 };
 
-const HOME_OVERRIDES = {
+const HOME_OVERRIDES: Partial<Home> = {
   carousels: [
     {
       id: 'offers',
@@ -138,7 +147,7 @@ const HOME_OVERRIDES = {
   categoriesTitle: 'خرید از دسته‌بندی‌ها',
 };
 
-const DEPT_MENU_OVERRIDE = [
+const DEPT_MENU_OVERRIDE: DeptMenuItem[] = [
   {
     label: 'میوه و سبزیجات',
     href: '#fruits',
@@ -231,29 +240,32 @@ const DEPT_MENU_OVERRIDE = [
   },
 ];
 
-export function enrichProduct(product: any) {
-  return { ...product, image: product.image || IMAGE_MAP[product.id] || null };
-}
-
-export function enrichCategory(category: any) {
-  return {
-    ...category,
-    image: category.image || CATEGORY_IMAGE_MAP[category.slug] || null,
+export function enrichProduct(product: Product): Product {
+  return { 
+    ...product, 
+    image: product.image || IMAGE_MAP[product.id] || undefined 
   };
 }
 
-export function enrichCategories(apiCategories: any[]) {
-  const existingSlugs = new Set(apiCategories.map((c) => c.slug));
+function enrichCategory(category: Category): Category {
+  return {
+    ...category,
+    image: category.image || CATEGORY_IMAGE_MAP[category.slug] || undefined,
+  };
+}
+
+export function enrichCategories(apiCategories: Category[]): Category[] {
+  const existingSlugs = new Set(apiCategories.map((c: Category) => c.slug));
   const extra = CATEGORIES_EXTRA.filter((c) => !existingSlugs.has(c.slug));
   return [...apiCategories, ...extra].map(enrichCategory);
 }
 
-export function enrichHome(home: any) {
-  const banners =
+export function enrichHome(home: Home): Home {
+  const banners: HomeBanner[] =
     Array.isArray(home.banners) && home.banners.length
-      ? home.banners.map((b: any, i: number) => ({
+      ? home.banners.map((b: HomeBanner, i: number) => ({
           ...b,
-          image: b.image || BANNER_IMAGE_MAP[i] || null,
+          image: b.image || BANNER_IMAGE_MAP[i] || undefined,
         }))
       : BANNER_IMAGE_MAP.map((image, i) => ({
           image,
@@ -263,6 +275,6 @@ export function enrichHome(home: any) {
   return { ...home, ...HOME_OVERRIDES, banners };
 }
 
-export function enrichShop(shop: any) {
+export function enrichShop(shop: Shop): Shop {
   return { ...shop, ...SHOP_OVERRIDES, deptMenu: DEPT_MENU_OVERRIDE };
 }

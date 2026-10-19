@@ -2,6 +2,21 @@ import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 import Fuse from 'fuse.js';
 
+import { API, fetchJson } from './api';
+
+import type {
+  Product,
+  Offer,
+  StockData,
+  Shop,
+  Category,
+  Home,
+  CarouselConfig,
+  HomeBanner,
+  ShopLink,
+  DeptMenuItem,
+} from './types';
+
 import {
   enrichShop,
   enrichCategories,
@@ -9,17 +24,7 @@ import {
   enrichProduct,
 } from './overrides';
 
-const API = {
-  products: '/api/products.json',
-  stock: '/api/stock.json',
-  offers: '/api/offers.json',
-  shop: '/api/shop.json',
-  categories: '/api/categories.json',
-  home: '/api/home.json',
-};
-
 const MIN_SKELETON_MS = 300;
-const TIMEOUT_MS = 8000;
 
 const priceFmt = new Intl.NumberFormat('fa-IR');
 const percentFmt = new Intl.NumberFormat('fa-IR', {
@@ -41,7 +46,7 @@ const notyf = new Notyf({
   ]
 });
 
-let productFuse: Fuse<any> | null = null;
+let productFuse: Fuse<Product> | null = null;
 
 function getShopSlug() {
   const parts = location.pathname.split('/').filter(Boolean);
@@ -51,14 +56,18 @@ function getShopSlug() {
 
 const CART_KEY = `shop:${getShopSlug()}:v1:cart`;
 
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
 function readCart(): Record<string, number> {
   try {
     const raw = localStorage.getItem(CART_KEY);
     if (!raw) return {};
-    const data = JSON.parse(raw);
-    if (!data || typeof data !== 'object' || Array.isArray(data)) return {};
+    const data: unknown = JSON.parse(raw);
+    if (!isRecord(data)) return {};   
     const out: Record<string, number> = {};
-    for (const [id, qty] of Object.entries(data)) {
+    for (const [id, qty] of Object.entries(data)) { 
       const n = Number(qty);
       if (Number.isFinite(n) && n > 0) out[String(id)] = Math.floor(n);
     }
@@ -170,8 +179,8 @@ function renderCardActions(container: HTMLElement, qty: number) {
 }
 
 function createCard(
-  product: any,
-  { offer, stock }: { offer: any; stock: number }
+  product: Product,
+  { offer, stock }: { offer: Offer | null; stock: number }
 ) {
   const outOfStock = stock === 0;
   const hasDiscount = offer && offer.percent > 0 && !outOfStock;
@@ -312,8 +321,9 @@ function showError(sectionId: string, message: string) {
 
 function showCarouselErrors(message: string) {
   const ids = new Set(['offers', 'fruits', 'dairy']);
-  document.querySelectorAll('[id$="-grid"]').forEach((grid) => {
-    const id = grid.id.replace(/-grid$/, '');
+  document.querySelectorAll('[id$="-grid"]').forEach((node) => {
+    if (!(node instanceof Element)) return; 
+    const id = node.id.replace(/-grid$/, '');
     if (id) ids.add(id);
   });
   ids.forEach((id) => showError(id, message));
@@ -321,8 +331,8 @@ function showCarouselErrors(message: string) {
 
 function fillSectionGrid(
   sectionId: string,
-  list: any[],
-  offerMap: Map<number, any>,
+  list: Product[],
+  offerMap: Map<number, Offer>,
   stockMap: Map<number, number>
 ) {
   const grid = document.getElementById(`${sectionId}-grid`);
@@ -352,7 +362,7 @@ function fillSectionGrid(
   grid.appendChild(frag);
 }
 
-function renderSimpleLinks(el: HTMLElement, links: any[]) {
+function renderSimpleLinks(el: HTMLElement, links: ShopLink[]) {
   el.replaceChildren();
   for (const item of links) {
     const a = document.createElement('a');
@@ -362,7 +372,7 @@ function renderSimpleLinks(el: HTMLElement, links: any[]) {
   }
 }
 
-function renderListLinks(el: HTMLElement, links: any[]) {
+function renderListLinks(el: HTMLElement, links: ShopLink[]) {
   el.replaceChildren();
   for (const item of links) {
     const li = document.createElement('li');
@@ -374,7 +384,7 @@ function renderListLinks(el: HTMLElement, links: any[]) {
   }
 }
 
-function renderNavList(el: HTMLElement, links: any[]) {
+function renderNavList(el: HTMLElement, links: ShopLink[]) {
   el.replaceChildren();
   for (const item of links) {
     const li = document.createElement('li');
@@ -390,7 +400,7 @@ function renderNavList(el: HTMLElement, links: any[]) {
   }
 }
 
-function renderMegaMenu(items: any[]) {
+function renderMegaMenu(items: DeptMenuItem[]) {
   const ul = document.querySelector<HTMLUListElement>('#dept-menu');
   if (!ul) return;
   ul.replaceChildren();
@@ -471,7 +481,7 @@ function renderMegaMenu(items: any[]) {
   }
 }
 
-function renderTopbar(shop: any) {
+function renderTopbar(shop: Shop) {
   const notice = document.querySelector<HTMLElement>('#topbar-notice');
   if (!notice) throw new Error('index.html is missing #topbar-notice');
   notice.textContent = shop.notice;
@@ -484,7 +494,7 @@ function renderTopbar(shop: any) {
   renderSimpleLinks(links, shop.topbarLinks);
 }
 
-function renderHeader(shop: any, productCount: number) {
+function renderHeader(shop: Shop, productCount: number) {
   const brand = document.querySelector<HTMLAnchorElement>('#header-brand');
   if (!brand) throw new Error('index.html is missing #header-brand');
   brand.setAttribute('aria-label', `${shop.name} — صفحه اصلی`);
@@ -519,7 +529,7 @@ function renderHeader(shop: any, productCount: number) {
   cart.textContent = shop.labels.cart;
 }
 
-function renderNavMenus(shop: any) {
+function renderNavMenus(shop: Shop) {
   const btn = document.querySelector<HTMLElement>('#dept-btn-label');
   if (!btn) throw new Error('index.html is missing #dept-btn-label');
   btn.textContent = shop.labels.deptButton;
@@ -541,7 +551,7 @@ function renderNavMenus(shop: any) {
   renderMegaMenu(shop.deptMenu || []);
 }
 
-function renderContactList(shop: any) {
+function renderContactList(shop: Shop) {
   const ul = document.querySelector<HTMLUListElement>('#footer-contact-list');
   if (!ul) throw new Error('index.html is missing #footer-contact-list');
   ul.replaceChildren();
@@ -573,7 +583,7 @@ function renderContactList(shop: any) {
   }
 }
 
-function renderSchedule(schedule: any[]) {
+function renderSchedule(schedule: { days: string; time: string }[]) {
   const el = document.getElementById('footer-schedule');
   if (!el) return;
   const frag = document.createDocumentFragment();
@@ -588,7 +598,7 @@ function renderSchedule(schedule: any[]) {
   el.replaceChildren(frag);
 }
 
-function renderFooter(shop: any) {
+function renderFooter(shop: Shop) {
   const brand = document.querySelector<HTMLAnchorElement>('#footer-brand');
   if (!brand) throw new Error('index.html is missing #footer-brand');
   brand.setAttribute('aria-label', shop.name);
@@ -631,7 +641,7 @@ function renderFooter(shop: any) {
   top.textContent = shop.labels.footerTop;
 }
 
-function renderCategories(items: any[]) {
+function renderCategories(items: Category[]) {
   const ul = document.querySelector<HTMLUListElement>('#categories-list');
   if (!ul) throw new Error('index.html is missing #categories-list');
   ul.replaceChildren();
@@ -678,7 +688,7 @@ function renderCategories(items: any[]) {
   });
 }
 
-function renderFooterCategories(items: any[]) {
+function renderFooterCategories(items: Category[]) {
   const ul = document.querySelector<HTMLUListElement>('#footer-categories-list');
   if (!ul) return;
   const links = items.map((cat) => ({
@@ -688,7 +698,7 @@ function renderFooterCategories(items: any[]) {
   renderListLinks(ul, links);
 }
 
-function renderHero(home: any) {
+function renderHero(home: Home) {
   const hero = home.hero || {};
 
   const title = document.querySelector<HTMLElement>('#hero-title');
@@ -701,11 +711,14 @@ function renderHero(home: any) {
 
   const cta = document.querySelector<HTMLAnchorElement>('#hero-cta');
   if (!cta) throw new Error('index.html is missing #hero-cta');
-  const ctaHref = hero.ctaHref || (hero.cta && hero.cta.href) || '#fruits';
+  const ctaHref = hero.ctaHref || (hero.cta && typeof hero.cta === 'object' ? hero.cta.href : undefined) || '#fruits';
   const ctaLabel =
     hero.ctaLabel ||
-    (typeof hero.cta === 'string' ? hero.cta : hero.cta && hero.cta.label) ||
-    '';
+    (typeof hero.cta === 'string'
+      ? hero.cta
+      : typeof hero.cta === 'object'
+      ? hero.cta.label
+      : '');
   cta.href = ctaHref;
   cta.removeAttribute('aria-hidden');
   cta.removeAttribute('tabindex');
@@ -729,15 +742,15 @@ function renderHero(home: any) {
   }
 }
 
-function homeBannerSlides(home: any) {
+function homeBannerSlides(home: Home) {
   if (Array.isArray(home.banners) && home.banners.length) {
-    return home.banners.map((b: any) => ({
+    return home.banners.map((b: HomeBanner) => ({
       image: b.image,
       alt: b.alt || '',
       href: b.href || '#',
     }));
   }
-  const slides: any[] = [];
+  const slides: HomeBanner[] = [];
   if (home.side) {
     slides.push({
       text: home.side.title || home.side.text,
@@ -759,7 +772,7 @@ function homeBannerSlides(home: any) {
   return slides;
 }
 
-function renderBanners(home: any) {
+function renderBanners(home: Home) {
   const track = document.getElementById('banner-track');
   if (!track) return;
 
@@ -769,7 +782,7 @@ function renderBanners(home: any) {
   track.removeAttribute('aria-busy');
   track.replaceChildren();
 
-  slides.forEach((b: any, i: number) => {
+  slides.forEach((b: HomeBanner, i: number) => {
     const li = document.createElement('li');
     li.className = 'hero-carousel__slide' + (i === 0 ? ' is-active' : '');
     if (i === 0) li.id = 'banner-start';
@@ -851,7 +864,7 @@ function skeletonCards(count: number) {
   return frag;
 }
 
-function buildCarouselSection(cfg: any) {
+function buildCarouselSection(cfg: CarouselConfig) {
   const isOffers = cfg.source === 'offers' || cfg.variant === 'offers';
   const section = document.createElement('section');
   section.className = isOffers ? 'products products--offers' : 'products';
@@ -936,19 +949,19 @@ function buildCarouselSection(cfg: any) {
 }
 
 function productsForCarousel(
-  cfg: any,
-  products: any[],
-  offerMap: Map<number, any>
+  cfg: CarouselConfig,
+  products: Product[],
+  offerMap: Map<number, Offer>
 ) {
   if (cfg.source === 'offers') {
     return [...offerMap.keys()]
       .map((id) => products.find((x) => x.id === id))
-      .filter(Boolean)
-      .sort((a: any, b: any) => {
+      .filter((p): p is Product => p !== undefined)
+      .sort((a: Product, b: Product) => {
         const pa = offerMap.get(a.id)?.percent || 0;
         const pb = offerMap.get(b.id)?.percent || 0;
         return pb - pa;
-      });
+      })
   }
   if (cfg.categoryId != null) {
     return products.filter((p) => p.categoryId === cfg.categoryId);
@@ -957,10 +970,10 @@ function productsForCarousel(
 }
 
 function renderCarousels(
-  home: any,
-  products: any[],
-  stockData: any,
-  offers: any[]
+  home: Home,
+  products: Product[],
+  stockData: StockData,
+  offers: Offer[]
 ) {
   const root = document.getElementById('carousels-root');
   if (!root) return;
@@ -969,7 +982,7 @@ function renderCarousels(
     products.map((product) => [product.id, stockData.items[product.id] ?? 0])
   );
 
-  const offerMap = new Map<number, any>(offers.map((o) => [o.productId, o]));
+  const offerMap = new Map<number, Offer>(offers.map((o) => [o.productId, o]));
   const list = home.carousels;
 
   for (const cfg of list) {
@@ -993,9 +1006,9 @@ function renderCarousels(
 }
 
 function renderShell(
-  shop: any,
-  categories: any[],
-  home: any,
+  shop: Shop,
+  categories: Category[],
+  home: Home,
   productCount: number
 ) {
   renderTopbar(shop);
@@ -1009,19 +1022,7 @@ function renderShell(
   document.title = `${shop.name} | ${shop.slogan}`;
 }
 
-async function fetchJson(url: string) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-  try {
-    const res = await fetch(url, { signal: controller.signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-function waitMinSkeleton(startedAt: number) {
+function waitMinSkeleton(startedAt: number): Promise<void> {
   const remaining = MIN_SKELETON_MS - (performance.now() - startedAt);
   if (remaining > 0) return new Promise((r) => setTimeout(r, remaining));
   return Promise.resolve();
@@ -1063,22 +1064,23 @@ function setupCart() {
       notyf.error(`${name} از سبد حذف شد`);
     }
 
-    const card = actions.closest('.product');
+    const card = actions.closest<HTMLElement>('.product');
     if (card) {
       card.classList.remove('product--cart-pulse');
-      void (card as HTMLElement).offsetWidth;
+      void card.offsetWidth;
       card.classList.add('product--cart-pulse');
     }
   });
 }
 
 let appCatalog: {
-  products: any[];
-  stockData: any;
-  offers: any[];
+  products: Product[];
+  stockData: StockData;
+  offers: Offer[];
 } | null = null;
-let appHome: any = null;
-let appCategories: any[] | null = null;
+
+let appHome: Home | null = null;
+let appCategories: Category[] | null = null;
 
 function getCatParam() {
   return new URLSearchParams(location.search).get('cat') || '';
@@ -1109,9 +1111,9 @@ function applyCategoryFilter(slug: string) {
 
   const root = document.getElementById('carousels-root');
   if (root) {
-    root.querySelectorAll('section.products').forEach((sec) => {
-      (sec as HTMLElement).hidden = sec.id !== cat.slug;
-    });
+    root.querySelectorAll<HTMLElement>('section.products').forEach((sec) => {
+      sec.hidden = sec.id !== cat.slug;
+    })
   }
 
   renderCarousels(filteredHome, products, stockData, offers);
@@ -1120,8 +1122,8 @@ function applyCategoryFilter(slug: string) {
   if (section) {
     section.hidden = false;
     if (root) {
-      root.querySelectorAll('section.products').forEach((sec) => {
-        (sec as HTMLElement).hidden = sec.id !== cat.slug;
+      root.querySelectorAll<HTMLElement>('section.products').forEach((sec) => {
+        sec.hidden = sec.id !== cat.slug;
       });
     }
   }
@@ -1130,8 +1132,8 @@ function applyCategoryFilter(slug: string) {
 function clearCategoryFilter() {
   const root = document.getElementById('carousels-root');
   if (root) {
-    root.querySelectorAll('section.products').forEach((sec) => {
-      (sec as HTMLElement).hidden = false;
+    root.querySelectorAll<HTMLElement>('section.products').forEach((sec) => {
+      sec.hidden = false;
     });
   }
   if (appCatalog && appHome) {
@@ -1217,6 +1219,7 @@ function setupSearch() {
 
       const itemWrapper = document.createElement('div');
       itemWrapper.className = 'search-results__item';
+      itemWrapper.role = 'listitem';
       itemWrapper.dataset.productId = String(p.id);
 
       const imgWrap = document.createElement('div');
@@ -1265,7 +1268,7 @@ function setupSearch() {
       const currentQty = getCartQty(p.id);
       renderCardActions(actions, currentQty);
 
-      actions.addEventListener('click', (e) => {
+      actions.addEventListener('click', (e: MouseEvent) => {
         if (!(e.target instanceof Element)) return;
         const btn = e.target.closest<HTMLButtonElement>('[data-action="inc"], [data-action="dec"]');
         if (!btn || btn.disabled) return;
@@ -1337,12 +1340,7 @@ function showSlowConnection(show: boolean) {
 }
 
 function errorMessage(err: unknown) {
-  if (
-    err &&
-    typeof err === 'object' &&
-    'name' in err &&
-    (err as { name: string }).name === 'AbortError'
-  ) {
+  if (err instanceof Error && err.name === 'AbortError') {
     return 'زمان انتظار برای دریافت داده به پایان رسید. لطفاً دوباره تلاش کنید.';
   }
   return 'داده‌ها در دسترس نیست. لطفاً اتصال اینترنت را بررسی کنید.';
@@ -1362,12 +1360,12 @@ async function init() {
   try {
     const [shopRaw, categoriesRaw, homeRaw, productsRaw, stockData, offers] =
       await Promise.all([
-        fetchJson(API.shop),
-        fetchJson(API.categories),
-        fetchJson(API.home),
-        fetchJson(API.products),
-        fetchJson(API.stock),
-        fetchJson(API.offers),
+        fetchJson<Shop>(API.shop),
+        fetchJson<Category[]>(API.categories),
+        fetchJson<Home>(API.home),
+        fetchJson<Product[]>(API.products),
+        fetchJson<StockData>(API.stock),
+        fetchJson<Offer[]>(API.offers),
       ]);
 
     const shop = enrichShop(shopRaw);
@@ -1394,7 +1392,7 @@ async function init() {
 
     const catSlug = getCatParam();
     if (catSlug) applyCategoryFilter(catSlug);
-  } catch (err) {
+  } catch (err: unknown) {
     clearTimeout(slowTimer);
     showSlowConnection(false);
     console.error('[shop] data failed:', err);
