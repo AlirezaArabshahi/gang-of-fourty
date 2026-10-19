@@ -35,7 +35,6 @@ export function h<K extends keyof HTMLElementTagNameMap>(
   return el;
 }
 
-// ─── Small DOM helpers ────────────────────────
 export function setText(id: string, text: string): void {
   const el = document.getElementById(id);
   if (el) el.textContent = text;
@@ -208,7 +207,7 @@ export function renderProductCard(
   return li;
 }
 
-// ─── Shell: topbar / header / nav / hero / footer ───
+// ─── Shell ─────────────────────────────────────
 function renderLinks(
   el: HTMLElement,
   links: ShopLink[],
@@ -331,6 +330,22 @@ function homeBannerSlides(home: Home): HomeBanner[] {
   return slides;
 }
 
+export function renderBannerSkeletons(): void {
+  const track = document.getElementById('banner-track');
+  if (!track) return;
+
+  const count = 5;
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < count; i++) {
+    const li = h('li', { className: 'hero-carousel__slide hero-carousel__slide--skeleton' });
+    if (i === 0) li.id = 'banner-start';
+    if (i === count - 1) li.id = 'banner-end';
+    li.appendChild(h('span', { className: 'hero-banner' }));
+    frag.appendChild(li);
+  }
+  track.appendChild(frag);
+}
+
 export function renderShell(): void {
   const shop = state.shop;
   const home = state.home;
@@ -406,9 +421,7 @@ export function renderShell(): void {
   }
 
   document.getElementById('hero-video')?.classList.remove('hero-video--skeleton');
-  const weekly = document.getElementById('weekly-title');
-  if (weekly) weekly.classList.remove('hero-carousel__title--skeleton');
-  setText('weekly-title', home.weeklyTitle || home.side?.title || '');
+  
   if (home.categoriesTitle) setText('categories-title', home.categoriesTitle);
 
   // Banners
@@ -419,10 +432,59 @@ export function renderShell(): void {
       track.removeAttribute('aria-busy');
       track.replaceChildren();
 
+      // ─── First slide: basket (built entirely via JS) ───
+      const basketLi = h('li', {
+        className: 'hero-carousel__slide hero-carousel__slide--basket is-active',
+        id: 'banner-start',
+      });
+
+      const basketLink = h('a', {
+        className: 'hero-banner hero-banner--basket',
+        href: '#fruits',
+      });
+
+      // Basket wrapper (fruits + basket images)
+      const basketWrap = h('div', { className: 'hero-carousel__basket-wrap' });
+      basketWrap.setAttribute('aria-hidden', 'true');
+
+      const fruitsImg = h('img', {
+        className: 'hero-carousel__fruits',
+        src: '/assets/images/promos/fruits.webp',
+        alt: '',
+        loading: 'eager',
+      });
+
+      const basketImg = h('img', {
+        className: 'hero-carousel__basket',
+        src: '/assets/images/promos/basket.webp',
+        alt: '',
+        loading: 'eager',
+      });
+
+      basketWrap.append(fruitsImg, basketImg);
+
+      // Basket content
+      const basketContent = h('div', { className: 'hero-carousel__basket-content' });
+
+      const eyebrow = h('span', {
+        className: 'hero-carousel__basket-eyebrow',
+        textContent: '✦ تازه از مزرعه',
+      });
+
+      const basketTitle = h('h3', {
+        className: 'hero-carousel__basket-title',
+        textContent: 'پیشنهادهای ویژه هفته',
+      });
+
+      basketContent.append(eyebrow, basketTitle);
+      basketLink.append(basketWrap, basketContent);
+      basketLi.appendChild(basketLink);
+      track.appendChild(basketLi);
+
+      // ─── Other slides ───
       slides.forEach((b, i) => {
-        const li = h('li', { className: 'hero-carousel__slide' + (i === 0 ? ' is-active' : '') });
-        li.style.setProperty('--i', String(i));
-        if (i === 0) li.id = 'banner-start';
+        const li = h('li', { className: 'hero-carousel__slide' });
+        li.style.setProperty('--i', String(i + 1));
         if (i === slides.length - 1) li.id = 'banner-end';
 
         const a = h('a', {
@@ -437,9 +499,8 @@ export function renderShell(): void {
             width: 800,
             height: 500,
             decoding: 'async',
-            loading: i === 0 ? 'eager' : 'lazy',
+            loading: 'lazy',
           });
-          if (i === 0) img.fetchPriority = 'high';
           a.appendChild(img);
         } else {
           a.style.backgroundColor = b.color || '#e3f1e7';
@@ -451,6 +512,30 @@ export function renderShell(): void {
         li.appendChild(a);
         track.appendChild(li);
       });
+
+      // ─── Carousel nav buttons, appended into the track's parent ───
+      const carousel = track.parentElement;
+      if (carousel && !carousel.querySelector('.hero-carousel__nav')) {
+        const nav = h('nav', { className: 'hero-carousel__nav' });
+        nav.setAttribute('aria-label', 'ناوبری کاروسل پیشنهادها');
+
+        const btnStart = h('a', {
+          href: '#banner-start',
+          className: 'carousel-nav__btn carousel-nav__btn--start hero-carousel__nav-btn hero-carousel__nav-btn--start',
+        });
+        btnStart.setAttribute('aria-label', 'رفتن به ابتدای پیشنهادها');
+        btnStart.appendChild(createSvgIcon('M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z'));
+
+        const btnEnd = h('a', {
+          href: '#banner-end',
+          className: 'carousel-nav__btn carousel-nav__btn--end hero-carousel__nav-btn hero-carousel__nav-btn--end',
+        });
+        btnEnd.setAttribute('aria-label', 'رفتن به انتهای پیشنهادها');
+        btnEnd.appendChild(createSvgIcon('M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z'));
+
+        nav.append(btnStart, btnEnd);
+        carousel.appendChild(nav);
+      }
     }
   }
 
@@ -676,7 +761,6 @@ export function fillSectionGrid(
     frag.appendChild(card);
   });
   grid.appendChild(frag);
-
 }
 
 export function skeletonCards(count: number): DocumentFragment {
@@ -743,7 +827,6 @@ function updateNavState(track: HTMLElement): void {
   const first = items[0];
   const last = items[items.length - 1];
 
-  // With `display: contents` the wrapper has 0×0 box; descend to the real child.
   const realBox = (el: Element): DOMRect => {
     const r = el.getBoundingClientRect();
     if (r.width > 0 || r.height > 0) return r;
