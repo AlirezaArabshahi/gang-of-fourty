@@ -1,4 +1,4 @@
-const API_BASE = "../../api/";
+const API_BASE = "./api/";
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 const CART_STORAGE_KEY = "superino-cart";
 let cart = readCart();
@@ -64,7 +64,11 @@ function renderLoadingSkeletons() {
 
 function makeProductCard(product, { offer, stock, categoryName }) {
   const card = makeElement("li", "product-item");
-  const emoji = makeElement("div", "product-icon product-emoji", product.emoji || "🛒");
+  const image = makeElement("div", "product-icon product-emoji");
+  const img = makeElement("img");
+  img.src = product.image;
+  img.alt = product.name || "";
+  image.append(img);
   const tag = makeElement("p", "item-tag", categoryName || product.categoryName || "محصول");
   const quantity = stock?.items?.[String(product.id)];
   const outOfStock = quantity === 0;
@@ -95,7 +99,7 @@ function makeProductCard(product, { offer, stock, categoryName }) {
     button.title = `افزودن ${product.name} به سبد خرید`;
   }
   buyRow.append(price, button);
-  card.append(emoji, tag, discount, title, description, oldPrice, buyRow);
+  card.append(image, tag, discount, title, description, oldPrice, buyRow);
   return card;
 }
 
@@ -146,7 +150,7 @@ function renderShopDetails(shop) {
   setText("#shop-about", shop.about);
   setText("#shop-address", shop.address);
   setText("#shop-phone", shop.phone);
-  const copyright = String(shop.copyright || "").replace(/سوپرمارکت\s*مینا/g, "سوپرینو").trim();
+  const copyright = String(shop.copyright || "").trim();
   setText("#shop-copyright", copyright || "سوپرینو");
 
   const menu = document.querySelector("#shop-menu-links");
@@ -166,8 +170,16 @@ function renderCategories(categories) {
     const href = `#${category.slug}`;
     appendLink(categoryMenu, `${category.emoji || "🛒"} ${category.name}`, href, "hidden-content-links");
     const card = appendLink(categoryCards, "", href, "categories-box");
-    const icon = makeElement("span", "categories-icon category-emoji", category.emoji || "🛒");
+    const icon = makeElement("span", "categories-icon");
     icon.style.backgroundColor = category.color || "var(--light-blue)";
+    if (category.image?.endsWith(".svg")) {
+      const image = makeElement("img");
+      image.src = category.image;
+      image.alt = category.name || "";
+      icon.append(image);
+    } else {
+      icon.textContent = category.emoji || "🛒";
+    }
     card.append(icon, makeElement("p", "categories-name", category.name));
     appendLink(footerCategories, category.name, href);
   });
@@ -180,7 +192,15 @@ function makeBanner(data, variant) {
   content.append(makeElement("h2", `banner-title ${variant}-title`, `${data.title || ""}`.trim()));
   content.append(makeElement("p", `banner-details ${variant}-details`, data.text || ""));
   if (data.cta) appendLink(content, data.cta.label || "مشاهده", data.cta.href || "#", `banner-button ${variant}-button`);
-  const icon = makeElement("span", "banner-art", data.emoji || "🛍️");
+  const icon = makeElement("span", "banner-art");
+  if (data.emoji?.endsWith(".svg")) {
+    const image = makeElement("img");
+    image.src = data.emoji;
+    image.alt = data.name;
+    icon.append(image);
+  } else {
+    icon.textContent = data.emoji || "🛍️";
+  }
   article.append(content, icon);
   return article;
 }
@@ -203,7 +223,15 @@ function renderPromos(home) {
     const content = makeElement("div", "banner-content");
     content.append(makeElement("h2", "banner-title", `${promo.text || ""}`.trim()));
     appendLink(content, "دیدن محصولات", promo.href || "#", "promo-link");
-    const icon = makeElement("span", "promo-emoji", promo.emoji || "🛍️");
+    const icon = makeElement("span", "promo-emoji");
+    if (promo.emoji?.endsWith(".svg")) {
+      const image = makeElement("img");
+      image.src = promo.emoji;
+      image.alt = promo.name;
+      icon.append(image);
+    } else {
+      icon.textContent = promo.emoji || "🛍️";
+    }
     article.append(content, icon);
     container.append(article);
   });
@@ -225,10 +253,16 @@ function createCarouselSection(config, products, stock, offersByProductId, categ
   viewport.append(list); carousel.append(viewport, controls); section.append(carousel);
 
   let selected;
-  if (config.source === "offers" || config.id === "offers") selected = products.filter((product) => offersByProductId.has(product.id));
-  else {
+  if (config.source === "offers" || config.id === "offers") {
+    selected = products.filter((product) => {
+      const offer = offersByProductId.get(product.id);
+      return offer?.label === "پیشنهاد ویژه";
+    });
+  } else {
     const categoryId = config.categoryId ?? config.category?.id;
-    selected = products.filter((product) => product.categoryId === categoryId);
+    selected = products.filter(
+      (product) => product.categoryId === categoryId
+    );
   }
   const category = categories.find((item) => item.id === (config.categoryId ?? config.category?.id));
   renderProducts(list, selected, (product) => ({ offer: offersByProductId.get(product.id), stock, categoryName: category?.name || config.title || "محصول" }));
@@ -326,17 +360,38 @@ function setupSearch(products) {
   if (input) input.placeholder = `جستجو در میان ${numberFormatter.format(products.length)} کالا...`;
 }
 
+async function fetchApiFile(file) {
+  const response = await fetch(`${API_BASE}${file}`);
+  if (!response.ok) {
+    throw new Error(`API "${file}" با وضعیت ${response.status} دریافت نشد.`);
+  }
+  return response.json();
+}
+
 async function loadPage() {
-  const endpoints = ["products.json", "stock.json", "offers.json", "categories.json", "shop.json", "home.json"];
+  const endpoints = [
+    "products.json",
+    "stock.json",
+    "offers.json",
+    "categories.json",
+    "shop.json",
+    "home.json",
+  ];
+
   try {
-    const responses = await Promise.all(endpoints.map((file) => fetch(`${API_BASE}${file}`)));
-    if (responses.some((response) => !response.ok)) throw new Error("API request failed");
-    const [products, stock, offers, categories, shop, home] = await Promise.all(responses.map((response) => response.json()));
-    const offersByProductId = new Map(offers.map((offer) => [offer.productId, offer]));
+    const [products, stock, offers, categories, shop, home] = await Promise.all(
+      endpoints.map(fetchApiFile)
+    );
+
+    const offersByProductId = new Map(
+      offers.map((offer) => [offer.productId, offer])
+    );
+
     renderShopDetails(shop);
     renderCategories(categories);
     renderHeroBanners(home);
     renderPromos(home);
+
     const configuredCategoryIds = renderHomeCarousels(
       home,
       products,
@@ -353,13 +408,24 @@ async function loadPage() {
       offersByProductId,
       configuredCategoryIds
     );
-    
+
     setupSearch(products);
   } catch (error) {
-    document.querySelectorAll(".skeleton-text").forEach((item) => item.classList.remove("skeleton-text"));
+    document.querySelectorAll(".skeleton-text").forEach((item) => {
+      item.classList.remove("skeleton-text");
+    });
+
     const main = document.querySelector("#main-content");
-    main.prepend(makeElement("p", "api-status api-status--error", "بارگذاری اطلاعات با مشکل مواجه شد. اتصال را بررسی و صفحه را دوباره بارگذاری کنید."));
-    console.error(error);
+    const oldError = main.querySelector(".api-status--error");
+    if (oldError) oldError.remove();
+
+    const message = makeElement(
+      "p",
+      "api-status api-status--error",
+      "بارگذاری اطلاعات با مشکل مواجه شد. مطمئن شو پروژه را با Live Server یا یک سرور محلی اجرا کرده‌ای."
+    );
+    main.prepend(message);
+    console.error("خطا در بارگذاری APIهای سوپرینو:", error);
   }
 }
 
