@@ -27,7 +27,7 @@ function readCart() {
 }
 
 function updateCartCount() {
-  const count = Object.values(cart).reduce((sum, value) => sum + Math.max(0, Number(value) || 0), 0);
+  const count = Object.values(cart).reduce((sum:number, value) => sum + Math.max(0, Number(value) || 0), 0);
   const badge = document.querySelector("#cart-count");
   if (badge) badge.textContent = numberFormatter.format(count);
 }
@@ -35,7 +35,11 @@ function updateCartCount() {
 function addToCart(productId) {
   const key = String(productId);
   cart[key] = (Number(cart[key]) || 0) + 1;
-  try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch { /* storage may be unavailable */ }
+  try { 
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); 
+  } catch { 
+    console.error("Storage is unavailable")
+  }
   updateCartCount();
 }
 
@@ -45,10 +49,14 @@ function makeSkeleton(className = "") {
 
 function renderLoadingSkeletons() {
   const banner = document.querySelector("#home-banners");
-  banner.replaceChildren(makeSkeleton("skeleton-banner"), makeSkeleton("skeleton-banner"));
   const categories = document.querySelector("#category-cards");
-  categories.replaceChildren(...Array.from({ length: 7 }, () => makeSkeleton("skeleton-category")));
   const carouselContainer = document.querySelector("#home-carousels");
+  const promos = document.querySelector("#home-promos");
+  if (!banner || !categories || !carouselContainer || !promos){
+    return
+  }
+  banner.replaceChildren(makeSkeleton("skeleton-banner"), makeSkeleton("skeleton-banner"));
+  categories.replaceChildren(...Array.from({ length: 7 }, () => makeSkeleton("skeleton-category")));
   carouselContainer.replaceChildren();
   for (let i = 0; i < 2; i++) {
     const section = makeElement("section", "recommendation");
@@ -58,7 +66,6 @@ function renderLoadingSkeletons() {
     section.append(row);
     carouselContainer.append(section);
   }
-  const promos = document.querySelector("#home-promos");
   promos.replaceChildren(makeSkeleton("skeleton-banner"), makeSkeleton("skeleton-banner"));
 }
 
@@ -154,9 +161,12 @@ function renderShopDetails(shop) {
   setText("#shop-copyright", copyright || "سوپرینو");
 
   const menu = document.querySelector("#shop-menu-links");
+  const hours = document.querySelector("#shop-hours");
+  if (!menu || !hours){
+    return
+  }
   menu.replaceChildren();
   (shop.menu || []).forEach((item) => appendLink(menu, item.label, item.href, "menu-texts"));
-  const hours = document.querySelector("#shop-hours");
   hours.replaceChildren();
   (shop.schedule || []).forEach((item) => hours.append(makeElement("p", "", `${item.days}: ${item.time}`)));
 }
@@ -165,7 +175,12 @@ function renderCategories(categories) {
   const categoryMenu = document.querySelector("#category-menu-links");
   const categoryCards = document.querySelector("#category-cards");
   const footerCategories = document.querySelector("#footer-category-links");
-  categoryMenu.replaceChildren(); categoryCards.replaceChildren(); footerCategories.replaceChildren();
+  if (!categoryMenu || !categoryCards || !footerCategories){
+    return
+  }
+  categoryMenu.replaceChildren();
+  categoryCards.replaceChildren();
+  footerCategories.replaceChildren();
   categories.forEach((category) => {
     const href = `#${category.slug}`;
     appendLink(categoryMenu, `${category.emoji || "🛒"} ${category.name}`, href, "hidden-content-links");
@@ -207,6 +222,9 @@ function makeBanner(data, variant) {
 
 function renderHeroBanners(home) {
   const container = document.querySelector("#home-banners");
+  if (!container){
+    return
+  }
   container.replaceChildren();
   const hero = makeBanner(home.hero, "banner-fruit");
   const side = makeBanner(home.side, "banner-sale");
@@ -216,6 +234,9 @@ function renderHeroBanners(home) {
 
 function renderPromos(home) {
   const container = document.querySelector("#home-promos");
+  if (!container){
+    return
+  }
   container.replaceChildren();
   (home.promos || []).forEach((promo, index) => {
     const variant = index % 2 === 0 ? "banner-breakfast" : "banner-bread";
@@ -273,6 +294,9 @@ function createCarouselSection(config, products, stock, offersByProductId, categ
 
 function renderHomeCarousels(home, products, stock, offersByProductId, categories) {
   const container = document.querySelector("#home-carousels");
+  if (!container){
+    return
+  }
   container.replaceChildren();
 
   const configuredCategoryIds = new Set();
@@ -309,6 +333,9 @@ function renderRemainingCategoryCarousels(
   configuredCategoryIds
 ) {
   const container = document.querySelector("#category-product-sections");
+  if (!container){
+    return
+  }
   container.replaceChildren();
 
   const renderedCategoryIds = new Set(configuredCategoryIds);
@@ -356,7 +383,7 @@ function renderRemainingCategoryCarousels(
 }
 
 function setupSearch(products) {
-  const input = document.querySelector(".search-entry");
+  const input = document.querySelector<HTMLInputElement>(".search-entry");
   if (input) input.placeholder = `جستجو در میان ${numberFormatter.format(products.length)} کالا...`;
 }
 
@@ -416,6 +443,9 @@ async function loadPage() {
     });
 
     const main = document.querySelector("#main-content");
+    if (!main){
+    return
+  }
     const oldError = main.querySelector(".api-status--error");
     if (oldError) oldError.remove();
 
@@ -429,8 +459,9 @@ async function loadPage() {
   }
 }
 
-document.addEventListener("click", (event) => {
-  const button = event.target.closest(".buy-button[data-product-id]");
+document.addEventListener("click", (event: MouseEvent) => {
+  if (!(event.target instanceof Element)) return;
+  const button = event.target?.closest<HTMLButtonElement>(".buy-button[data-product-id]");
   if (button && !button.disabled) addToCart(button.dataset.productId);
 });
 
