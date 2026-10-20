@@ -1,3 +1,16 @@
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
+import { CountUp } from 'countup.js';
+
+
+const notyf = new Notyf({
+    position: { x: "center", y: "top" },
+});
+let cartCount: number = Number(localStorage.getItem("big-o-cart"));
+if(Number.isNaN(cartCount)) {
+    cartCount = 0;
+}
+
 // Fetches one JSON file and returns its parsed data.
 // Throws if the request fails or the response is not ok (e.g. 404),
 // so the caller can show an error message.
@@ -126,6 +139,9 @@ function createProductCard(product, cardInfo : CardInfo = {}) {
     button.type = "button";
     button.setAttribute("aria-describedby", title.id);
     cardFooter.append(priceBox, button);
+
+    button.addEventListener("click", () => addToCart(product.name));
+    
 
     const plus: HTMLElement = document.createElement("span");
     plus.textContent = "+";
@@ -300,6 +316,21 @@ function renderShop(shop) {
     getHtmlElement<HTMLElement>(".info").append(hours);
 }
 
+// Adds one product to the cart: shows a success toast, increases cartCount,
+// saves it in localStorage and refreshes the counter in the header.
+// productName: name of the product shown in the toast.
+function addToCart(productName: string) {
+    notyf.success(`محصول ${productName} با موفقیت به سبد خرید اضافه شد.`);
+    cartCount += 1;
+    localStorage.setItem("big-o-cart", String(cartCount));
+    updateCartNumber();
+}
+
+// Writes the current cartCount into the header counter using Persian digits.
+function updateCartNumber() {
+    getHtmlElement<HTMLElement>(".product-counter").textContent = new Intl.NumberFormat('fa-IR').format(cartCount);
+}
+
 // Entry point: loads the data, then renders the carousels.
 // Errors are caught here, because this is the one place that knows about the page.
 async function init() {
@@ -314,7 +345,7 @@ async function init() {
         containers.forEach(container => {
             clearMessage(container);
         });
-
+        updateCartNumber();
         renderCategories(categories);
         renderCategoryLinks(categories);
         renderShop(shop);
