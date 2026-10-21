@@ -206,7 +206,7 @@
         height: 320px;
     }
     .hero-promos {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repe, minmax(2, 1fr);
     }
     .hero-main__content {
         padding: 1.5rem;
@@ -225,7 +225,7 @@
         grid-template-columns: repeat(5, minmax(0, 1fr));
     }
     .features-list li,
-    .features-list li:nth-child(n + 4) {
+    .features-list li:nth-child(n+4) {
         grid-column: auto;
     }
     .header-top {
