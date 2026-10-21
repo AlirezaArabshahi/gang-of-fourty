@@ -2,7 +2,7 @@ import type Fuse from 'fuse.js';
 import type { Product, Offer, StockData, Shop, Category, Home } from './types';
 import { getShopSlug, isRecord, priceFmt } from './utils';
 
-// ─── Global state ─────────────────────────────
+// Global state 
 interface State {
   shop: Shop | null;
   home: Home | null;
@@ -23,7 +23,7 @@ export const state: State = {
   fuse: null,
 };
 
-// ─── Cart ─────────────────────────────────────
+// Cart 
 const CART_KEY = `shop:${getShopSlug()}:v1:cart`;
 
 export function getCart(): Record<string, number> {

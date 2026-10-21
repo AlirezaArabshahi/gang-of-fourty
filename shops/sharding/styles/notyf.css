@@ -15,7 +15,7 @@
   overflow: hidden;
 }
 
-/* Left accent stripe — saffron for success, red for error */
+/* Left accent stripe.  saffron for success, red for error */
 .notyf__toast::before {
   content: "";
   position: absolute;
@@ -42,7 +42,7 @@
   color: var(--text) !important;
 }
 
-/* Hide Notyf's default checkmark/x icons — we use the stripe instead */
+/* Hide Notyf's default checkmark/x icons. we use the stripe instead */
 .notyf__icon {
   display: none !important;
 }
@@ -69,7 +69,7 @@
   background-color: var(--text) !important;
 }
 
-/* Dark mode: subtle lift + inner rim */
+/* Dark mode */
 :root[data-theme="dark"] .notyf__toast {
   box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
 }

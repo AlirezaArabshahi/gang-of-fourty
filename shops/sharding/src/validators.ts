@@ -1,7 +1,7 @@
 import type { Product, Offer, StockData, Shop, Category, Home } from './types';
 import { isRecord } from './utils';
 
-// ─── Product ──────────────────────────────────
+// Product 
 function isProduct(v: unknown): v is Product {
   return (
     isRecord(v) &&
@@ -16,7 +16,7 @@ function isProduct(v: unknown): v is Product {
   );
 }
 
-// ─── Offer ────────────────────────────────────
+// Offer 
 function isOffer(v: unknown): v is Offer {
   return (
     isRecord(v) &&
@@ -25,12 +25,12 @@ function isOffer(v: unknown): v is Offer {
   );
 }
 
-// ─── Stock ────────────────────────────────────
+// Stock 
 function isStockData(v: unknown): v is StockData {
   return isRecord(v) && isRecord(v.items);
 }
 
-// ─── Category ─────────────────────────────────
+// Category 
 function isCategory(v: unknown): v is Category {
   return (
     isRecord(v) &&
@@ -41,7 +41,7 @@ function isCategory(v: unknown): v is Category {
   );
 }
 
-// ─── Shop ─────────────────────────────────────
+// Shop 
 // The API only guarantees `name` and `slogan`.
 // Everything else is filled by SHOP_OVERRIDES via enrichShop().
 function isShop(v: unknown): v is Shop {
@@ -52,14 +52,14 @@ function isShop(v: unknown): v is Shop {
   );
 }
 
-// ─── Home ─────────────────────────────────────
+// Home 
 // The API only guarantees an object; carousels/banners/hero
 // are filled by HOME_OVERRIDES via enrichHome().
 function isHome(v: unknown): v is Home {
   return isRecord(v);
 }
 
-// ─── Array wrappers ───────────────────────────
+// Array wrappers 
 export function isProductArray(v: unknown): v is Product[] {
   return Array.isArray(v) && v.every(isProduct);
 }

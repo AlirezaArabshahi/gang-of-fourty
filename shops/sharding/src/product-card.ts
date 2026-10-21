@@ -3,7 +3,7 @@ import { getQty } from './state';
 import { h, mkBtn, cloneIcon, renderImageOrEmoji } from './dom';
 import { priceFmt, discountPct, applyOffer, hasDiscount } from './utils';
 
-// ─── Cart button / stepper ────────────────────
+// Cart button / stepper 
 export function renderCartButton(
   container: HTMLElement,
   productId: string | number,
@@ -39,7 +39,7 @@ export function renderCartButton(
   container.appendChild(stepper);
 }
 
-// ─── Product card ─────────────────────────────
+// Product card 
 export function renderProductCard(
   product: Product,
   offer: Offer | null,
@@ -130,7 +130,7 @@ export function renderProductCard(
   return li;
 }
 
-// ─── Skeleton cards ───────────────────────────
+// Skeleton cards 
 export function skeletonCards(count: number): DocumentFragment {
   const frag = document.createDocumentFragment();
   for (let i = 0; i < count; i++) {

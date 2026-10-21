@@ -5,7 +5,7 @@ import { state } from './state';
 import { h, setText, fillFromTemplate, createSvgIcon } from './dom';
 import { priceFmt } from './utils';
 
-// ─── Links ────────────────────────────────────
+// Links 
 function renderLinks(
   el: HTMLElement,
   links: ShopLink[],
@@ -32,7 +32,7 @@ function renderLinks(
   });
 }
 
-// ─── Mega menu ────────────────────────────────
+// Mega menu 
 function renderMegaMenu(items: DeptMenuItem[]): void {
   const ul = document.querySelector<HTMLUListElement>('#dept-menu');
   if (!ul) return;
@@ -94,7 +94,7 @@ function renderMegaMenu(items: DeptMenuItem[]): void {
   }
 }
 
-// ─── Footer contact + schedule ────────────────
+// Footer contact + schedule
 function renderContact(shop: Shop): void {
   const ul = document.querySelector<HTMLUListElement>('#footer-contact-list');
   if (!ul) return;

@@ -10,7 +10,7 @@
   background: light-dark(#FAFBEF, #1F1B18);
 }
 
-/* Same simple dot pattern in BOTH modes */
+/* simple dot pattern */
 .categories > .container::before {
   content: "";
   position: absolute;
@@ -67,7 +67,6 @@
 .category:hover,
 .category:focus-visible { border-color: var(--accent); outline: none; }
 
-/* Dark: subtle rim for depth */
 :root[data-theme="dark"] .category {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
@@ -125,7 +124,7 @@
   .category { scroll-snap-stop: normal; }
 }
 
-/* ────── Carousel nav ────── */
+/* Carousel nav */
 .carousel-nav {
   display: inline-flex;
   align-items: center;

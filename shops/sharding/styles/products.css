@@ -5,7 +5,7 @@
   overflow: visible;
 }
 
-/* Dark: subtle rim light for definition */
+/* Dark */
 :root[data-theme="dark"] .products__inner {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
@@ -96,9 +96,7 @@
   border-radius: var(--radius-sm);
 }
 
-/* ════════════════════════════════════════════
-   PRODUCT CARD — readable in both modes
-   ════════════════════════════════════════════ */
+/* PRODUCT CARD  */
 
 .product {
   position: relative;
@@ -113,7 +111,7 @@
   transition: border-color var(--t-fast);
 }
 
-/* Dark: rim light + slightly bigger shadow for clear separation */
+/* Dark */
 :root[data-theme="dark"] .product {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
@@ -324,7 +322,7 @@
   .product__qty-btn { width: 24px; height: 24px; }
 }
 
-/* ── Offers band ── */
+/* Offers band */
 .products--offers .products__inner {
   background: var(--offers-bg);
   border: 1px solid light-dark(rgba(245, 194, 74, 0.15), rgba(242, 200, 102, 0.2));

@@ -1,11 +1,11 @@
-// ─── Shop slug ────────────────────────────────
+// Shop slug 
 export function getShopSlug(): string {
   const parts = location.pathname.split('/').filter(Boolean);
   const i = parts.indexOf('shops');
   return i !== -1 && parts[i + 1] ? parts[i + 1] : 'default';
 }
 
-// ─── Formatters ───────────────────────────────
+// Formatters 
 export const priceFmt = new Intl.NumberFormat('fa-IR');
 
 export const discountPct = new Intl.NumberFormat('fa-IR', {
@@ -13,7 +13,7 @@ export const discountPct = new Intl.NumberFormat('fa-IR', {
   maximumFractionDigits: 0,
 });
 
-// ─── Offer helpers ────────────────────────────
+// Offer helpers 
 export function hasDiscount(
   offer: { percent: number } | null | undefined,
 ): offer is { percent: number } {
@@ -28,7 +28,7 @@ export function applyOffer(
   return Math.round(price * (1 - offer.percent / 100));
 }
 
-// ─── Guards ───────────────────────────────────
+// Guards 
 export function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
 }

@@ -7,7 +7,7 @@ import type {
   DeptMenuItem,
 } from './types';
 
-// ─── Data ─────────────────────────────────────
+// Data 
 const PRODUCT_IMAGES: Record<number, string> = {
   101: '/assets/images/products/p-apple.webp',
   102: '/assets/images/products/p-orange.webp',
@@ -177,7 +177,7 @@ const DEPT_MENU: DeptMenuItem[] = [
   },
 ];
 
-// ─── Enrichers ────────────────────────────────
+// Enrichers 
 export function enrichProduct(product: Product): Product {
   return {
     ...product,

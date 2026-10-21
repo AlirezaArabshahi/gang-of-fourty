@@ -121,7 +121,7 @@
 .hero-video--skeleton .hero-video__cta svg,
 .hero-video--skeleton .hero-video__cta span { visibility: hidden; }
 
-/* ────── Hero carousel ────── */
+/* Hero carousel */
 .hero-carousel { margin-top: var(--sp-lg); position: relative; }
 
 .hero-carousel__track {
@@ -239,7 +239,7 @@
 }
 .hero-carousel__basket { z-index: 1; }
 
-/* ── Fruits drop-in animation ── */
+/* Fruits drop-in animation */
 .hero-carousel__fruits {
   z-index: 2;
   opacity: 0;

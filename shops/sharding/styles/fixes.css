@@ -1,6 +1,4 @@
-/* ════════════════════════════════════════════
-   CUSTOM IMAGES — remove white bg via multiply
-   ════════════════════════════════════════════ */
+/* CUSTOM IMAGES — remove white bg via multiply */
 
 .product__img,
 .category__img,
@@ -14,9 +12,7 @@
   mix-blend-mode: multiply;
 }
 
-/* ════════════════════════════════════════════
-   FIX 1 — Emoji size in mobile cards
-   ════════════════════════════════════════════ */
+/* FIX 1 — Emoji size in mobile cards*/
 
 .product__emoji {
   font-size: clamp(3rem, 14vw, 5rem);
@@ -49,9 +45,9 @@
   font-size: 1.5rem;
 }
 
-/* ════════════════════════════════════════════
+/* 
    FIX 2 — Out-of-stock cards in offers band
-   ════════════════════════════════════════════ */
+*/
 
 .product--out-of-stock {
   opacity: 1;
@@ -97,9 +93,7 @@
   opacity: 1;
 }
 
-/* ════════════════════════════════════════════
-   TOPBAR — readable text on sage background (light)
-   ════════════════════════════════════════════ */
+/* TOPBAR */
 
 .topbar {
   color: var(--topbar-fg);
@@ -147,9 +141,7 @@
   }
 }
 
-/* ════════════════════════════════════════════
-   FOOTER — readable muted text in light mode
-   ════════════════════════════════════════════ */
+/* FOOTER */
 
 .footer__about,
 .footer__list a,

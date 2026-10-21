@@ -15,11 +15,11 @@ import {
   renderProductSkeletons
 } from './ui';
 import { setupSearch } from './search';
-import { fireConfetti } from './confetti'; // <-- از مرحله قبل
+import { fireConfetti } from './confetti';
 
 const MIN_SKELETON_MS = 300;
 
-// ─── Cart event delegation ────────────────────
+// Cart event delegation 
 function setupCartEvents(): void {
   document.addEventListener('click', (e) => {
     if (!(e.target instanceof Element)) return;
@@ -38,7 +38,7 @@ function setupCartEvents(): void {
 
     if (delta > 0) {
       notyf.success(`${name} به سبد اضافه شد`);
-      fireConfetti(); // <-- از مرحله قبل
+      fireConfetti(); 
     } else if (qty === 0) {
       notyf.error(`${name} از سبد حذف شد`);
     }
@@ -52,7 +52,7 @@ function setupCartEvents(): void {
   });
 }
 
-// ─── Category navigation ──────────────────────
+// Category navigation 
 function getCatParam(): string {
   return new URLSearchParams(location.search).get('cat') || '';
 }
@@ -117,7 +117,7 @@ function setupCategoryNavigation(): void {
   });
 }
 
-// ─── Helpers ──────────────────────────────────
+// Helpers 
 function showSlowConnection(show: boolean): void {
   const el = document.getElementById('slow-connection');
   if (!el) return;
@@ -151,7 +151,7 @@ function showAllErrors(message: string): void {
   ['offers', 'fruits', 'dairy'].forEach((id) => renderError(id, message));
 }
 
-// ─── Init ─────────────────────────────────────
+// Init 
 async function init(): Promise<void> {
   document.querySelector('.search')?.addEventListener('submit', (e) => e.preventDefault());
 
@@ -165,7 +165,7 @@ async function init(): Promise<void> {
 
   renderShellSkeletons();
   renderBannerSkeletons();
-  renderProductSkeletons(); // <-- رندر اسکلتون‌های محصولات قبل از فچ
+  renderProductSkeletons(); 
 
   try {
     const [shopRaw, categoriesRaw, homeRaw, productsRaw, stockData, offers] =
