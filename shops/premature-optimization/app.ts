@@ -1,13 +1,12 @@
 import * as Types from "./types"
 import { Notyf } from 'notyf'
 import 'notyf/notyf.min.css'
-import { CountUp } from "countup.js";
+import { gsap } from "gsap";
 
-const API_BASE: string = "/api/";
+const API_BASE: string = "/api/"
 const numberFormatter: Intl.NumberFormat = new Intl.NumberFormat("fa-IR")
 const CART_STORAGE_KEY: string = "superino-cart"
 let cart = readCart()
-let displayedCartCount = 0;
 let cartProducts: Types.Product[] = [];
 const STOCK_STORAGE_KEY = "superino-stock";
 let currentStock: Types.Stock = {
@@ -78,39 +77,96 @@ function readCart(): Types.Cart {
         entry[1] > 0
     )
     return Object.fromEntries(validEntries)
-  } catch (error: unknown) {
-    console.error("خطا در خواندن سبد خرید ",error)
+  } catch {
     return {}
   }
 }
 
-function updateCartCount(animate: boolean = false): void {
+function updateCartCount(): void {
   const count: number = Object.values(cart).reduce(
     (sum: number, value: number): number => sum + Math.max(0, value),
     0
   );
   const badge: HTMLSpanElement | null = document.querySelector<HTMLSpanElement>("#cart-count");
 
-  if (badge) {
-    if (animate && count !== displayedCartCount) {
-      const counter: CountUp = new CountUp(badge, count, {
-        startVal: displayedCartCount,
-        duration: 4,
-        decimalPlaces: 0,
-        useEasing: true,
-        useGrouping: false,
-        easingFn: (t: number, b: number, c: number, d: number): number =>
-          c * (1 - Math.pow(2, (-10 * t) / d)) + b,
-        formattingFn: (value: number): string => numberFormatter.format(Math.round(value)),
-      });
-      counter.start();
-    } else {
-      badge.textContent = numberFormatter.format(count);
+  if (badge) badge.textContent = numberFormatter.format(count);
+  renderCartDropdown();
+}
+
+function animateCartIcon(): void {
+  const cartButton: HTMLButtonElement | null =
+    document.querySelector<HTMLButtonElement>("#cart-button");
+  if (!cartButton) return;
+
+  gsap.killTweensOf(cartButton);
+  gsap.fromTo(
+    cartButton,
+    { scale: 1 },
+    {
+      scale: 1.2,
+      duration: 0.16,
+      repeat: 1,
+      yoyo: true,
+      ease: "power2.out",
+      onComplete: (): void => {
+        gsap.set(cartButton, { clearProps: "transform" });
+      },
     }
+  );
+}
+
+function animateProductToCart(button: HTMLButtonElement): void {
+  const card: HTMLElement | null = button.closest<HTMLElement>(".product-item");
+  const productImage: HTMLImageElement | null =
+    card?.querySelector<HTMLImageElement>(".product-icon img") ?? null;
+  const cartButton: HTMLButtonElement | null =
+    document.querySelector<HTMLButtonElement>("#cart-button");
+
+  if (!productImage || !cartButton) {
+    animateCartIcon();
+    return;
   }
 
-  displayedCartCount = count;
-  renderCartDropdown();
+  const imageRect: DOMRect = productImage.getBoundingClientRect();
+  const cartRect: DOMRect = cartButton.getBoundingClientRect();
+  if (imageRect.width <= 0 || imageRect.height <= 0) {
+    animateCartIcon();
+    return;
+  }
+
+  const flyingImage: HTMLImageElement = productImage.cloneNode(true) as HTMLImageElement;
+  Object.assign(flyingImage.style, {
+    position: "fixed",
+    left: `${imageRect.left}px`,
+    top: `${imageRect.top}px`,
+    width: `${imageRect.width}px`,
+    height: `${imageRect.height}px`,
+    objectFit: "contain",
+    margin: "0",
+    zIndex: "9999",
+    pointerEvents: "none",
+    transformOrigin: "center center",
+    willChange: "transform, opacity",
+  });
+  document.body.append(flyingImage);
+
+  const deltaX: number = cartRect.left + cartRect.width / 2 - (imageRect.left + imageRect.width / 2);
+  const deltaY: number = cartRect.top + cartRect.height / 2 - (imageRect.top + imageRect.height / 2);
+
+  gsap.to(flyingImage, {
+    x: deltaX,
+    y: deltaY,
+    scale: 0.15,
+    rotation: 12,
+    opacity: 0.25,
+    duration: 0.65,
+    ease: "power2.in",
+    onComplete: (): void => {
+      flyingImage.remove();
+      animateCartIcon();
+    },
+    onInterrupt: (): void => flyingImage.remove(),
+  });
 }
 
 function renderCartDropdown(): void {
@@ -150,6 +206,7 @@ function removeFromCart(productId: string): void {
   if (previousQuantity <= 0) return;
 
   const previousStock = currentStock.items[productId] ?? 0;
+  const lastUpdate = currentStock.updatedAt;
 
   if (previousQuantity > 1) {
     cart[productId] = previousQuantity - 1;
@@ -158,12 +215,12 @@ function removeFromCart(productId: string): void {
   }
 
   currentStock.items[productId] = previousStock + 1;
-  currentStock.updatedAt = String(Date.now)
+  currentStock.updatedAt = String(Date.now())
 
   if (!saveCartAndStock()) {
     cart[productId] = previousQuantity;
     currentStock.items[productId] = previousStock;
-    currentStock.updatedAt = String(Date.now)
+    currentStock.updatedAt = lastUpdate;
     updateCartCount();
     return;
   }
@@ -174,7 +231,7 @@ function removeFromCart(productId: string): void {
 }
 
 
-function addToCart(productId: string | undefined): void {
+function addToCart(productId: string | undefined, button?: HTMLButtonElement): void {
   if (!productId) {
     notyf.error("شناسه محصول معتبر نیست");
     return;
@@ -189,21 +246,25 @@ function addToCart(productId: string | undefined): void {
   }
 
   const previousQuantity = Number(cart[key]) || 0;
+  const lastUpdate = currentStock.updatedAt;
+
 
   cart[key] = previousQuantity + 1;
   currentStock.items[key] = stock - 1;
-  currentStock.updatedAt = String(Date.now)
+  currentStock.updatedAt = String(Date.now())
 
   if (!saveCartAndStock()) {
     cart[key] = previousQuantity;
     if (previousQuantity === 0) delete cart[key];
     currentStock.items[key] = stock;
-    currentStock.updatedAt = String(Date.now)
+    currentStock.updatedAt = lastUpdate;
     return;
   }
 
-  updateCartCount(true);
+  updateCartCount();
   updateProductStockUI(key);
+  if (button) animateProductToCart(button);
+  else animateCartIcon();
   notyf.success("محصول به سبد خرید اضافه شد");
 }
 
@@ -291,6 +352,17 @@ function renderProducts(container: HTMLElement, products: Types.Product[], optio
     )
   )
   container.replaceChildren(fragment)
+
+  const cards: NodeListOf<HTMLElement> = container.querySelectorAll<HTMLElement>(".product-item");
+  if (cards.length > 0) {
+    gsap.from(cards, {
+      opacity: 0,
+      duration: 0.5,
+      stagger: 0.35,
+      ease: "power2.out",
+      clearProps: "all",
+    });
+  }
 }
 
 function setupCarousel({
@@ -316,13 +388,18 @@ function setupCarousel({
     carousel.step = firstCard.getBoundingClientRect().width + gap;
     carousel.maxOffset = Math.max(0, products.scrollWidth - viewport.clientWidth);
     carousel.offset = Math.min(carousel.offset, carousel.maxOffset);
-    products.style.transform = `translateX(${carousel.offset}px)`;
+    gsap.set(products, { x: carousel.offset });
     previous.disabled = carousel.offset <= 0;
     next.disabled = carousel.offset >= carousel.maxOffset - 1;
   };
   const move = (direction: -1 | 1): void => {
     carousel.offset = Math.max(0, Math.min(carousel.maxOffset, carousel.offset + direction * carousel.step));
-    products.style.transform = `translateX(${carousel.offset}px)`;
+    gsap.to(products, {
+      x: carousel.offset,
+      duration: 0.15,
+      ease: "power2.out",
+      overwrite: true,
+    });
     previous.disabled = carousel.offset <= 0;
     next.disabled = carousel.offset >= carousel.maxOffset - 1;
   };
@@ -648,7 +725,7 @@ async function loadPage(): Promise<void> {
       main.prepend(makeElement(
         "p",
         "api-status api-status--error",
-        "بارگذاری اطلاعات با مشکل مواجه شد"
+        "بارگذاری اطلاعات با مشکل مواجه شد. مطمئن شو پروژه را با Live Server یا یک سرور محلی اجرا کرده‌ای."
       ));
       console.error("خطا در بارگذاری APIهای سوپرینو:", error);
     }
@@ -675,7 +752,7 @@ document.addEventListener("click", (event: MouseEvent) => {
   }
 
   const button = event.target.closest<HTMLButtonElement>(".buy-button[data-product-id]");
-  if (button && !button.disabled) addToCart(button.dataset.productId);
+  if (button && !button.disabled) addToCart(button.dataset.productId, button);
 
   if (!event.target.closest(".cart-dropdown-wrap")) {
     document.querySelector(".cart-dropdown-wrap")?.classList.remove("is-open");
@@ -683,12 +760,6 @@ document.addEventListener("click", (event: MouseEvent) => {
   }
 });
 
-document.addEventListener("keydown", (event: KeyboardEvent) => {
-  if (event.key === "Escape") {
-    document.querySelector(".cart-dropdown-wrap")?.classList.remove("is-open");
-    document.querySelector<HTMLButtonElement>("#cart-button")?.setAttribute("aria-expanded", "false");
-  }
-});
 
 updateCartCount();
 renderLoadingSkeletons();

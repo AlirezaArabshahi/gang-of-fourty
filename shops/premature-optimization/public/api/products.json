@@ -3,7 +3,7 @@
     "id": 101,
     "categoryId": 1,
     "name": "شیر پرچرب حاوی ویتامین D3 میهن ",
-    "image": "/imgs/dairiess/mihan-fullfat-d3-milk.png",
+    "image": "/imgs/dairies/mihan-fullfat-d3-milk.png",
     "unit": "۹۵۰ میلی‌لیتر",
     "price": 108500,
     "tags": []
@@ -95,7 +95,7 @@
     "id": 201,
     "categoryId": 2,
     "name": "موز",
-    "image": "/imgs/fruitss/banana.png",
+    "image": "/imgs/fruits/banana.png",
     "unit": "۱ کیلوگرم",
     "price": 570000,
     "tags": [
@@ -126,7 +126,7 @@
   {
     "id": 204,
     "categoryId": 2,
-    "name": "انار تره‌باز",
+    "name": "انار تره‌بار",
     "image": "/imgs/fruits/pomegranate.png",
     "unit": "۱ کیلوگرم",
     "price": 500000,
@@ -415,7 +415,7 @@
     "id": 411,
     "categoryId": 4,
     "name": "شیشه پاک کن ضد بخار سبز تاژ",
-    "image": "/imgs/cleaner/taj-glass-cleanerr.png",
+    "image": "/imgs/cleaner/taj-glass-cleaner.png",
     "unit": "۵۰۰ کرم",
     "price": 1277790,
     "tags": []
@@ -523,7 +523,7 @@
     "id": 509,
     "categoryId": 5,
     "name": "کنسرو لوبیا چیتی با سس گوجه فرنگی اصالت",
-    "image": "/imgs/canned-food/esalat-pinko-bean-tomato-saucee.png",
+    "image": "/imgs/canned-food/esalat-pinko-bean-tomato-sauce.png",
     "unit": "۳۸۰ گرم",
     "price": 149000,
     "tags": []
@@ -541,7 +541,7 @@
     "id": 511,
     "categoryId": 5,
     "name": "نان پیتزای کاپو",
-    "image": "/imgs/canned-food/cape-pizza-breadd.png",
+    "image": "/imgs/canned-food/cape-pizza-bread.png",
     "unit": "۵۰۰ گرم",
     "price": 179800,
     "tags": []
@@ -550,7 +550,7 @@
     "id": 601,
     "categoryId": 6,
     "name": "پودر ژله انار دراژه",
-    "image": "/imgs/dessertss/derazhe-jelly-pomegrante-.png",
+    "image": "/imgs/desserts/derazhe-jelly-pomegrante.png",
     "unit": "۱۰۰ گرم",
     "price": 75000,
     "tags": []
@@ -667,7 +667,7 @@
     "id": 702,
     "categoryId": 7,
     "name": "دراژه کاکائویی پرلیز کوپا",
-    "image": "/imgs/snackss/derazhe-smartiz.png",
+    "image": "/imgs/snacks/derazhe-smartiz.png",
     "unit": "۲۰ گرم",
     "price": 38000,
     "tags": []
@@ -856,7 +856,7 @@
     "id": 803,
     "categoryId": 8,
     "name": "نان لواش سه نان",
-    "image": "/imgs/bread/senan-lavash-breadd.png",
+    "image": "/imgs/bread/senan-lavash-bread.png",
     "unit": "۲۰۰ گرم",
     "price": 65000,
     "tags": []
@@ -865,7 +865,7 @@
     "id": 804,
     "categoryId": 8,
     "name": "نان تست پروتئین سه نان",
-    "image": "/imgs/bread/senan-protienn-breadd.png",
+    "image": "/imgs/bread/senan-protien-bread.png",
     "unit": "۵۴۰ گرم",
     "price": 180000,
     "tags": []
@@ -946,7 +946,7 @@
     "id": 813,
     "categoryId": 8,
     "name": "آرد سوخاری گلها",
-    "image": "/imgs/bread/golha-breaddcrumbs.png",
+    "image": "/imgs/bread/golha-breadcrumbs.png",
     "unit": "۳۰۰ گرم",
     "price": 198900,
     "tags": []
