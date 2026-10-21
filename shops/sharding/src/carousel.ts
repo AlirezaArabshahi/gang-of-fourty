@@ -72,7 +72,7 @@ function buildCarouselSection(cfg: CarouselConfig): HTMLElement {
     tabIndex: 0,
   });
   grid.setAttribute('aria-label', cfg.title);
-  grid.appendChild(skeletonCards(7));
+  grid.setAttribute('aria-busy', 'true'); // Set busy until data loads
 
   const main = h('div', { className: 'products__main' }, head, status, grid);
   const inner = h('div', { className: 'products__inner' }, main);
@@ -101,7 +101,7 @@ function productsForCarousel(
   return [];
 }
 
-function fillSectionGrid(
+export function fillSectionGrid(
   sectionId: string,
   list: Product[],
   offerMap: Map<number, Offer>,
@@ -120,6 +120,7 @@ function fillSectionGrid(
   status.replaceChildren();
   grid.hidden = false;
   grid.replaceChildren();
+  grid.removeAttribute('aria-busy');
 
   const frag = document.createDocumentFragment();
   list.forEach((product, i) => {
@@ -157,6 +158,26 @@ export function renderError(sectionId: string, message: string): void {
     h('p', { className: 'products__status-title', textContent: 'بارگذاری ناموفق' }),
     h('p', { className: 'products__status-text', textContent: message }),
   );
+}
+
+export function renderProductSkeletons(): void {
+  const root = document.getElementById('carousels-root');
+  if (!root) return;
+
+  root.replaceChildren();
+
+  const defaultSections: CarouselConfig[] = [
+    { id: 'offers', title: 'پیشنهادهای ویژه امروز', emoji: '🔥', source: 'offers', sub: 'در حال بارگذاری...' },
+    { id: 'fruits', title: 'میوه و سبزیجات', emoji: '🥬', categoryId: 1 },
+    { id: 'dairy', title: 'لبنیات و تخم‌مرغ', emoji: '🥛', categoryId: 2 },
+  ];
+
+  for (const cfg of defaultSections) {
+    const section = buildCarouselSection(cfg);
+    const grid = section.querySelector('.products__grid');
+    if (grid) grid.appendChild(skeletonCards(7));
+    root.appendChild(section);
+  }
 }
 
 export function renderCarousels(home: Home | null = state.home): void {

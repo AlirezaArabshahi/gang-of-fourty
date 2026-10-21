@@ -8,5 +8,7 @@ export {
 export {
   renderShell, renderShellSkeletons, renderBannerSkeletons,
 } from './shell';
-export { renderCarousels, renderError } from './carousel';
+export {
+  renderCarousels, renderError, renderProductSkeletons
+} from './carousel';
 export { setupCarouselControls } from './carousel-controls';

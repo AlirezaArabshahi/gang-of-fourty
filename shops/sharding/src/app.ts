@@ -1,14 +1,3 @@
-import '../styles/tokens.css';
-import '../styles/base.css';
-import '../styles/header.css';
-import '../styles/hero.css';
-import '../styles/categories.css';
-import '../styles/products.css';
-import '../styles/footer.css';
-import '../styles/skeleton.css';
-import '../styles/animations.css';
-import '../styles/notyf.css';
-import '../styles/fixes.css';
 
 import './theme';
 import './menu';
@@ -23,9 +12,10 @@ import { enrichShop, enrichCategories, enrichHome, enrichProduct } from './overr
 import {
   notyf, renderShell, renderCarousels, renderCartButton, renderError,
   setupCarouselControls, renderBannerSkeletons, renderShellSkeletons,
+  renderProductSkeletons
 } from './ui';
 import { setupSearch } from './search';
-import { fireConfetti } from './confetti';
+import { fireConfetti } from './confetti'; // <-- از مرحله قبل
 
 const MIN_SKELETON_MS = 300;
 
@@ -48,11 +38,10 @@ function setupCartEvents(): void {
 
     if (delta > 0) {
       notyf.success(`${name} به سبد اضافه شد`);
-      fireConfetti(); 
+      fireConfetti(); // <-- از مرحله قبل
     } else if (qty === 0) {
       notyf.error(`${name} از سبد حذف شد`);
     }
-
 
     const card = actions.closest<HTMLElement>('.product');
     if (card) {
@@ -176,6 +165,7 @@ async function init(): Promise<void> {
 
   renderShellSkeletons();
   renderBannerSkeletons();
+  renderProductSkeletons(); // <-- رندر اسکلتون‌های محصولات قبل از فچ
 
   try {
     const [shopRaw, categoriesRaw, homeRaw, productsRaw, stockData, offers] =
