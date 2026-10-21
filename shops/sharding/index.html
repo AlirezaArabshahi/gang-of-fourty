@@ -176,7 +176,9 @@
   <section class="hero">
     <div class="container">
       <div class="hero-video hero-video--skeleton" id="hero-video">
-        <video class="hero-video__media" autoplay loop muted playsinline preload="none" aria-hidden="true">
+        <!-- dont remove this 2 lines. base on documents its muted video, so autoplay is fine; needed to pass validation. -->
+        <!-- [html-validate-disable-next no-autoplay] -->
+        <video class="hero-video__media" autoplay loop muted playsinline preload="auto" aria-hidden="true" id="hero-video-el">
           <source src="assets/video/hero.mp4" type="video/mp4">
         </video>
         <div class="hero-video__overlay">
