@@ -77,33 +77,14 @@ const createHeroSlider = (heroSlide: MainCardProps): HTMLElement => {
     return swiper;
 };
 
-// const createMainCard = (slide: MainCardProps): HTMLElement => {
-//     const main = el('article', 'hero-main');
 
-//     const emoji = el('span', 'hero-emoji', slide.emoji);
-//     emoji.setAttribute('aria-hidden', 'true');
-//     const button = el('a', 'btn btn-primary', slide.cta.label);
-//     button.href = slide.cta.href;
-
-//     main.append(
-//         emoji,
-//         el('h2', 'hero-title', slide.title),
-//         el('p', 'hero-text', slide.text),
-//         button
-//     );
-
-//     return main;
-// };
-
-function createMainCard(props: MainCardProps): HTMLElement {
+const createMainCard=(props: MainCardProps): HTMLElement =>{
     const article = el('article', 'hero-main');
 
-    // تصویر سمت چپ
     const image = el('img', 'hero-main__image');
     image.src = props.image;
     image.alt = props.title;
 
-    // محتوای سمت راست
     const content = el('div', 'hero-main__content');
 
     const emoji = el('span', 'hero-emoji', props.emoji);
@@ -116,10 +97,8 @@ function createMainCard(props: MainCardProps): HTMLElement {
     const button = el('a', 'btn btn-primary', props.cta.label);
     button.href = props.cta.href;
 
-    // ابتدا متن‌ها و دکمه را داخل بخش محتوا قرار می‌دهیم
     content.append(emoji, title, text, button);
 
-    // سپس تصویر و محتوا را داخل کارت قرار می‌دهیم
     article.append(image, content);
 
     return article;
@@ -144,22 +123,22 @@ const createSideCard = (slide: MainCardProps): HTMLElement => {
     return side;
 };
 
-const createPromos = (promos: PromoItem[]): HTMLElement => {
-    const container = el('div', 'hero-promos');
+// const createPromos = (promos: PromoItem[]): HTMLElement => {
+//     const container = el('div', 'hero-promos');
 
-    promos.forEach(({ href, bg, emoji, text }) => {
-        const promo = el('a', 'hero-promo');
-        promo.href = href;
-        promo.style.setProperty('--promo-bg', bg);
+//     promos.forEach(({ href, bg, emoji, text }) => {
+//         const promo = el('a', 'hero-promo');
+//         promo.href = href;
+//         promo.style.setProperty('--promo-bg', bg);
 
-        const emojiSpan = el('span', null, emoji);
-        emojiSpan.setAttribute('aria-hidden', 'true');
-        promo.append(emojiSpan, el('span', null, text));
-        container.append(promo);
-    });
+//         const emojiSpan = el('span', null, emoji);
+//         emojiSpan.setAttribute('aria-hidden', 'true');
+//         promo.append(emojiSpan, el('span', null, text));
+//         container.append(promo);
+//     });
 
-    return container;
-};
+//     return container;
+// };
 
 const renderHero = (home: Home): void => {
     const heroGrid = document.querySelector<HTMLElement>('.hero-grid');
@@ -169,7 +148,7 @@ const renderHero = (home: Home): void => {
         heroGrid.append(
             createHeroSlider(home.hero),
             createSideCard(home.side),
-            createPromos(home.promos)
+            // createPromos(home.promos)
         );
 
         initSwiper();
