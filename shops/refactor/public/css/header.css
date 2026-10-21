@@ -4,6 +4,7 @@
     z-index: 30;
     background: var(--surface);
     border-bottom: 1px solid var(--line);
+    background: var(--header-bg, #0d422f);
 }
 
 .header-top {
@@ -58,7 +59,7 @@
     border: 0;
     border-radius: 12px;
     background: transparent;
-    color: var(--ink);
+    color: #ffffff;
     transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 

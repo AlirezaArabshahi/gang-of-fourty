@@ -9,6 +9,9 @@
     visibility: hidden;
     transform: translateY(-8px);
     transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility 0s linear var(--dur);
+    background: var(--header-nav-bg, #093424);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 24px rgba(0, 0, 0, 0.25);
 }
 
 .nav-toggle:checked~.nav-bar {
@@ -39,10 +42,11 @@
 .nav-links li+li a,
 .nav-extra li a {
     border-top: 1px solid var(--line);
+    color: #ffffff;
 }
 
 .nav-links a[aria-current="page"] {
-    color: var(--green-deep);
+    color: #ffffff;
     background: var(--mint);
 }
 
@@ -55,7 +59,7 @@
 .nav-links .icon,
 .nav-extra .icon,
 .nav-phone .icon {
-    color: var(--green);
+    color: #a7f3d0;
 }
 
 .nav-extra {
