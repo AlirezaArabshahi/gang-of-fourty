@@ -1,15 +1,10 @@
+import { getShopSlug } from './utils';
+
 const THEMES = ['auto', 'light', 'dark'] as const;
 type Theme = (typeof THEMES)[number];
 
-
 function isTheme(value: string | null): value is Theme {
   return value === 'auto' || value === 'light' || value === 'dark';
-}
-
-function getShopSlug(): string {
-  const parts = location.pathname.split('/').filter(Boolean);
-  const i = parts.indexOf('shops');
-  return i !== -1 && parts[i + 1] ? parts[i + 1] : 'default';
 }
 
 const STORAGE_KEY = `shop:${getShopSlug()}:v1:theme`;
@@ -41,7 +36,9 @@ function setTheme(theme: Theme): void {
   if (!isTheme(theme)) return;
   try {
     localStorage.setItem(STORAGE_KEY, theme);
-  } catch { }
+  } catch (err: unknown) {
+    console.warn('[theme] failed to persist theme preference', err);
+  }
   applyTheme(theme);
 }
 
@@ -60,4 +57,4 @@ window.addEventListener('storage', (e: StorageEvent) => {
 });
 
 applyTheme(getStoredTheme());
-export { };
+

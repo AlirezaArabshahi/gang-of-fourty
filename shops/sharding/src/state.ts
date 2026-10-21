@@ -1,5 +1,6 @@
 import type Fuse from 'fuse.js';
 import type { Product, Offer, StockData, Shop, Category, Home } from './types';
+import { getShopSlug, isRecord, priceFmt } from './utils';
 
 // ─── Global state ─────────────────────────────
 interface State {
@@ -23,18 +24,7 @@ export const state: State = {
 };
 
 // ─── Cart ─────────────────────────────────────
-function getShopSlug(): string {
-  const parts = location.pathname.split('/').filter(Boolean);
-  const i = parts.indexOf('shops');
-  return i !== -1 && parts[i + 1] ? parts[i + 1] : 'default';
-}
-
 const CART_KEY = `shop:${getShopSlug()}:v1:cart`;
-const fa = new Intl.NumberFormat('fa-IR');
-
-function isRecord(v: unknown): v is Record<string, unknown> {
-  return typeof v === 'object' && v !== null && !Array.isArray(v);
-}
 
 export function getCart(): Record<string, number> {
   try {
@@ -56,7 +46,9 @@ export function getCart(): Record<string, number> {
 export function setCart(cart: Record<string, number>): void {
   try {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  } catch {}
+  } catch (err: unknown) {
+    console.warn('[cart] failed to persist to localStorage', err);
+  }
   updateCartBadge();
 }
 
@@ -83,11 +75,11 @@ export function updateCartBadge(): void {
   const badge = document.getElementById('cart-badge');
   const status = document.getElementById('cart-status');
   if (badge) {
-    badge.textContent = fa.format(total);
+    badge.textContent = priceFmt.format(total);
     badge.hidden = total === 0;
   }
   if (status) {
     status.textContent =
-      total === 0 ? 'سبد خرید خالی است' : `${fa.format(total)} کالا در سبد خرید`;
+      total === 0 ? 'سبد خرید خالی است' : `${priceFmt.format(total)} کالا در سبد خرید`;
   }
 }

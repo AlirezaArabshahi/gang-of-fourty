@@ -2,13 +2,15 @@ import './theme';
 import './menu';
 
 import Fuse from 'fuse.js';
-import { API, fetchJson } from './api';
-import type { Product, Offer, StockData, Shop, Category, Home } from './types';
+import {
+  fetchShop, fetchCategories, fetchHome, fetchProducts,
+  fetchStock, fetchOffers,
+} from './api';
 import { state, changeQty, updateCartBadge } from './state';
 import { enrichShop, enrichCategories, enrichHome, enrichProduct } from './overrides';
 import {
-  notyf, renderShell, renderCarousels, renderCartButton, renderError, setupCarouselControls,
-  renderBannerSkeletons, renderShellSkeletons,
+  notyf, renderShell, renderCarousels, renderCartButton, renderError,
+  setupCarouselControls, renderBannerSkeletons, renderShellSkeletons,
 } from './ui';
 import { setupSearch } from './search';
 
@@ -59,7 +61,7 @@ function setupCategoryNavigation(): void {
       return;
     }
 
-    const filtered: Home = {
+    const filtered: typeof home = {
       ...home,
       carousels: [{ id: cat.slug, title: cat.name, emoji: cat.emoji, categoryId: cat.id }],
     };
@@ -76,7 +78,9 @@ function setupCategoryNavigation(): void {
 
   const clearFilter = () => {
     const root = document.getElementById('carousels-root');
-    root?.querySelectorAll<HTMLElement>('section.products').forEach((s) => { s.hidden = false; });
+    root?.querySelectorAll<HTMLElement>('section.products').forEach((s) => {
+      s.hidden = false;
+    });
     renderCarousels(state.home);
   };
 
@@ -152,19 +156,18 @@ async function init(): Promise<void> {
   const startedAt = performance.now();
   const slowTimer = setTimeout(() => showSlowConnection(true), 3000);
 
-  // Shell + banner skeletons before fetch (HTML stays empty)
   renderShellSkeletons();
   renderBannerSkeletons();
 
   try {
     const [shopRaw, categoriesRaw, homeRaw, productsRaw, stockData, offers] =
       await Promise.all([
-        fetchJson<Shop>(API.shop),
-        fetchJson<Category[]>(API.categories),
-        fetchJson<Home>(API.home),
-        fetchJson<Product[]>(API.products),
-        fetchJson<StockData>(API.stock),
-        fetchJson<Offer[]>(API.offers),
+        fetchShop(),
+        fetchCategories(),
+        fetchHome(),
+        fetchProducts(),
+        fetchStock(),
+        fetchOffers(),
       ]);
 
     state.shop = enrichShop(shopRaw);

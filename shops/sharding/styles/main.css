@@ -567,6 +567,7 @@ input:focus-visible, textarea:focus-visible { outline: none; }
   display: flex;
   align-items: center;
   gap: 2px;
+  padding: 4px;
   flex: 1 1 auto;
   min-width: 0;
   overflow-x: auto;
@@ -587,7 +588,7 @@ input:focus-visible, textarea:focus-visible { outline: none; }
   transition: background var(--t-fast), color var(--t-fast);
 }
 .nav a:hover { background: var(--accent-soft); color: var(--text); }
-.nav a.is-active { color: var(--accent); font-weight: 700; }
+/* .nav a.is-active { color: var(--accent); font-weight: 700; } */
 
 /* Theme switch */
 .theme-switch {

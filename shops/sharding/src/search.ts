@@ -1,8 +1,8 @@
 import type { Product } from './types';
 import { state, changeQty } from './state';
 import { h, renderCartButton, notyf } from './ui';
-
-const priceFmt = new Intl.NumberFormat('fa-IR');
+import { renderImageOrEmoji } from './dom';
+import { priceFmt, applyOffer } from './utils';
 
 export function setupSearch(): void {
   const search = document.querySelector<HTMLInputElement>('#search-input');
@@ -27,42 +27,29 @@ export function setupSearch(): void {
     box.replaceChildren();
 
     if (hits.length === 0) {
-      box.appendChild(h('p', { className: 'search-results__empty', textContent: 'نتیجه‌ای یافت نشد' }));
+      box.appendChild(
+        h('p', {
+          className: 'search-results__empty',
+          textContent: 'نتیجه‌ای یافت نشد',
+        }),
+      );
       box.hidden = false;
       return;
     }
 
     for (const p of hits) {
       const offer = offerFor(p);
-      const hasDiscount = !!offer && offer.percent > 0;
-      const finalPrice = hasDiscount && offer
-        ? Math.round(p.price * (1 - offer.percent / 100))
-        : p.price;
+      const finalPrice = applyOffer(p.price, offer);
 
       const imgWrap = h('div', { className: 'search-results__img' });
-      if (p.image) {
-        const img = h('img', { src: p.image, alt: p.name });
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'contain';
-        img.onerror = () => {
-          img.remove();
-          imgWrap.textContent = p.emoji || '🛒';
-          imgWrap.style.display = 'grid';
-          imgWrap.style.placeItems = 'center';
-          imgWrap.style.fontSize = '1.5rem';
-        };
-        imgWrap.appendChild(img);
-      } else {
-        imgWrap.textContent = p.emoji || '🛒';
-        imgWrap.style.display = 'grid';
-        imgWrap.style.placeItems = 'center';
-        imgWrap.style.fontSize = '1.5rem';
-      }
+      renderImageOrEmoji(imgWrap, p.image, p.name, p.emoji);
 
       const info = h('div', { className: 'search-results__info' },
         h('span', { className: 'search-results__name', textContent: p.name }),
-        h('span', { className: 'search-results__price', textContent: `${priceFmt.format(finalPrice)} تومان` })
+        h('span', {
+          className: 'search-results__price',
+          textContent: `${priceFmt.format(finalPrice)} تومان`,
+        }),
       );
 
       const actions = h('div', {
@@ -87,7 +74,7 @@ export function setupSearch(): void {
     const pid = item.dataset.productId;
     if (!pid) return;
 
-    const next = changeQty(pid, 1);
+    changeQty(pid, 1);
     const name = item.querySelector('.search-results__name')?.textContent || 'کالا';
     notyf.success(`${name} به سبد اضافه شد`);
 
@@ -95,9 +82,9 @@ export function setupSearch(): void {
     if (actions) renderCartButton(actions, pid, name);
 
     item.style.backgroundColor = 'var(--lime-soft)';
-    setTimeout(() => { item.style.backgroundColor = ''; }, 300);
-
-    void next;
+    setTimeout(() => {
+      item.style.backgroundColor = '';
+    }, 300);
   });
 
   document.addEventListener('click', (e) => {
