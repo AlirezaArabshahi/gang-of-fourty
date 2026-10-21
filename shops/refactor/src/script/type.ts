@@ -12,9 +12,13 @@ export interface CTA {
 
 export interface MainCardProps {
     title: string;
-    emoji: string;
     text: string;
-    cta: CTA;
+    emoji: string;
+    image: string;
+    cta: {
+        label: string;
+        href: string;
+    };
 }
 
 export interface PromoItem {

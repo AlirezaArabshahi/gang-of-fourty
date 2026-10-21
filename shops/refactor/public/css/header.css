@@ -187,14 +187,15 @@
 
 .site-header .promo {
     display: none;
-    padding: 10px 16px;
-    background: var(--green);
-    color: #fff;
+    padding: 8px 16px;
+    background: var(--header-nav-bg, #093424);
+    color: #d1fae5;
     text-align: center;
-    font-family: "IRANSans", Tahoma, sans-serif;
-    font-size: 0.85rem;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
     font-weight: 500;
-    line-height: 1.6;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .site-header .promo p {

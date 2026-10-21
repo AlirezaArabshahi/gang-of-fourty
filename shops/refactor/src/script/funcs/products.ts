@@ -15,38 +15,115 @@ import type { Home, Shop, MainCardProps, PromoItem, ProductView, Schedule, Foote
 const toFa = (n: number): string => n.toLocaleString('fa-IR');
 
 
-const createHeroSlider = (slide: MainCardProps): HTMLElement => {
-     const swiper = el('div', 'swiper');
+// const createHeroSlider = (slide: MainCardProps): HTMLElement => {
+//      const swiper = el('div', 'swiper');
+//     swiper.setAttribute('role', 'region');
+//     swiper.setAttribute('aria-label', 'پیشنهاد ویژه فروشگاه');
+
+//     const wrapper = el('div', 'swiper-wrapper');
+//     const item = el('div', 'swiper-slide');
+//     item.append(createMainCard(slide));
+//     wrapper.append(item);
+
+//     swiper.append(wrapper);
+
+//     return swiper;
+// };
+const createHeroSlider = (heroSlide: MainCardProps): HTMLElement => {
+    const swiper = el('div', 'swiper');
     swiper.setAttribute('role', 'region');
     swiper.setAttribute('aria-label', 'پیشنهاد ویژه فروشگاه');
 
     const wrapper = el('div', 'swiper-wrapper');
-    const item = el('div', 'swiper-slide');
-    item.append(createMainCard(slide));
-    wrapper.append(item);
+
+    const slidesData: MainCardProps[] = [
+    {
+        ...heroSlide,
+        image: '/img/bg.png',
+    },
+    {
+        title: 'تخفیف شگفت‌انگیز فصل',
+        text: 'تازه‌ترین سیفی‌جات و سبزیجات ارگانیک، با بالاترین کیفیت و بهترین قیمت.',
+        emoji: '🥗',
+        image: '/img/bg.png',
+        cta: {
+            label: 'مشاهده تخفیف‌ها',
+            href: '#products',
+        },
+    },
+    {
+        title: 'ارسال سریع در تهران',
+        text: 'تحویل سفارش‌ها در کمتر از ۲ ساعت، درب منزل با بسته‌بندی کاملاً بهداشتی.',
+        emoji: '🚚',
+        image:'/img/bg.png',
+        cta: {
+            label: 'خرید سریع',
+            href: '#products',
+        },
+    },
+];
+
+    slidesData.forEach((slide) => {
+        const item = el('div', 'swiper-slide');
+        item.append(createMainCard(slide));
+        wrapper.append(item);
+    });
 
     swiper.append(wrapper);
+
+    const pagination = el('div', 'swiper-pagination');
+    swiper.append(pagination);
 
     return swiper;
 };
 
-const createMainCard = (slide: MainCardProps): HTMLElement => {
-    const main = el('article', 'hero-main');
+// const createMainCard = (slide: MainCardProps): HTMLElement => {
+//     const main = el('article', 'hero-main');
 
-    const emoji = el('span', 'hero-emoji', slide.emoji);
+//     const emoji = el('span', 'hero-emoji', slide.emoji);
+//     emoji.setAttribute('aria-hidden', 'true');
+//     const button = el('a', 'btn btn-primary', slide.cta.label);
+//     button.href = slide.cta.href;
+
+//     main.append(
+//         emoji,
+//         el('h2', 'hero-title', slide.title),
+//         el('p', 'hero-text', slide.text),
+//         button
+//     );
+
+//     return main;
+// };
+
+function createMainCard(props: MainCardProps): HTMLElement {
+    const article = el('article', 'hero-main');
+
+    // تصویر سمت چپ
+    const image = el('img', 'hero-main__image');
+    image.src = props.image;
+    image.alt = props.title;
+
+    // محتوای سمت راست
+    const content = el('div', 'hero-main__content');
+
+    const emoji = el('span', 'hero-emoji', props.emoji);
     emoji.setAttribute('aria-hidden', 'true');
-    const button = el('a', 'btn btn-primary', slide.cta.label);
-    button.href = slide.cta.href;
 
-    main.append(
-        emoji,
-        el('h2', 'hero-title', slide.title),
-        el('p', 'hero-text', slide.text),
-        button
-    );
+    const title = el('h2', 'hero-title', props.title);
 
-    return main;
-};
+    const text = el('p', 'hero-text', props.text);
+
+    const button = el('a', 'btn btn-primary', props.cta.label);
+    button.href = props.cta.href;
+
+    // ابتدا متن‌ها و دکمه را داخل بخش محتوا قرار می‌دهیم
+    content.append(emoji, title, text, button);
+
+    // سپس تصویر و محتوا را داخل کارت قرار می‌دهیم
+    article.append(image, content);
+
+    return article;
+}
 
 const createSideCard = (slide: MainCardProps): HTMLElement => {
     const side = el('article', 'hero-side');
