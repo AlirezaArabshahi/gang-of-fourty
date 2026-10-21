@@ -14,21 +14,6 @@ import type { Home, Shop, MainCardProps, PromoItem, ProductView, Schedule, Foote
 
 const toFa = (n: number): string => n.toLocaleString('fa-IR');
 
-
-// const createHeroSlider = (slide: MainCardProps): HTMLElement => {
-//      const swiper = el('div', 'swiper');
-//     swiper.setAttribute('role', 'region');
-//     swiper.setAttribute('aria-label', 'پیشنهاد ویژه فروشگاه');
-
-//     const wrapper = el('div', 'swiper-wrapper');
-//     const item = el('div', 'swiper-slide');
-//     item.append(createMainCard(slide));
-//     wrapper.append(item);
-
-//     swiper.append(wrapper);
-
-//     return swiper;
-// };
 const createHeroSlider = (heroSlide: MainCardProps): HTMLElement => {
     const swiper = el('div', 'swiper');
     swiper.setAttribute('role', 'region');
@@ -123,23 +108,6 @@ const createSideCard = (slide: MainCardProps): HTMLElement => {
     return side;
 };
 
-// const createPromos = (promos: PromoItem[]): HTMLElement => {
-//     const container = el('div', 'hero-promos');
-
-//     promos.forEach(({ href, bg, emoji, text }) => {
-//         const promo = el('a', 'hero-promo');
-//         promo.href = href;
-//         promo.style.setProperty('--promo-bg', bg);
-
-//         const emojiSpan = el('span', null, emoji);
-//         emojiSpan.setAttribute('aria-hidden', 'true');
-//         promo.append(emojiSpan, el('span', null, text));
-//         container.append(promo);
-//     });
-
-//     return container;
-// };
-
 const renderHero = (home: Home): void => {
     const heroGrid = document.querySelector<HTMLElement>('.hero-grid');
 
@@ -148,7 +116,6 @@ const renderHero = (home: Home): void => {
         heroGrid.append(
             createHeroSlider(home.hero),
             createSideCard(home.side),
-            // createPromos(home.promos)
         );
 
         initSwiper();
