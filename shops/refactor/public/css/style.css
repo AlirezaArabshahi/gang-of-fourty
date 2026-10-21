@@ -484,7 +484,7 @@ main>section+section {
     isolation: isolate;
     color: var(--ink);
     background-color: #EEF7F1;
-    border: 1px solid color-mix(in srgb, var(--orange) 25%, transparent);
+    border: 1px solid color-mix(in srgb, #0b7a54 25%, transparent);
     border-radius: var(--radius-lg, 24px);
 }
 

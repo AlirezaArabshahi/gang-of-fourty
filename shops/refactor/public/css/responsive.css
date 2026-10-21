@@ -309,8 +309,8 @@
         padding: 8px;
         border: 1px solid var(--line);
         border-radius: 16px;
-        background: #fff;
         box-shadow: 0 14px 30px rgba(10, 40, 28, 0.14);
+        background-color: #0a3d2a;
         opacity: 0;
         visibility: hidden;
         transform: translateY(6px);
