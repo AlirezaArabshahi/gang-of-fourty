@@ -1,9 +1,28 @@
 import * as Types from "./types"
+import { Notyf } from 'notyf'
+import 'notyf/notyf.min.css'
+import { CountUp } from "countup.js";
 
-const API_BASE: string = "./api/"
+const API_BASE: string = "/api/";
 const numberFormatter: Intl.NumberFormat = new Intl.NumberFormat("fa-IR")
 const CART_STORAGE_KEY: string = "superino-cart"
 let cart = readCart()
+let displayedCartCount = 0;
+let cartProducts: Types.Product[] = [];
+const STOCK_STORAGE_KEY = "superino-stock";
+let currentStock: Types.Stock = {
+  updatedAt: "",
+  items: {},
+};
+
+const notyf = new Notyf({
+  duration: 5000,
+  position: {
+    x: "right",
+    y: "bottom",
+  },
+  dismissible: true,
+});
 
 const makeElement: Types.MakeElement = (tag, className = "", text = "") => {
   const element = document.createElement(tag)
@@ -20,39 +39,175 @@ const appendLink: Types.AppendLinks = (container, label, href = "#", className =
   return link
 }
 
+function saveCartAndStock(): boolean {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    localStorage.setItem(STOCK_STORAGE_KEY, JSON.stringify(currentStock));
+    return true;
+  } catch {
+    notyf.error("ذخیره تغییرات با خطا مواجه شد");
+    return false;
+  }
+}
+
+function updateProductStockUI(productId: string): void {
+  const quantity: number = currentStock.items[productId] ?? 0;
+  document.querySelectorAll<HTMLButtonElement>(
+    `.buy-button[data-product-id="${CSS.escape(productId)}"]`
+  ).forEach((button: HTMLButtonElement): void => {
+    const card = button.closest<HTMLElement>(".product-item");
+    if (!card) return;
+    const outOfStock: boolean = quantity <= 0;
+    button.disabled = outOfStock;
+    button.title = outOfStock ? "موجودی این محصول تمام شده است" : "افزودن محصول به سبد خرید";
+    card.classList.toggle("product-item--unavailable", outOfStock);
+  });
+}
+
 function readCart(): Types.Cart {
   try {
     const value: unknown = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "{}")
 
-    return value && typeof value === "object" && !Array.isArray(value) ? value as Types.Cart : {}
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {}
+    const entries = Object.entries(value)
+    const validEntries: [string, number][] = entries.filter(
+      (entry): entry is [string, number] =>
+        typeof entry[0] === "string" &&
+        typeof entry[1] === "number" &&
+        Number.isFinite(entry[1]) &&
+        entry[1] > 0
+    )
+    return Object.fromEntries(validEntries)
   } catch {
     return {}
   }
 }
 
-function updateCartCount(): void {
-  const count: number = Object.values(cart).reduce((sum: number, value) => sum + Math.max(0, Number(value) || 0), 0);
-  const badge = document.querySelector<HTMLSpanElement>("#cart-count")
+function updateCartCount(animate: boolean = false): void {
+  const count: number = Object.values(cart).reduce(
+    (sum: number, value: number): number => sum + Math.max(0, value),
+    0
+  );
+  const badge: HTMLSpanElement | null = document.querySelector<HTMLSpanElement>("#cart-count");
+
   if (badge) {
-    badge.textContent = numberFormatter.format(count)
+    if (animate && count !== displayedCartCount) {
+      const counter: CountUp = new CountUp(badge, count, {
+        startVal: displayedCartCount,
+        duration: 4,
+        decimalPlaces: 0,
+        useEasing: true,
+        useGrouping: false,
+        easingFn: (t: number, b: number, c: number, d: number): number =>
+          c * (1 - Math.pow(2, (-10 * t) / d)) + b,
+        formattingFn: (value: number): string => numberFormatter.format(Math.round(value)),
+      });
+      counter.start();
+    } else {
+      badge.textContent = numberFormatter.format(count);
+    }
   }
+
+  displayedCartCount = count;
+  renderCartDropdown();
 }
+
+function renderCartDropdown(): void {
+  const container = document.querySelector<HTMLDivElement>("#cart-dropdown-items")
+  if (!container) return
+
+  container.replaceChildren()
+  const entries = Object.entries(cart).filter(([, quantity]) => Number(quantity) > 0)
+
+  if (entries.length === 0) {
+    container.append(makeElement("p", "cart-empty", "سبد خرید شما خالی است"))
+    return
+  }
+
+  entries.forEach(([productId, quantity]) => {
+    const product = cartProducts.find((item) => String(item.id) === productId)
+    const row = makeElement("div", "cart-dropdown-item")
+    const details = makeElement("div", "cart-dropdown-details")
+    details.append(
+      makeElement("span", "cart-dropdown-name", product?.name || `محصول ${productId}`),
+      makeElement("span", "cart-dropdown-quantity", `تعداد: ${numberFormatter.format(Number(quantity) || 0)}`)
+    )
+    const removeButton = makeElement("button", "cart-remove-button", "❌")
+    removeButton.type = "button"
+    removeButton.dataset.cartRemoveId = productId
+    removeButton.setAttribute("aria-label", `حذف ${product?.name || "محصول"} از سبد خرید`)
+    removeButton.title = "حذف محصول"
+    row.append(details, removeButton)
+    container.append(row)
+  })
+}
+
+function removeFromCart(productId: string): void {
+  if (!(productId in cart)) return;
+
+  const previousQuantity = Number(cart[productId]) || 0;
+  if (previousQuantity <= 0) return;
+
+  const previousStock = currentStock.items[productId] ?? 0;
+
+  if (previousQuantity > 1) {
+    cart[productId] = previousQuantity - 1;
+  } else {
+    delete cart[productId];
+  }
+
+  currentStock.items[productId] = previousStock + 1;
+  currentStock.updatedAt = String(Date.now)
+
+  if (!saveCartAndStock()) {
+    cart[productId] = previousQuantity;
+    currentStock.items[productId] = previousStock;
+    currentStock.updatedAt = String(Date.now)
+    updateCartCount();
+    return;
+  }
+
+  updateCartCount();
+  updateProductStockUI(productId);
+  notyf.success("محصول از سبد خرید حذف شد");
+}
+
 
 function addToCart(productId: string | undefined): void {
   if (!productId) {
-    return
+    notyf.error("شناسه محصول معتبر نیست");
+    return;
   }
-  const key = String(productId)
-  cart[key] = (Number(cart[key]) || 0) + 1
-  try {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart))
-  } catch {
-    console.error("Storage is unavailable")
+
+  const key = String(productId);
+  const stock = currentStock.items[key] ?? 0;
+
+  if (stock <= 0) {
+    notyf.error("موجودی این محصول تمام شده است");
+    return;
   }
-  updateCartCount()
+
+  const previousQuantity = Number(cart[key]) || 0;
+
+  cart[key] = previousQuantity + 1;
+  currentStock.items[key] = stock - 1;
+  currentStock.updatedAt = String(Date.now)
+
+  if (!saveCartAndStock()) {
+    cart[key] = previousQuantity;
+    if (previousQuantity === 0) delete cart[key];
+    currentStock.items[key] = stock;
+    currentStock.updatedAt = String(Date.now)
+    return;
+  }
+
+  updateCartCount(true);
+  updateProductStockUI(key);
+  notyf.success("محصول به سبد خرید اضافه شد");
 }
 
-function makeSkeleton(className = ""): HTMLDivElement {
+
+function makeSkeleton(className: string = ""): HTMLDivElement {
   return makeElement("div", `skeleton ${className}`.trim())
 }
 
@@ -82,49 +237,54 @@ function makeProductCard(
   product: Types.Product,
   { offer, stock, categoryName }: Types.ProductCardOptions
 ): HTMLLIElement {
-  const card: HTMLLIElement = makeElement("li", "product-item")
-  const image: HTMLDivElement = makeElement("div", "product-icon product-emoji")
-  const img: HTMLImageElement = makeElement("img")
-  img.src = product.image
-  img.alt = product.name || ""
-  image.append(img)
-  const tag: HTMLParagraphElement = makeElement("p", "item-tag", categoryName || product.categoryName || "محصول")
-  const quantity: number = stock?.items?.[String(product.id)]
-  const outOfStock: boolean = quantity === 0
-  const discount: HTMLSpanElement = makeElement("span", "product-discount")
-  const title: HTMLHeadElement = makeElement("h3", "item-title", product.name || "")
-  const description: HTMLParagraphElement = makeElement("p", "item-description", product.unit || "")
-  const oldPrice: HTMLParagraphElement = makeElement("p", "item-old-price")
-  const buyRow: HTMLDivElement = makeElement("div", "item-buy")
-  const price: HTMLSpanElement = makeElement("span", "item-price")
-  const finalPrice: number = offer ? Math.round(product.price * (100 - offer.percent) / 100) : product.price
-  price.textContent = `${numberFormatter.format(finalPrice)} تومان`
+  const card: HTMLLIElement = makeElement("li", "product-item");
+  const image: HTMLDivElement = makeElement("div", "product-icon product-emoji");
+  const img: HTMLImageElement = makeElement("img");
+  img.src = product.image;
+  img.alt = product.name;
+  image.append(img);
+
+  const tag: HTMLParagraphElement = makeElement(
+    "p", "item-tag", categoryName || product.categoryName || "محصول"
+  );
+  const quantity: number = stock.items[String(product.id)] ?? 0;
+  const outOfStock: boolean = quantity <= 0;
+  const discount: HTMLSpanElement = makeElement("span", "product-discount");
+  const title: HTMLHeadingElement = makeElement("h3", "item-title", product.name);
+  const description: HTMLParagraphElement = makeElement("p", "item-description", product.unit);
+  const oldPrice: HTMLParagraphElement = makeElement("p", "item-old-price");
+  const buyRow: HTMLDivElement = makeElement("div", "item-buy");
+  const price: HTMLSpanElement = makeElement("span", "item-price");
+  const finalPrice: number = offer
+    ? Math.round(product.price * (100 - offer.percent) / 100)
+    : product.price;
+
+  price.textContent = `${numberFormatter.format(finalPrice)} تومان`;
   if (offer) {
-    discount.textContent = `${numberFormatter.format(offer.percent)}٪`
-    oldPrice.textContent = `${numberFormatter.format(product.price)} تومان`
+    discount.textContent = `${numberFormatter.format(offer.percent)}٪`;
+    oldPrice.textContent = `${numberFormatter.format(product.price)} تومان`;
   } else {
-    discount.hidden = true
-    oldPrice.hidden = true
+    discount.hidden = true;
+    oldPrice.hidden = true;
   }
-  const button: HTMLButtonElement = makeElement("button", "buy-button", "+")
-  button.type = "button"
-  if (outOfStock) {
-    card.classList.add("product-item--unavailable")
-    tag.after(makeElement("span", "product-stock-badge", "ناموجود"))
-    button.disabled = true
-    button.title = "این کالا موجود نیست"
-  } else {
-    button.dataset.productId = String(product.id)
-    button.title = `افزودن ${product.name} به سبد خرید`
-  }
-  buyRow.append(price, button)
-  card.append(image, tag, discount, title, description, oldPrice, buyRow)
+
+  const button: HTMLButtonElement = makeElement("button", "buy-button", "+");
+  button.type = "button";
+  button.dataset.productId = String(product.id);
+  button.disabled = outOfStock;
+  button.title = outOfStock
+    ? "موجودی این محصول تمام شده است"
+    : `افزودن ${product.name} به سبد خرید`;
+
+  if (outOfStock) card.classList.add("product-item--unavailable");
+  buyRow.append(price, button);
+  card.append(image, tag, discount, title, description, oldPrice, buyRow);
   return card;
 }
 
 function renderProducts(container: HTMLElement, products: Types.Product[], optionsForProduct: Types.OptionsForProduct): void {
   const fragment = document.createDocumentFragment()
-  products.forEach((product) =>
+  products.forEach((product: Types.Product) =>
     fragment.append(
       makeProductCard(product, optionsForProduct(product))
     )
@@ -159,7 +319,7 @@ function setupCarousel({
     previous.disabled = carousel.offset <= 0;
     next.disabled = carousel.offset >= carousel.maxOffset - 1;
   };
-  const move = (direction): void => {
+  const move = (direction: -1 | 1): void => {
     carousel.offset = Math.max(0, Math.min(carousel.maxOffset, carousel.offset + direction * carousel.step));
     products.style.transform = `translateX(${carousel.offset}px)`;
     previous.disabled = carousel.offset <= 0;
@@ -203,7 +363,7 @@ function renderShopDetails(shop: Types.Shop): void {
   (shop.schedule || []).forEach((item) => hours.append(makeElement("p", "", `${item.days}: ${item.time}`)));
 }
 
-function renderCategories(categories: Types.Categories[]): void {
+function renderCategories(categories: Types.Category[]): void {
   const categoryMenu = document.querySelector<HTMLDivElement>("#category-menu-links");
   const categoryCards = document.querySelector<HTMLDivElement>("#category-cards");
   const footerCategories = document.querySelector<HTMLDivElement>("#footer-category-links");
@@ -232,7 +392,7 @@ function renderCategories(categories: Types.Categories[]): void {
   });
 }
 
-function makeBanner(data, variant) {
+function makeBanner(data: Types.BannerData | null | undefined, variant: string): HTMLElement | null {
   if (!data) return null;
   const article = makeElement("article", variant);
   const content = makeElement("div", `banner-content ${variant}-content`);
@@ -243,7 +403,7 @@ function makeBanner(data, variant) {
   if (data.emoji?.endsWith(".svg")) {
     const image = makeElement("img");
     image.src = data.emoji;
-    image.alt = data.name;
+    image.alt = data.name ?? data.title;
     icon.append(image);
   } else {
     icon.textContent = data.emoji || "🛍️";
@@ -252,7 +412,7 @@ function makeBanner(data, variant) {
   return article;
 }
 
-function renderHeroBanners(home) {
+function renderHeroBanners(home: Types.Home): void {
   const container = document.querySelector<HTMLElement>("#home-banners");
   if (container) {
     container.replaceChildren();
@@ -263,7 +423,7 @@ function renderHeroBanners(home) {
   }
 }
 
-function renderPromos(home) {
+function renderPromos(home: Types.Home): void {
   const container = document.querySelector<HTMLElement>("#home-promos");
   if (container) {
     container.replaceChildren();
@@ -277,7 +437,7 @@ function renderPromos(home) {
       if (promo.emoji?.endsWith(".svg")) {
         const image = makeElement("img");
         image.src = promo.emoji;
-        image.alt = promo.name;
+        image.alt = promo.name ?? promo.text;
         icon.append(image);
       } else {
         icon.textContent = promo.emoji || "🛍️";
@@ -288,7 +448,13 @@ function renderPromos(home) {
   }
 }
 
-function createCarouselSection(config, products, stock, offersByProductId, categories) {
+function createCarouselSection(
+  config: Types.CarouselConfig,
+  products: Types.Product[],
+  stock: Types.Stock,
+  offersByProductId: Map<number, Types.Offer>,
+  categories: Types.Category[]
+): HTMLElement {
   const section = makeElement("section", "recommendation");
   section.id = config.id;
   section.append(makeElement("h2", "recommendation-title", `${config.emoji || "🛒"} ${config.title || "محصولات"}`.trim()));
@@ -303,7 +469,7 @@ function createCarouselSection(config, products, stock, offersByProductId, categ
   controls.append(previous, next);
   viewport.append(list); carousel.append(viewport, controls); section.append(carousel);
 
-  let selected;
+  let selected: Types.Product[];
   if (config.source === "offers" || config.id === "offers") {
     selected = products.filter((product) => {
       const offer = offersByProductId.get(product.id);
@@ -322,16 +488,22 @@ function createCarouselSection(config, products, stock, offersByProductId, categ
   return section;
 }
 
-function renderHomeCarousels(home, products, stock, offersByProductId, categories) {
+function renderHomeCarousels(
+  home: Types.Home,
+  products: Types.Product[],
+  stock: Types.Stock,
+  offersByProductId: Map<number, Types.Offer>,
+  categories: Types.Category[]
+): Set<number> | null {
   const container = document.querySelector<HTMLDivElement>("#home-carousels");
   if (!container) {
     return null
   }
   container.replaceChildren();
 
-  const configuredCategoryIds = new Set();
+  const configuredCategoryIds: Set<number> = new Set<number>();
 
-  (home.carousels || [])
+  (home.carousels ?? [])
     .filter((config) => config.title !== "لبنیات")
     .forEach((config) => {
       if (config.categoryId != null) {
@@ -355,93 +527,100 @@ function renderHomeCarousels(home, products, stock, offersByProductId, categorie
 }
 
 function renderRemainingCategoryCarousels(
-  home,
-  categories,
-  products,
-  stock,
-  offersByProductId,
-  configuredCategoryIds
-) {
+  home: Types.Home,
+  categories: Types.Category[],
+  products: Types.Product[],
+  stock: Types.Stock,
+  offersByProductId: Map<number, Types.Offer>,
+  configuredCategoryIds: Set<number> | null
+): void {
   const container = document.querySelector<HTMLDivElement>("#category-product-sections");
-  if (!container) {
-    return
-  }
+  if (!container) return;
   container.replaceChildren();
 
-  const renderedCategoryIds = new Set(configuredCategoryIds);
-
-  (home.carousels || [])
-    .filter((config) => config.id !== "offers" && config.title !== "پیشنهاد ویژه")
-    .forEach((config) => {
-      const categoryId = config.categoryId ?? config.category?.id;
-
+  const renderedCategoryIds: Set<number> = new Set(configuredCategoryIds ?? []);
+  (home.carousels ?? [])
+    .filter((config: Types.CarouselConfig) => config.id !== "offers" && config.title !== "پیشنهاد ویژه")
+    .forEach((config: Types.CarouselConfig): void => {
+      const categoryId: number | undefined = config.categoryId ?? config.category?.id;
       if (categoryId == null || renderedCategoryIds.has(categoryId)) return;
-
-      container.append(
-        createCarouselSection(
-          config,
-          products,
-          stock,
-          offersByProductId,
-          categories
-        )
-      );
-
+      container.append(createCarouselSection(config, products, stock, offersByProductId, categories));
       renderedCategoryIds.add(categoryId);
     });
 
   categories
-    .filter((category) => !renderedCategoryIds.has(category.id))
-    .forEach((category) => {
-      container.append(
-        createCarouselSection(
-          {
-            id: category.slug,
-            title: category.name,
-            emoji: category.emoji,
-            categoryId: category.id,
-          },
-          products,
-          stock,
-          offersByProductId,
-          categories
-        )
-      );
-
+    .filter((category: Types.Category) => !renderedCategoryIds.has(category.id))
+    .forEach((category: Types.Category): void => {
+      container.append(createCarouselSection({
+        id: category.slug,
+        title: category.name,
+        emoji: category.emoji,
+        categoryId: category.id,
+      }, products, stock, offersByProductId, categories));
       renderedCategoryIds.add(category.id);
     });
 }
 
-function setupSearch(products) {
+function setupSearch(products: Types.Product[]): void {
   const input = document.querySelector<HTMLInputElement>(".search-entry");
   if (input) input.placeholder = `جستجو در میان ${numberFormatter.format(products.length)} کالا...`;
 }
 
-async function fetchApiFile(file) {
+async function fetchApiFile<T>(file: Types.ApiFile): Promise<T> {
   const response = await fetch(`${API_BASE}${file}`);
   if (!response.ok) {
     throw new Error(`API "${file}" با وضعیت ${response.status} دریافت نشد.`);
   }
-  return response.json();
+  const data: unknown = await response.json();
+  return data as T;
 }
 
-async function loadPage() {
-  const endpoints = [
-    "products.json",
-    "stock.json",
-    "offers.json",
-    "categories.json",
-    "shop.json",
-    "home.json",
-  ];
-
+async function loadPage(): Promise<void> {
   try {
-    const [products, stock, offers, categories, shop, home] = await Promise.all(
-      endpoints.map(fetchApiFile)
-    );
+    const [products, stock, offers, categories, shop, home] = await Promise.all([
+      fetchApiFile<Types.Product[]>("products.json"),
+      fetchApiFile<Types.Stock>("stock.json"),
+      fetchApiFile<Types.Offer[]>("offers.json"),
+      fetchApiFile<Types.Category[]>("categories.json"),
+      fetchApiFile<Types.Shop>("shop.json"),
+      fetchApiFile<Types.Home>("home.json"),
+    ]);
 
-    const offersByProductId = new Map(
-      offers.map((offer) => [offer.productId, offer])
+    currentStock = stock;
+    try {
+      const savedStock: string | null = localStorage.getItem(STOCK_STORAGE_KEY);
+      if (savedStock) {
+        const parsed: unknown = JSON.parse(savedStock);
+        if (
+          parsed !== null &&
+          typeof parsed === "object" &&
+          "items" in parsed &&
+          parsed.items !== null &&
+          typeof parsed.items === "object" &&
+          !Array.isArray(parsed.items)
+        ) {
+          const validStockEntries: [string, number][] = Object.entries(parsed.items).filter(
+            (entry): entry is [string, number] =>
+              typeof entry[0] === "string" &&
+              typeof entry[1] === "number" &&
+              Number.isFinite(entry[1]) &&
+              entry[1] >= 0
+          );
+          currentStock.items = {
+            ...currentStock.items,
+            ...Object.fromEntries(validStockEntries),
+          };
+        }
+      }
+    } catch {
+      localStorage.removeItem(STOCK_STORAGE_KEY);
+    }
+
+    cartProducts = products;
+    renderCartDropdown();
+
+    const offersByProductId: Map<number, Types.Offer> = new Map(
+      offers.map((offer: Types.Offer): [number, Types.Offer] => [offer.productId, offer])
     );
 
     renderShopDetails(shop);
@@ -449,40 +628,27 @@ async function loadPage() {
     renderHeroBanners(home);
     renderPromos(home);
 
-    const configuredCategoryIds = renderHomeCarousels(
-      home,
-      products,
-      stock,
-      offersByProductId,
-      categories
+    const configuredCategoryIds: Set<number> | null = renderHomeCarousels(
+      home, products, currentStock, offersByProductId, categories
     );
-
     renderRemainingCategoryCarousels(
-      home,
-      categories,
-      products,
-      stock,
-      offersByProductId,
-      configuredCategoryIds
+      home, categories, products, currentStock, offersByProductId, configuredCategoryIds
     );
-
     setupSearch(products);
-  } catch (error) {
-    document.querySelectorAll<Element>(".skeleton-text").forEach((item) => {
-      if (item) item.classList.remove("skeleton-text");
+    updateCartCount();
+    products.forEach((product: Types.Product): void => updateProductStockUI(String(product.id)));
+  } catch (error: unknown) {
+    document.querySelectorAll<HTMLElement>(".skeleton-text").forEach((item: HTMLElement): void => {
+      item.classList.remove("skeleton-text");
     });
-
     const main = document.querySelector<HTMLElement>("#main-content");
     if (main) {
-      const oldError = main.querySelector<HTMLElement>(".api-status--error");
-      if (oldError) oldError.remove();
-
-      const message = makeElement(
+      main.querySelector<HTMLElement>(".api-status--error")?.remove();
+      main.prepend(makeElement(
         "p",
         "api-status api-status--error",
-        "بارگذاری اطلاعات با مشکل مواجه شد. مطمئن شو پروژه را با Live Server یا یک سرور محلی اجرا کرده‌ای."
-      );
-      main.prepend(message);
+        "بارگذاری اطلاعات با مشکل مواجه شد"
+      ));
       console.error("خطا در بارگذاری APIهای سوپرینو:", error);
     }
   }
@@ -490,8 +656,37 @@ async function loadPage() {
 
 document.addEventListener("click", (event: MouseEvent) => {
   if (!(event.target instanceof Element)) return;
-  const button = event.target?.closest<HTMLButtonElement>(".buy-button[data-product-id]");
+
+  const removeButton = event.target.closest<HTMLButtonElement>("[data-cart-remove-id]");
+  if (removeButton) {
+    event.preventDefault();
+    event.stopPropagation();
+    removeFromCart(removeButton.dataset.cartRemoveId || "");
+    return;
+  }
+
+  const cartButton = event.target.closest<HTMLButtonElement>("#cart-button");
+  if (cartButton) {
+    const wrapper = cartButton.closest<HTMLElement>(".cart-dropdown-wrap");
+    const isOpen = wrapper?.classList.toggle("is-open") ?? false;
+    cartButton.setAttribute("aria-expanded", String(isOpen));
+    return;
+  }
+
+  const button = event.target.closest<HTMLButtonElement>(".buy-button[data-product-id]");
   if (button && !button.disabled) addToCart(button.dataset.productId);
+
+  if (!event.target.closest(".cart-dropdown-wrap")) {
+    document.querySelector(".cart-dropdown-wrap")?.classList.remove("is-open");
+    document.querySelector<HTMLButtonElement>("#cart-button")?.setAttribute("aria-expanded", "false");
+  }
+});
+
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+  if (event.key === "Escape") {
+    document.querySelector(".cart-dropdown-wrap")?.classList.remove("is-open");
+    document.querySelector<HTMLButtonElement>("#cart-button")?.setAttribute("aria-expanded", "false");
+  }
 });
 
 updateCartCount();

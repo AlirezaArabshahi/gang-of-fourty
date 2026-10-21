@@ -1,17 +1,3 @@
-export interface MyHTMLElementTagNameMap {
-    div: HTMLDivElement;
-    span: HTMLSpanElement;
-    input: HTMLInputElement;
-    button: HTMLButtonElement;
-    img: HTMLImageElement;
-    p: HTMLParagraphElement;
-    a: HTMLAnchorElement;
-    ul: HTMLUListElement;
-    li: HTMLLIElement;
-    section: HTMLElement;
-    h, h1, h2, h3, h4: HTMLHeadElement;
-}
-
 export type MakeElement = <T extends keyof HTMLElementTagNameMap>(
     tag: T,
     className?: string,
@@ -19,16 +5,15 @@ export type MakeElement = <T extends keyof HTMLElementTagNameMap>(
 ) => HTMLElementTagNameMap[T];
 
 export type AppendLinks = (
-    container: Element | HTMLDivElement,
+    container: Element,
     label: string,
-    href: string,
+    href?: string,
     className?: string
 ) => HTMLAnchorElement;
 
-export type Cart = Record<string, number>;
+export type Cart = Record<string, number>
 
-
-export type Product = {
+export interface Product {
     id: number
     name: string
     image: string
@@ -37,52 +22,51 @@ export type Product = {
     categoryName: string
     categoryId: number
     tags?: string[]
-};
+}
 
-export type Offer = {
+export interface Offer {
     productId: number
     percent: number
     label: string
-};
+}
 
-export type Stock = {
+export interface Stock {
+    updatedAt: string
     items: Record<string, number>
-};
+}
 
-export type ProductCardOptions = {
+export interface ProductCardOptions {
     offer?: Offer
     stock: Stock
     categoryName: string
-};
+}
 
-export type OptionsForProduct = (
-    product: Product
-) => ProductCardOptions
+export type OptionsForProduct = (product: Product) => ProductCardOptions;
 
-export type CarouselElements = {
+export interface CarouselElements {
     products: HTMLUListElement
     viewport: HTMLDivElement
     previous: HTMLButtonElement
     next: HTMLButtonElement
-};
+}
 
-export type CarouselState = {
+export interface CarouselState {
     offset: number
     step: number
     maxOffset: number
-};
+}
 
-export type ShopMenuItem = {
+export interface ShopMenuItem {
     label: string
     href: string
-};
+}
 
-export type ShopScheduleItem = {
+export interface ShopScheduleItem {
     days: string
     time: string
-};
+}
 
-export type Shop = {
+export interface Shop {
     name: string
     notice?: string | null
     slogan?: string | null
@@ -95,7 +79,7 @@ export type Shop = {
     currency: string
 }
 
-export type Categories = {
+export interface Category {
     id: number
     name: string
     slug: string
@@ -103,3 +87,48 @@ export type Categories = {
     emoji: string | null
     color: string
 }
+
+export interface CallToAction {
+    label: string
+    href: string
+}
+
+export interface BannerData {
+    title: string
+    text: string
+    name?: string
+    emoji: string
+    cta?: CallToAction
+}
+
+export interface Promo {
+    text: string
+    href: string
+    name?: string
+    emoji: string
+}
+
+export interface CarouselConfig {
+    id: string
+    title: string
+    emoji?: string | null
+    source?: string
+    categoryId?: number | null
+    category?: { id: number }
+}
+
+export interface Home {
+    hero?: BannerData | null
+    side?: BannerData | null
+    promos?: Promo[]
+    carousels?: CarouselConfig[]
+}
+
+export type ApiFile =
+    | "products.json"
+    | "stock.json"
+    | "offers.json"
+    | "categories.json"
+    | "shop.json"
+    | "home.json"
+
