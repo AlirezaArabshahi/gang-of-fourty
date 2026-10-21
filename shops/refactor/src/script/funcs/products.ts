@@ -91,19 +91,27 @@ const createMainCard=(props: MainCardProps): HTMLElement =>{
 
 const createSideCard = (slide: MainCardProps): HTMLElement => {
     const side = el('article', 'hero-side');
+    
+    side.style.backgroundImage = `url('./public/img/Fresh Dairy Platter with Discount Badge (1).png')`; 
 
-    const emoji = el('span', 'hero-emoji', slide.emoji);
-    emoji.setAttribute('aria-hidden', 'true');
+    const content = el('div', 'hero-side-content');
 
-    const button = el('a', 'btn btn-secondary', slide.cta.label);
+    const iconWrapper = el('span', 'side-icon');
+    iconWrapper.textContent = '🧀'; 
+    
+    const title = el('h2', 'side-title', slide.title);
+    const text = el('p', 'side-text', slide.text);
+    
+    const button = el('a', 'btn btn-primary', slide.cta.label);
     button.href = slide.cta.href;
 
-    side.append(
-        emoji,
-        el('h2', 'side-title', slide.title),
-        el('p', 'side-text', slide.text),
+    content.append(
+        iconWrapper,
+        title,
+        text,
         button
     );
+    side.append(content);
 
     return side;
 };
@@ -119,7 +127,6 @@ const renderHero = (home: Home): void => {
             createHeroSlider(home.hero),
             createSideCard(home.side),
         );
-
         initSwiper();
     }
 };
