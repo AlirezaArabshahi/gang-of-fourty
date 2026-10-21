@@ -1,128 +1,157 @@
-const API_BASE = "./api/";
-const numberFormatter = new Intl.NumberFormat("fa-IR");
-const CART_STORAGE_KEY = "superino-cart";
-let cart = readCart();
+import * as Types from "./types"
 
-function makeElement(tag, className = "", text = "") {
-  const element = document.createElement(tag);
-  if (className) element.className = className;
-  if (text !== "") element.textContent = text;
-  return element;
+const API_BASE: string = "./api/"
+const numberFormatter: Intl.NumberFormat = new Intl.NumberFormat("fa-IR")
+const CART_STORAGE_KEY: string = "superino-cart"
+let cart = readCart()
+
+const makeElement: Types.MakeElement = (tag, className = "", text = "") => {
+  const element = document.createElement(tag)
+  if (className) element.className = className
+  if (text !== "") element.textContent = text
+
+  return element
+};
+
+const appendLink: Types.AppendLinks = (container, label, href = "#", className = "") => {
+  const link = makeElement("a", className, label)
+  link.href = href || "#"
+  container.append(link)
+  return link
 }
 
-function appendLink(container, label, href = "#", className = "") {
-  const link = makeElement("a", className, label);
-  link.href = href || "#";
-  container.append(link);
-  return link;
-}
-
-function readCart() {
+function readCart(): Types.Cart {
   try {
-    const value = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "{}");
-    return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    const value: unknown = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "{}")
+
+    return value && typeof value === "object" && !Array.isArray(value) ? value as Types.Cart : {}
   } catch {
-    return {};
+    return {}
   }
 }
 
-function updateCartCount() {
-  const count = Object.values(cart).reduce((sum:number, value) => sum + Math.max(0, Number(value) || 0), 0);
-  const badge = document.querySelector("#cart-count");
-  if (badge) badge.textContent = numberFormatter.format(count);
-}
-
-function addToCart(productId) {
-  const key = String(productId);
-  cart[key] = (Number(cart[key]) || 0) + 1;
-  try { 
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); 
-  } catch { 
-    console.error("Storage is unavailable")
+function updateCartCount(): void {
+  const count: number = Object.values(cart).reduce((sum: number, value) => sum + Math.max(0, Number(value) || 0), 0);
+  const badge = document.querySelector<HTMLSpanElement>("#cart-count")
+  if (badge) {
+    badge.textContent = numberFormatter.format(count)
   }
-  updateCartCount();
 }
 
-function makeSkeleton(className = "") {
-  return makeElement("div", `skeleton ${className}`.trim());
-}
-
-function renderLoadingSkeletons() {
-  const banner = document.querySelector("#home-banners");
-  const categories = document.querySelector("#category-cards");
-  const carouselContainer = document.querySelector("#home-carousels");
-  const promos = document.querySelector("#home-promos");
-  if (!banner || !categories || !carouselContainer || !promos){
+function addToCart(productId: string | undefined): void {
+  if (!productId) {
     return
   }
-  banner.replaceChildren(makeSkeleton("skeleton-banner"), makeSkeleton("skeleton-banner"));
-  categories.replaceChildren(...Array.from({ length: 7 }, () => makeSkeleton("skeleton-category")));
-  carouselContainer.replaceChildren();
-  for (let i = 0; i < 2; i++) {
-    const section = makeElement("section", "recommendation");
-    section.append(makeSkeleton("skeleton-heading"));
-    const row = makeElement("div", "skeleton-products");
-    for (let j = 0; j < 4; j++) row.append(makeSkeleton("skeleton-product"));
-    section.append(row);
-    carouselContainer.append(section);
+  const key = String(productId)
+  cart[key] = (Number(cart[key]) || 0) + 1
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart))
+  } catch {
+    console.error("Storage is unavailable")
   }
-  promos.replaceChildren(makeSkeleton("skeleton-banner"), makeSkeleton("skeleton-banner"));
+  updateCartCount()
 }
 
-function makeProductCard(product, { offer, stock, categoryName }) {
-  const card = makeElement("li", "product-item");
-  const image = makeElement("div", "product-icon product-emoji");
-  const img = makeElement("img");
-  img.src = product.image;
-  img.alt = product.name || "";
-  image.append(img);
-  const tag = makeElement("p", "item-tag", categoryName || product.categoryName || "محصول");
-  const quantity = stock?.items?.[String(product.id)];
-  const outOfStock = quantity === 0;
-  const discount = makeElement("span", "product-discount");
-  const title = makeElement("h3", "item-title", product.name || "");
-  const description = makeElement("p", "item-description", product.unit || "");
-  const oldPrice = makeElement("p", "item-old-price");
-  const buyRow = makeElement("div", "item-buy");
-  const price = makeElement("span", "item-price");
-  const finalPrice = offer ? Math.round(product.price * (100 - offer.percent) / 100) : product.price;
-  price.textContent = `${numberFormatter.format(finalPrice)} تومان`;
+function makeSkeleton(className = ""): HTMLDivElement {
+  return makeElement("div", `skeleton ${className}`.trim())
+}
+
+function renderLoadingSkeletons(): void {
+  const banner = document.querySelector<HTMLElement>("#home-banners")
+  const categories = document.querySelector<HTMLDivElement>("#category-cards")
+  const carouselContainer = document.querySelector<HTMLDivElement>("#home-carousels")
+  const promos = document.querySelector<HTMLElement>("#home-promos")
+  if (!banner || !categories || !carouselContainer || !promos) {
+    return
+  }
+  banner.replaceChildren(makeSkeleton("skeleton-banner"), makeSkeleton("skeleton-banner"))
+  categories.replaceChildren(...Array.from({ length: 7 }, () => makeSkeleton("skeleton-category")))
+  carouselContainer.replaceChildren()
+  for (let i = 0; i < 2; i++) {
+    const section: HTMLElement = makeElement("section", "recommendation")
+    section.append(makeSkeleton("skeleton-heading"))
+    const row: HTMLDivElement = makeElement("div", "skeleton-products")
+    for (let j = 0; j < 4; j++) row.append(makeSkeleton("skeleton-product"))
+    section.append(row)
+    carouselContainer.append(section)
+  }
+  promos.replaceChildren(makeSkeleton("skeleton-banner"), makeSkeleton("skeleton-banner"))
+}
+
+function makeProductCard(
+  product: Types.Product,
+  { offer, stock, categoryName }: Types.ProductCardOptions
+): HTMLLIElement {
+  const card: HTMLLIElement = makeElement("li", "product-item")
+  const image: HTMLDivElement = makeElement("div", "product-icon product-emoji")
+  const img: HTMLImageElement = makeElement("img")
+  img.src = product.image
+  img.alt = product.name || ""
+  image.append(img)
+  const tag: HTMLParagraphElement = makeElement("p", "item-tag", categoryName || product.categoryName || "محصول")
+  const quantity: number = stock?.items?.[String(product.id)]
+  const outOfStock: boolean = quantity === 0
+  const discount: HTMLSpanElement = makeElement("span", "product-discount")
+  const title: HTMLHeadElement = makeElement("h3", "item-title", product.name || "")
+  const description: HTMLParagraphElement = makeElement("p", "item-description", product.unit || "")
+  const oldPrice: HTMLParagraphElement = makeElement("p", "item-old-price")
+  const buyRow: HTMLDivElement = makeElement("div", "item-buy")
+  const price: HTMLSpanElement = makeElement("span", "item-price")
+  const finalPrice: number = offer ? Math.round(product.price * (100 - offer.percent) / 100) : product.price
+  price.textContent = `${numberFormatter.format(finalPrice)} تومان`
   if (offer) {
-    discount.textContent = `${numberFormatter.format(offer.percent)}٪`;
-    oldPrice.textContent = `${numberFormatter.format(product.price)} تومان`;
+    discount.textContent = `${numberFormatter.format(offer.percent)}٪`
+    oldPrice.textContent = `${numberFormatter.format(product.price)} تومان`
   } else {
-    discount.hidden = true;
-    oldPrice.hidden = true;
+    discount.hidden = true
+    oldPrice.hidden = true
   }
-  const button = makeElement("button", "buy-button", "+");
-  button.type = "button";
+  const button: HTMLButtonElement = makeElement("button", "buy-button", "+")
+  button.type = "button"
   if (outOfStock) {
-    card.classList.add("product-item--unavailable");
-    tag.after(makeElement("span", "product-stock-badge", "ناموجود"));
-    button.disabled = true;
-    button.title = "این کالا موجود نیست";
+    card.classList.add("product-item--unavailable")
+    tag.after(makeElement("span", "product-stock-badge", "ناموجود"))
+    button.disabled = true
+    button.title = "این کالا موجود نیست"
   } else {
-    button.dataset.productId = String(product.id);
-    button.title = `افزودن ${product.name} به سبد خرید`;
+    button.dataset.productId = String(product.id)
+    button.title = `افزودن ${product.name} به سبد خرید`
   }
-  buyRow.append(price, button);
-  card.append(image, tag, discount, title, description, oldPrice, buyRow);
+  buyRow.append(price, button)
+  card.append(image, tag, discount, title, description, oldPrice, buyRow)
   return card;
 }
 
-function renderProducts(container, products, optionsForProduct) {
-  const fragment = document.createDocumentFragment();
-  products.forEach((product) => fragment.append(makeProductCard(product, optionsForProduct(product))));
-  container.replaceChildren(fragment);
+function renderProducts(container: HTMLElement, products: Types.Product[], optionsForProduct: Types.OptionsForProduct): void {
+  const fragment = document.createDocumentFragment()
+  products.forEach((product) =>
+    fragment.append(
+      makeProductCard(product, optionsForProduct(product))
+    )
+  )
+  container.replaceChildren(fragment)
 }
 
-function setupCarousel({ products, viewport, previous, next }) {
-  const carousel = { offset: 0, step: 0, maxOffset: 0 };
-  const update = () => {
-    const firstCard = products.querySelector(".product-item");
-    if (!firstCard) { previous.disabled = true; next.disabled = true; return; }
+function setupCarousel({
+  products,
+  viewport,
+  previous,
+  next,
+}: Types.CarouselElements): void {
+  const carousel: Types.CarouselState = {
+    offset: 0,
+    step: 0,
+    maxOffset: 0,
+  };
+  const update = (): void => {
+    const firstCard = products.querySelector<HTMLLIElement>(".product-item");
+    if (!firstCard) {
+      previous.disabled = true;
+      next.disabled = true;
+      return;
+    }
     const styles = getComputedStyle(products);
-    const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+    const gap: number = Number.parseFloat(styles.columnGap || styles.gap) || 0;
     carousel.step = firstCard.getBoundingClientRect().width + gap;
     carousel.maxOffset = Math.max(0, products.scrollWidth - viewport.clientWidth);
     carousel.offset = Math.min(carousel.offset, carousel.maxOffset);
@@ -130,7 +159,7 @@ function setupCarousel({ products, viewport, previous, next }) {
     previous.disabled = carousel.offset <= 0;
     next.disabled = carousel.offset >= carousel.maxOffset - 1;
   };
-  const move = (direction) => {
+  const move = (direction): void => {
     carousel.offset = Math.max(0, Math.min(carousel.maxOffset, carousel.offset + direction * carousel.step));
     products.style.transform = `translateX(${carousel.offset}px)`;
     previous.disabled = carousel.offset <= 0;
@@ -142,9 +171,12 @@ function setupCarousel({ products, viewport, previous, next }) {
   requestAnimationFrame(update);
 }
 
-function renderShopDetails(shop) {
-  const setText = (selector, value) => {
-    const element = document.querySelector(selector);
+function renderShopDetails(shop: Types.Shop): void {
+  const setText = (
+    selector: string,
+    value: string | null | undefined
+  ): void => {
+    const element = document.querySelector<HTMLElement>(selector);
     if (element && value != null) {
       element.textContent = value;
       element.classList.remove("skeleton-text");
@@ -157,12 +189,12 @@ function renderShopDetails(shop) {
   setText("#shop-about", shop.about);
   setText("#shop-address", shop.address);
   setText("#shop-phone", shop.phone);
-  const copyright = String(shop.copyright || "").trim();
-  setText("#shop-copyright", copyright || "سوپرینو");
+  const copyright: string = String(shop.copyright || "").trim();
+  setText("#shop-copyright", copyright || "© سوپرینو");
 
-  const menu = document.querySelector("#shop-menu-links");
-  const hours = document.querySelector("#shop-hours");
-  if (!menu || !hours){
+  const menu = document.querySelector<HTMLDivElement>("#shop-menu-links");
+  const hours = document.querySelector<HTMLDivElement>("#shop-hours");
+  if (!menu || !hours) {
     return
   }
   menu.replaceChildren();
@@ -171,24 +203,24 @@ function renderShopDetails(shop) {
   (shop.schedule || []).forEach((item) => hours.append(makeElement("p", "", `${item.days}: ${item.time}`)));
 }
 
-function renderCategories(categories) {
-  const categoryMenu = document.querySelector("#category-menu-links");
-  const categoryCards = document.querySelector("#category-cards");
-  const footerCategories = document.querySelector("#footer-category-links");
-  if (!categoryMenu || !categoryCards || !footerCategories){
+function renderCategories(categories: Types.Categories[]): void {
+  const categoryMenu = document.querySelector<HTMLDivElement>("#category-menu-links");
+  const categoryCards = document.querySelector<HTMLDivElement>("#category-cards");
+  const footerCategories = document.querySelector<HTMLDivElement>("#footer-category-links");
+  if (!categoryMenu || !categoryCards || !footerCategories) {
     return
   }
   categoryMenu.replaceChildren();
   categoryCards.replaceChildren();
   footerCategories.replaceChildren();
   categories.forEach((category) => {
-    const href = `#${category.slug}`;
+    const href: string = `#${category.slug}`;
     appendLink(categoryMenu, `${category.emoji || "🛒"} ${category.name}`, href, "hidden-content-links");
-    const card = appendLink(categoryCards, "", href, "categories-box");
-    const icon = makeElement("span", "categories-icon");
+    const card: HTMLAnchorElement = appendLink(categoryCards, "", href, "categories-box");
+    const icon: HTMLSpanElement = makeElement("span", "categories-icon");
     icon.style.backgroundColor = category.color || "var(--light-blue)";
     if (category.image?.endsWith(".svg")) {
-      const image = makeElement("img");
+      const image: HTMLImageElement = makeElement("img");
       image.src = category.image;
       image.alt = category.name || "";
       icon.append(image);
@@ -221,41 +253,39 @@ function makeBanner(data, variant) {
 }
 
 function renderHeroBanners(home) {
-  const container = document.querySelector("#home-banners");
-  if (!container){
-    return
+  const container = document.querySelector<HTMLElement>("#home-banners");
+  if (container) {
+    container.replaceChildren();
+    const hero = makeBanner(home.hero, "banner-fruit");
+    const side = makeBanner(home.side, "banner-sale");
+    if (hero) container.append(hero);
+    if (side) container.append(side);
   }
-  container.replaceChildren();
-  const hero = makeBanner(home.hero, "banner-fruit");
-  const side = makeBanner(home.side, "banner-sale");
-  if (hero) container.append(hero);
-  if (side) container.append(side);
 }
 
 function renderPromos(home) {
-  const container = document.querySelector("#home-promos");
-  if (!container){
-    return
+  const container = document.querySelector<HTMLElement>("#home-promos");
+  if (container) {
+    container.replaceChildren();
+    (home.promos || []).forEach((promo, index) => {
+      const variant = index % 2 === 0 ? "banner-breakfast" : "banner-bread";
+      const article = makeElement("article", variant);
+      const content = makeElement("div", "banner-content");
+      content.append(makeElement("h2", "banner-title", `${promo.text || ""}`.trim()));
+      appendLink(content, "دیدن محصولات", promo.href || "#", "promo-link");
+      const icon = makeElement("span", "promo-emoji");
+      if (promo.emoji?.endsWith(".svg")) {
+        const image = makeElement("img");
+        image.src = promo.emoji;
+        image.alt = promo.name;
+        icon.append(image);
+      } else {
+        icon.textContent = promo.emoji || "🛍️";
+      }
+      article.append(content, icon);
+      container.append(article);
+    });
   }
-  container.replaceChildren();
-  (home.promos || []).forEach((promo, index) => {
-    const variant = index % 2 === 0 ? "banner-breakfast" : "banner-bread";
-    const article = makeElement("article", variant);
-    const content = makeElement("div", "banner-content");
-    content.append(makeElement("h2", "banner-title", `${promo.text || ""}`.trim()));
-    appendLink(content, "دیدن محصولات", promo.href || "#", "promo-link");
-    const icon = makeElement("span", "promo-emoji");
-    if (promo.emoji?.endsWith(".svg")) {
-      const image = makeElement("img");
-      image.src = promo.emoji;
-      image.alt = promo.name;
-      icon.append(image);
-    } else {
-      icon.textContent = promo.emoji || "🛍️";
-    }
-    article.append(content, icon);
-    container.append(article);
-  });
 }
 
 function createCarouselSection(config, products, stock, offersByProductId, categories) {
@@ -293,9 +323,9 @@ function createCarouselSection(config, products, stock, offersByProductId, categ
 }
 
 function renderHomeCarousels(home, products, stock, offersByProductId, categories) {
-  const container = document.querySelector("#home-carousels");
-  if (!container){
-    return
+  const container = document.querySelector<HTMLDivElement>("#home-carousels");
+  if (!container) {
+    return null
   }
   container.replaceChildren();
 
@@ -332,8 +362,8 @@ function renderRemainingCategoryCarousels(
   offersByProductId,
   configuredCategoryIds
 ) {
-  const container = document.querySelector("#category-product-sections");
-  if (!container){
+  const container = document.querySelector<HTMLDivElement>("#category-product-sections");
+  if (!container) {
     return
   }
   container.replaceChildren();
@@ -438,24 +468,23 @@ async function loadPage() {
 
     setupSearch(products);
   } catch (error) {
-    document.querySelectorAll(".skeleton-text").forEach((item) => {
-      item.classList.remove("skeleton-text");
+    document.querySelectorAll<Element>(".skeleton-text").forEach((item) => {
+      if (item) item.classList.remove("skeleton-text");
     });
 
-    const main = document.querySelector("#main-content");
-    if (!main){
-    return
-  }
-    const oldError = main.querySelector(".api-status--error");
-    if (oldError) oldError.remove();
+    const main = document.querySelector<HTMLElement>("#main-content");
+    if (main) {
+      const oldError = main.querySelector<HTMLElement>(".api-status--error");
+      if (oldError) oldError.remove();
 
-    const message = makeElement(
-      "p",
-      "api-status api-status--error",
-      "بارگذاری اطلاعات با مشکل مواجه شد. مطمئن شو پروژه را با Live Server یا یک سرور محلی اجرا کرده‌ای."
-    );
-    main.prepend(message);
-    console.error("خطا در بارگذاری APIهای سوپرینو:", error);
+      const message = makeElement(
+        "p",
+        "api-status api-status--error",
+        "بارگذاری اطلاعات با مشکل مواجه شد. مطمئن شو پروژه را با Live Server یا یک سرور محلی اجرا کرده‌ای."
+      );
+      main.prepend(message);
+      console.error("خطا در بارگذاری APIهای سوپرینو:", error);
+    }
   }
 }
 
