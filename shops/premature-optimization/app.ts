@@ -2,8 +2,8 @@ import * as Types from "./types"
 import { Notyf } from 'notyf'
 import 'notyf/notyf.min.css'
 import { gsap } from "gsap";
+import { fetchApiFile } from "./api";
 
-const API_BASE: string = "/api/"
 const numberFormatter: Intl.NumberFormat = new Intl.NumberFormat("fa-IR")
 const CART_STORAGE_KEY: string = "superino-cart"
 let cart = readCart()
@@ -642,15 +642,6 @@ function renderRemainingCategoryCarousels(
 function setupSearch(products: Types.Product[]): void {
   const input = document.querySelector<HTMLInputElement>(".search-entry");
   if (input) input.placeholder = `جستجو در میان ${numberFormatter.format(products.length)} کالا...`;
-}
-
-async function fetchApiFile<T>(file: Types.ApiFile): Promise<T> {
-  const response = await fetch(`${API_BASE}${file}`);
-  if (!response.ok) {
-    throw new Error(`API "${file}" با وضعیت ${response.status} دریافت نشد.`);
-  }
-  const data: unknown = await response.json();
-  return data as T;
 }
 
 async function loadPage(): Promise<void> {
