@@ -1,6 +1,8 @@
 import Fuse from 'fuse.js';
 import { Notyf } from 'notyf';
 import Swal from 'sweetalert2';
+import heroImage from './1.jpg';
+import dairyImage from './labaniat.jpg';
 import 'notyf/notyf.min.css';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -532,7 +534,7 @@ function renderBanners(home) {
     const frame = document.createElement("div");
     frame.className = "hero-image-frame";
     const image = document.createElement("img");
-    image.src = "1.jpg";
+    image.src = heroImage;
     image.alt = "نارنگی‌های تازه و رسیده در سبد محصول";
     frame.append(image);
     const freshness = createTextElement("p", "", "freshness-card");
@@ -573,7 +575,7 @@ function renderBanners(home) {
     const photo = document.createElement("div");
     photo.className = "story-image";
     const sideImage = document.createElement("img");
-    sideImage.src = "labaniat.jpg";
+    sideImage.src = dairyImage;
     sideImage.alt = "لبنیات تازه";
     photo.append(sideImage, createTextElement("span", home.side.title));
     const sideCopy = document.createElement("div");
