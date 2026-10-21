@@ -2,7 +2,7 @@
   "hero": {
     "title": "میوه‌های ارگانیک، سبزی‌های تازه",
     "text": "گلچین از بهترین باغ‌های اطراف",
-    "emoji": "./svgs/bannerFruit.svg",
+    "emoji": "/svgs/bannerFruit.svg",
     "cta": {
       "label": "خرید میوه و سبزی",
       "href": "#fruits"
@@ -11,7 +11,7 @@
   "side": {
     "title": "تا ۱۰٪ تخفیف لبنیات",
     "text": "فقط تا پایان امروز",
-    "emoji": "./svgs/bannerDairy.svg",
+    "emoji": "/svgs/bannerDairy.svg",
     "cta": {
       "label": "دیدن محصولات",
       "href": "#dairy"
@@ -20,12 +20,12 @@
   "promos": [
     {
       "text": "تنقلات برای شب‌های پرهیجان",
-      "emoji": "./svgs/banner-snacks.svg",
+      "emoji": "/svgs/banner-snacks.svg",
       "href": "#snacks"
     },
     {
       "text": "نان داغ، هر روز ساعت ۷",
-      "emoji": "./svgs/bread-banner.svg",
+      "emoji": "/svgs/bread-banner.svg",
       "href": "#bakery"
     }
   ],
