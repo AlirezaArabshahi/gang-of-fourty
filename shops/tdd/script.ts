@@ -27,7 +27,86 @@ type CarouselElements = {
     status: HTMLParagraphElement;
 };
 
-async function loadJSON(url) {
+type Product = {
+    id: number;
+    categoryId: number;
+    name: string;
+    emoji: string;
+    unit: string;
+    price: number;
+    tags: string[];
+};
+
+type Stock = {
+    updatedAt: string;
+    items: Record<number, number>;
+};
+
+type Offer = {
+    productId: number;
+    percent: number;
+    label: string;
+};
+
+type Category = {
+    id: number;
+    slug: string;
+    name: string;
+    emoji: string;
+    color: string;
+};
+
+type ShopLink = { label: string; href: string };
+
+type Shop = {
+    name: string;
+    slogan: string;
+    owner: string;
+    city: string;
+    phone: string;
+    hours: { open: string; close: string };
+    deliveryFee: number;
+    freeDeliveryOver: number;
+    currency: string;
+    notice: string;
+    about: string;
+    address: string;
+    schedule: { days: string; time: string }[];
+    menu: ShopLink[];
+    help: ShopLink[];
+    copyright: string;
+};
+
+type HomeBanner = {
+    title: string;
+    text: string;
+    emoji: string;
+    cta: ShopLink;
+};
+
+type HomePromo = {
+    text: string;
+    emoji: string;
+    color: string;
+    href: string;
+};
+
+type CarouselConfig = {
+    id: string;
+    title: string;
+    emoji: string;
+    source?: "offers";
+    categoryId?: number;
+};
+
+type Home = {
+    hero: HomeBanner;
+    side: HomeBanner;
+    promos: HomePromo[];
+    carousels: CarouselConfig[];
+};
+
+async function loadJSON<T>(url: string): Promise<T> {
     const response = await fetch(url)
 
     if (!response.ok) {
@@ -42,7 +121,7 @@ function showStatus(carousel: CarouselElements, message: string, isError = false
     carousel.status.classList.toggle("is-error", isError);
 }
 
-function createProductCard(product, cardId, quantity, offer) {
+function createProductCard(product: Product, cardId: string, quantity: number, offer?: Offer) {
     const titleId = `${cardId}-name`
     const statusId = `${cardId}-status`;
 
@@ -152,7 +231,7 @@ function createProductCard(product, cardId, quantity, offer) {
     return card
 }
 
-function renderProducts(carousel: CarouselElements, products, stock, offers) {
+function renderProducts(carousel: CarouselElements, products: Product[], stock: Stock, offers: Offer[]) {
     carousel.track.replaceChildren()
     carousel.controls.hidden = true
 
@@ -223,7 +302,7 @@ function createLink(label, href) {
     return link;
 }
 
-function renderCategories(categories, products: { categoryId: number; name: string }[] = []) {
+function renderCategories(categories: Category[], products: Product[] = []) {
     const grid = document.querySelector<HTMLDivElement>("#category-grid");
     const sections = document.querySelector<HTMLElement>("#category-sections");
     const desktopMenu = document.querySelector<HTMLDivElement>("#desktop-categories");
@@ -276,7 +355,7 @@ function shopHref(href) {
     return href;
 }
 
-function renderShop(shop) {
+function renderShop(shop: Shop) {
     const notice = document.querySelector<HTMLParagraphElement>("#shop-notice");
     const slogan = document.querySelector<HTMLElement>("#shop-slogan");
     const footerAbout = document.querySelector<HTMLParagraphElement>("#footer-about-text");
@@ -471,7 +550,7 @@ window.addEventListener("storage", (event: StorageEvent) => {
     if (event.key === CART_KEY || event.key === null) restoreCart();
 });
 
-function renderAbout(about) {
+function renderAbout(about: string) {
     const section = document.querySelector<HTMLElement>("#about");
     if (!section) throw new Error("Missing about section");
     const heading = createTextElement("h2", "داستان سام مارکت");
@@ -503,7 +582,7 @@ function renderAbout(about) {
     section.append(steps);
 }
 
-function renderBanners(home) {
+function renderBanners(home: Home) {
     const banners = document.querySelector<HTMLDivElement>("#home-banners");
     if (!banners) throw new Error("Missing home banners");
     const hero = document.createElement("section");
@@ -589,7 +668,7 @@ function renderBanners(home) {
     story.replaceChildren(photo, sideCopy);
 }
 
-function renderHomeCarousels(configurations, products, stock, offers) {
+function renderHomeCarousels(configurations: CarouselConfig[], products: Product[], stock: Stock, offers: Offer[]) {
     const container = document.querySelector<HTMLDivElement>("#home-carousels");
     if (!container) throw new Error("Missing home carousels");
     container.replaceChildren();
@@ -630,7 +709,7 @@ function renderHomeCarousels(configurations, products, stock, offers) {
     });
 }
 
-function enableSearch(products, stock, offers) {
+function enableSearch(products: Product[], stock: Stock, offers: Offer[]) {
     const form = document.querySelector<HTMLFormElement>(".search");
     const input = document.querySelector<HTMLInputElement>("#site-search");
     const section = document.querySelector<HTMLElement>("#search-results");
@@ -676,12 +755,12 @@ async function initPage() {
     try {
         // All six independent requests start together and are awaited once.
         const [products, stock, offers, categories, shop, home] = await Promise.all([
-            loadJSON(PRODUCTS_URL),
-            loadJSON(STOCK_URL),
-            loadJSON(OFFERS_URL),
-            loadJSON(CATEGORIES_URL),
-            loadJSON(SHOP_URL),
-            loadJSON(HOME_URL)
+            loadJSON<Product[]>(PRODUCTS_URL),
+            loadJSON<Stock>(STOCK_URL),
+            loadJSON<Offer[]>(OFFERS_URL),
+            loadJSON<Category[]>(CATEGORIES_URL),
+            loadJSON<Shop>(SHOP_URL),
+            loadJSON<Home>(HOME_URL)
         ]);
         if (!Array.isArray(products) || !Array.isArray(offers) ||
             !Array.isArray(categories) || !stock?.items ||
