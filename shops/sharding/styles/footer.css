@@ -91,7 +91,7 @@
 .footer__list a,
 .footer__list li { font-size: 0.8rem; color: var(--footer-muted); }
 .footer__list a { transition: color var(--t-fast); }
-.footer__list a:hover { color: var(--accent-bright); }
+.footer__list a:hover { color: var(--accent); }
 
 .footer__hours { font-size: 0.8rem; color: var(--footer-muted); line-height: 1.8; }
 
