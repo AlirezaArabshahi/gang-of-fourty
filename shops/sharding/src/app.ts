@@ -8,7 +8,7 @@ import { state, changeQty, updateCartBadge } from './state';
 import { enrichShop, enrichCategories, enrichHome, enrichProduct } from './overrides';
 import {
   notyf, renderShell, renderCarousels, renderCartButton, renderError, setupCarouselControls,
-  renderBannerSkeletons,
+  renderBannerSkeletons, renderShellSkeletons,
 } from './ui';
 import { setupSearch } from './search';
 
@@ -152,7 +152,8 @@ async function init(): Promise<void> {
   const startedAt = performance.now();
   const slowTimer = setTimeout(() => showSlowConnection(true), 3000);
 
-  // Show banner skeletons immediately (before fetch)
+  // Shell + banner skeletons before fetch (HTML stays empty)
+  renderShellSkeletons();
   renderBannerSkeletons();
 
   try {
@@ -192,7 +193,7 @@ async function init(): Promise<void> {
       url.searchParams.set('cat', catSlug);
       history.replaceState({ cat: catSlug }, '', url);
     }
-  } catch (err) {
+  } catch (err: unknown) {
     clearTimeout(slowTimer);
     showSlowConnection(false);
     console.error('[shop] data failed:', err);

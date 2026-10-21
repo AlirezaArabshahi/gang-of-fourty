@@ -7,7 +7,6 @@
         "types": ["vite/client"],
         "strict": true,
         "noImplicitAny": true,
-
         "noEmit": true,
         "skipLibCheck": true
     },

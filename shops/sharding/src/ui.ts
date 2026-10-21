@@ -37,7 +37,24 @@ export function h<K extends keyof HTMLElementTagNameMap>(
 
 export function setText(id: string, text: string): void {
   const el = document.getElementById(id);
-  if (el) el.textContent = text;
+  if (!el) return;
+  el.textContent = text;
+  // Drop loading skeleton chrome once real copy arrives (CLS placeholders in HTML)
+  el.classList.remove(
+    'skeleton-text',
+    'skeleton-text--brand',
+    'skeleton-text--tagline',
+    'skeleton-text--action',
+    'skeleton-text--dept',
+    'skeleton-text--mobile-title',
+    'skeleton-text--section-title',
+    'skeleton-text--footer-title',
+    'skeleton-text--about',
+    'skeleton-text--copy',
+    'skeleton-text--footer-top',
+    'skeleton-text--topbar',
+  );
+  el.removeAttribute('aria-hidden');
 }
 
 function mkBtn(
@@ -330,6 +347,44 @@ function homeBannerSlides(home: Home): HomeBanner[] {
   return slides;
 }
 
+
+// ─── Shell skeletons (empty HTML shells) ─────
+function cloneTemplate(id: string): DocumentFragment | null {
+  const tpl = document.querySelector<HTMLTemplateElement>(`#${id}`);
+  if (!tpl) return null;
+  const node = tpl.content.cloneNode(true);
+  return node instanceof DocumentFragment ? node : null;
+}
+
+function fillFromTemplate(
+  containerId: string,
+  templateId: string,
+  count: number
+): void {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.replaceChildren();
+  for (let i = 0; i < count; i++) {
+    const frag = cloneTemplate(templateId);
+    if (!frag) continue;
+    // --i inherits to .skeleton-text so card-in staggers like before
+    for (const node of Array.from(frag.children)) {
+      if (node instanceof HTMLElement) {
+        node.style.setProperty('--i', String(i));
+      }
+    }
+    el.appendChild(frag);
+  }
+}
+
+/** Fill empty nav / mobile / category / topbar shells before fetch. */
+export function renderShellSkeletons(): void {
+  fillFromTemplate('topbar-links', 'tpl-skeleton-topbar-link', 3);
+  fillFromTemplate('nav-list', 'tpl-skeleton-nav-item', 7);
+  fillFromTemplate('mobile-menu-list', 'tpl-skeleton-mobile-item', 7);
+  fillFromTemplate('categories-list', 'tpl-skeleton-category', 10);
+}
+
 export function renderBannerSkeletons(): void {
   const track = document.getElementById('banner-track');
   if (!track) return;
@@ -422,7 +477,7 @@ export function renderShell(): void {
 
   document.getElementById('hero-video')?.classList.remove('hero-video--skeleton');
   
-  if (home.categoriesTitle) setText('categories-title', home.categoriesTitle);
+  setText('categories-title', home.categoriesTitle || 'خرید از دسته‌بندی‌ها');
 
   // Banners
   const track = document.getElementById('banner-track');
@@ -475,7 +530,12 @@ export function renderShell(): void {
         className: 'hero-carousel__basket-title',
         textContent: 'پیشنهادهای ویژه هفته',
       });
-
+      const basketArrow = h('span', {
+        className: 'hero-carousel__basket-arrow',
+        textContent: '←',
+        ariaHidden: 'true',
+      });
+      basketTitle.appendChild(basketArrow);
       basketContent.append(eyebrow, basketTitle);
       basketLink.append(basketWrap, basketContent);
       basketLi.appendChild(basketLink);
@@ -546,6 +606,7 @@ export function renderShell(): void {
   setText('footer-brand-tagline', shop.slogan);
   setText('footer-about', shop.about);
 
+  setText('footer-categories-title', 'دسته‌بندی‌ها');
   setText('footer-help-title', shop.labels.footerHelpTitle);
   setText('footer-contact-title', shop.labels.footerContactTitle);
   setText('footer-schedule-title', shop.labels.footerScheduleTitle);
