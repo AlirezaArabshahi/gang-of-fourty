@@ -1,3 +1,15 @@
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/header.css';
+import '../styles/hero.css';
+import '../styles/categories.css';
+import '../styles/products.css';
+import '../styles/footer.css';
+import '../styles/skeleton.css';
+import '../styles/animations.css';
+import '../styles/notyf.css';
+import '../styles/fixes.css';
+
 import './theme';
 import './menu';
 
