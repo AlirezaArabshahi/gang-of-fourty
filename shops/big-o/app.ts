@@ -321,14 +321,24 @@ function renderShop(shop) {
 // productName: name of the product shown in the toast.
 function addToCart(productName: string) {
     notyf.success(`محصول ${productName} با موفقیت به سبد خرید اضافه شد.`);
+    const previousCount = cartCount;
     cartCount += 1;
     localStorage.setItem("big-o-cart", String(cartCount));
-    updateCartNumber();
+    updateCartNumber(previousCount,cartCount);
 }
 
-// Writes the current cartCount into the header counter using Persian digits.
-function updateCartNumber() {
-    getHtmlElement<HTMLElement>(".product-counter").textContent = new Intl.NumberFormat('fa-IR').format(cartCount);
+// Shows the cart count in the header counter with Persian digits.
+// startNumber/endNumber: the counter animates from the first to the second
+// (equal numbers mean no animation). Animation is skipped if the user prefers reduced motion.
+function updateCartNumber(startNumber : number ,endNumber : number) {
+    const counter = getHtmlElement<HTMLElement>(".product-counter");
+    const reduceMotion: boolean = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const countUp = new CountUp(counter, endNumber, {
+        startVal: startNumber ,
+        duration: reduceMotion ? 0 : 0.5,
+        formattingFn: (n: number) => new Intl.NumberFormat('fa-IR').format(n),
+    });
+    countUp.start();
 }
 
 // Entry point: loads the data, then renders the carousels.
@@ -345,7 +355,7 @@ async function init() {
         containers.forEach(container => {
             clearMessage(container);
         });
-        updateCartNumber();
+        updateCartNumber(cartCount,cartCount);
         renderCategories(categories);
         renderCategoryLinks(categories);
         renderShop(shop);
