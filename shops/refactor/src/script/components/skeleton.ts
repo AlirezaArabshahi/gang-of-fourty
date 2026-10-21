@@ -5,8 +5,6 @@ import { el } from '../utils/utils.js';
 
 type MessageRole = 'status' | 'alert';
 
-// کاروسل‌ها داخل HTML دو نشانهٔ ثابت دارند (li.track-edge با data-edge="start" و "end")
-// که هدف لینک‌های #…-start و #…-end هستند. محتوای JavaScript همیشه «بین» این دو می‌نشیند.
 const isEdge = (node: Element): boolean => node.classList.contains('track-edge');
 
 const setBusy = (container: HTMLElement, busy: boolean): void => {

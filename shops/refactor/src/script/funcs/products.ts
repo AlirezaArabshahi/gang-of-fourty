@@ -3,6 +3,7 @@ import { formatPrice } from '../utils/format.js';
 import { makeCard } from '../components/productcard.js';
 import initSwiper from "../vender/swiper/swiper.js"
 import showAddToCartToast from "../vender/sweetAlert/sweetAlert.js"
+import  celebrateAddToCart from "../vender/canvas-confetti/canvas-confetti.js"
 import {
     el,
     saveToLocalStorage,
@@ -337,6 +338,7 @@ const initAddToCart = (): void => {
             saveToLocalStorage(getCountBasketFromLocalStorage() + 1)
             updateBadge();
             showAddToCartToast()
+             celebrateAddToCart();
         }
     });
 }
