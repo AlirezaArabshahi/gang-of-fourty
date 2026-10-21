@@ -12,13 +12,12 @@ import {
      initCarousels,
 } from './funcs/products.js'
 
-
-
 const SLOW_AFTER_MS = 3000;
 const SLOW = Symbol('slow');
 
 const MESSAGE_CONTAINERS = ['.hero-grid', '.cat-list', '.sub-menu', '.footer-cols'];
 const TRACK_SELECTORS = ['.products-track-off', '.products-track-latest', '.product-fruit'];
+
 
 const forEachContainer = (selectors: string[], action: (container: HTMLElement) => void): void => {
     selectors.forEach((selector) => {
@@ -29,7 +28,7 @@ const forEachContainer = (selectors: string[], action: (container: HTMLElement) 
 const delay = (ms: number): Promise<typeof SLOW> =>
     new Promise((resolve) => {
         setTimeout(() => resolve(SLOW), ms);
-    });
+});
 
 const showLoadingStates = (): void => {
     forEachContainer(MESSAGE_CONTAINERS, showLoading);

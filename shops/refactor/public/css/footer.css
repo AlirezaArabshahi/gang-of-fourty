@@ -7,12 +7,12 @@
     max-width: var(--container-max);
     margin: 0 auto;
     padding: 42px 40px 90px;
-    border-radius: 28px;
+    border-radius: 28px 28px 0 0;
     color: #fff;
     background-color: #0d4d38;
     background-image: repeating-linear-gradient( 45deg, rgba(255, 255, 255, 0.045) 0 2px, transparent 2px 44px), repeating-linear-gradient( -45deg, rgba(255, 255, 255, 0.045) 0 2px, transparent 2px 44px);
     overflow: visible;
-    margin-bottom: 2rem;
+    /* margin-bottom: 2rem; */
 }
 
 .footer-inner :focus-visible {
@@ -279,7 +279,8 @@ a.footer-contact-value {
 .footer-to-top-wrap {
     position: absolute;
     inset-inline: 0;
-    bottom: -22px;
+    bottom: 0;
+    /* bottom: -22px; */
     display: flex;
     justify-content: center;
 }
