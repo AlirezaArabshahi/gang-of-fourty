@@ -988,6 +988,34 @@ footer.is-fragment-target {
   border-radius: 999px;
 }
 
+.cart-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.clear-cart {
+  min-height: 2.9rem;
+  padding: .45rem .65rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--green-deep);
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.clear-cart:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+#search-results {
+  scroll-margin-top: var(--header-offset);
+}
+
 .cart strong {
   display: grid;
   place-items: center;

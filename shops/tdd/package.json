@@ -12,5 +12,10 @@
   "devDependencies": {
     "typescript": "^7.0.2",
     "vite": "^8.3.5"
+  },
+  "dependencies": {
+    "fuse.js": "^7.5.0",
+    "notyf": "^3.10.0",
+    "sweetalert2": "^11.26.25"
   }
 }

@@ -1,3 +1,9 @@
+import Fuse from 'fuse.js';
+import { Notyf } from 'notyf';
+import Swal from 'sweetalert2';
+import 'notyf/notyf.min.css';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
 const PRODUCTS_URL = "../../api/products.json"
 const STOCK_URL = "../../api/stock.json";
 const OFFERS_URL = "../../api/offers.json";
@@ -9,6 +15,7 @@ const priceFormatter = new Intl.NumberFormat("fa-IR")
 const HOME_URL = "../../api/home.json";
 const CART_KEY = "tdd:w2:cart-count";
 let cartCount = 0;
+const notyf = new Notyf({ duration: 2000, position: { x: "left", y: "top" } });
 const brandStory = {"paragraphs": ["سام مارکت، سوپرمارکت سام در پروژه بوتکمپ است؛ با یک سبد برای نیازهای روزمره و یک داستان از دنیای برنامه‌نویسی. نام پروژه، TDD، یادآور هدف سام است: تسلط بر توسعه آزمون‌محور تا پایان بوتکمپ.", "در توسعه آزمون‌محور، اول یک تست ناموفق می‌نویسیم، بعد کد لازم برای پاس‌شدن آن را می‌سازیم و در پایان ساختار کد را بهبود می‌دهیم. سام از این نگاه برای ایده ارزیابی تازگی الهام گرفته: اول معیار مشخص، بعد بررسی محصول و در ادامه بهبود شیوه انتخاب. این فرایند، طرح پیشنهادی برند در پروژه بوتکمپ فرانت اند است؛ چرخه نرم‌افزاری TDD الهام آن است."], "steps": [{"title": "قرمز؛ اول معیار، بعد انتخاب", "text": "در TDD، تست پیش از راه‌حل نوشته می‌شود. در ایده سام، معیار تازگی را پیش از انتخاب مشخص می‌کنیم؛ محصولی که با معیار هماهنگ نیست، نیاز به بررسی دارد."}, {"title": "سبز؛ انتخاب پس از ارزیابی", "text": "همان‌طور که کد باید تست را پاس کند، در فرایند پیشنهادی سام هم انتخاب محصول باید با معیارهای تعریف‌شده هماهنگ باشد؛ تازگی، پشتوانه انتخاب است."}, {"title": "آبی؛ بهترشدن فرایند", "text": "در بازآرایی، ساختار کد بهتر می‌شود و تست‌ها همچنان موفق می‌مانند. در ایده فروشگاه هم بازخوردها به بهترشدن ارزیابی و نگهداری کمک می‌کنند؛ با حفظ معیار تازگی."}]};
 
 type CarouselElements = {
@@ -397,9 +404,11 @@ function renderCartCount() {
     const formatted = priceFormatter.format(cartCount);
     const count = document.querySelector<HTMLElement>("#cart-count");
     const cart = document.querySelector<HTMLAnchorElement>(".cart");
-    if (!count || !cart) throw new Error("Missing cart elements");
+    const clearButton = document.querySelector<HTMLButtonElement>("#clear-cart");
+    if (!count || !cart || !clearButton) throw new Error("Missing cart elements");
     count.textContent = formatted;
     cart.setAttribute("aria-label", `سبد خرید، ${formatted} کالا`);
+    clearButton.disabled = cartCount === 0;
 }
 
 function restoreCart() {
@@ -424,6 +433,36 @@ function addToCart() {
     } catch {
         status.textContent = "کالا اضافه شد؛ ذخیره سبد برای مراجعه بعدی در این مرورگر ممکن نیست.";
     }
+    notyf.success("به سبد خرید اضافه شد");
+}
+
+function enableClearCart() {
+    const button = document.querySelector<HTMLButtonElement>("#clear-cart");
+    const status = document.querySelector<HTMLParagraphElement>("#cart-status");
+    if (!button || !status) throw new Error("Missing cart controls");
+
+    button.addEventListener("click", async () => {
+        if (cartCount === 0) return;
+
+        const result = await Swal.fire({
+            title: "سبد خرید خالی شود؟",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "بله، خالی شود",
+            cancelButtonText: "انصراف",
+            focusCancel: true
+        });
+        if (!result.isConfirmed) return;
+
+        cartCount = 0;
+        renderCartCount();
+        try {
+            localStorage.removeItem(CART_KEY);
+            status.textContent = "";
+        } catch {
+            status.textContent = "سبد خالی شد؛ ذخیره تغییر در این مرورگر ممکن نیست.";
+        }
+    });
 }
 
 window.addEventListener("storage", (event: StorageEvent) => {
@@ -589,7 +628,42 @@ function renderHomeCarousels(configurations, products, stock, offers) {
     });
 }
 
+function enableSearch(products, stock, offers) {
+    const form = document.querySelector<HTMLFormElement>(".search");
+    const input = document.querySelector<HTMLInputElement>("#site-search");
+    const section = document.querySelector<HTMLElement>("#search-results");
+    const controls = document.querySelector<HTMLElement>("#search-results-controls");
+    const track = document.querySelector<HTMLDivElement>("#search-results-track");
+    const status = document.querySelector<HTMLParagraphElement>("#search-results-status");
+    if (!form || !input || !section || !controls || !track || !status) {
+        throw new Error("Missing search elements");
+    }
+
+    const fuse = new Fuse(products, { keys: ["name"], threshold: 0.4, ignoreLocation: true });
+
+    form.addEventListener("submit", (event: SubmitEvent) => {
+        event.preventDefault();
+        const query = input.value.trim();
+        if (!query) {
+            section.hidden = true;
+            return;
+        }
+
+        const matches = fuse.search(query).map(result => result.item);
+        renderProducts({ prefix: "search-results", track, controls, status }, matches, stock, offers);
+        status.textContent = matches.length
+            ? `${priceFormatter.format(matches.length)} محصول پیدا شد.`
+            : `نتیجه‌ای برای «${query}» پیدا نشد.`;
+        section.hidden = false;
+        section.scrollIntoView({
+            behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+            block: "start"
+        });
+    });
+}
+
 async function initPage() {
+    enableClearCart();
     restoreCart();
     const main = document.querySelector<HTMLElement>("main");
     const status = document.querySelector<HTMLParagraphElement>("#page-status");
@@ -617,6 +691,7 @@ async function initPage() {
         renderHomeCarousels(home.carousels, products, stock, offers);
         renderCategories(categories, products);
         renderShop(shop);
+        enableSearch(products, stock, offers);
         const search = document.querySelector<HTMLInputElement>("#site-search");
         if (!search) throw new Error("Missing search input");
         search.placeholder = `جست‌وجو در میان ${priceFormatter.format(products.length)} کالا...`;
