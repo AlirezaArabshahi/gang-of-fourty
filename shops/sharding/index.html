@@ -18,8 +18,8 @@
       }
     })();
   </script>
-  <title></title>
-  <meta name="description" content="">
+  <title>فروشگاه آنلاین</title>
+  <meta name="description" content="خرید آنلاین مواد غذایی و اقلام سوپرمارکتی">
   <link rel="icon" type="image/svg+xml" href="./favicon.ico">
 </head>
 <body>
@@ -94,7 +94,7 @@
             <path d="M7 18a2 2 0 1 0 2 2 2 2 0 0 0-2-2zM1 2v2h2l3.6 7.59-1.35 2.45A1.96 1.96 0 0 0 5 15a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12.9-1.63h7.45a2 2 0 0 0 1.75-1.03l3.58-6.49A1 1 0 0 0 19.88 4H5.21l-.94-2H1zm16 16a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/>
           </svg>
           <span class="action__label skeleton-text skeleton-text--action" id="label-cart" aria-hidden="true"></span>
-          <span class="badge" id="cart-badge" aria-hidden="true" hidden>۰</span>
+          <span class="badge" id="cart-badge" hidden>۰</span>
         </a>
         <span class="visually-hidden" id="cart-status"></span>
       </div>
@@ -174,11 +174,13 @@
   <section class="hero">
     <div class="container">
       <div class="hero-video hero-video--skeleton" id="hero-video">
+        <!-- base on documents its muted video, so autoplay is fine; needed to pass validation. -->
+        <!-- [html-validate-disable-next no-autoplay] -->
         <video class="hero-video__media" autoplay loop muted playsinline preload="none" aria-hidden="true">
           <source src="assets/video/hero.mp4" type="video/mp4">
         </video>
         <div class="hero-video__overlay">
-          <h1 class="hero-video__title" id="hero-title"></h1>
+          <h1 class="hero-video__title" id="hero-title">فروشگاه آنلاین</h1>
           <p class="hero-video__desc" id="hero-desc"></p>
           <a href="#fruits" class="hero-video__cta" id="hero-cta" aria-hidden="true" tabindex="-1">
             <span id="hero-cta-label"></span>
@@ -210,7 +212,7 @@
     <section class="categories" aria-labelledby="categories-title">
       <div class="container">
         <div class="categories__head">
-          <h2 id="categories-title" class="categories__title skeleton-text skeleton-text--section-title" aria-hidden="true"></h2>
+          <h2 id="categories-title" class="categories__title skeleton-text skeleton-text--section-title" aria-hidden="true">دسته‌بندی محصولات</h2>
           <nav class="carousel-nav" aria-label="ناوبری دسته‌بندی‌ها">
             <a href="#cat-start" class="carousel-nav__btn carousel-nav__btn--start" aria-label="رفتن به ابتدای دسته‌بندی‌ها">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
@@ -244,17 +246,17 @@
           <p class="footer__about skeleton-text skeleton-text--about" id="footer-about" aria-hidden="true"></p>
         </div>
         <div class="footer__col footer__col--cats">
-          <h3 class="footer__title skeleton-text skeleton-text--footer-title" id="footer-categories-title" aria-hidden="true"></h3>
+          <h3 class="footer__title skeleton-text skeleton-text--footer-title" id="footer-categories-title" aria-hidden="true">دسته‌بندی‌ها</h3>
           <ul class="footer__list footer__list--cats" id="footer-categories-list"></ul>
         </div>
         <div class="footer__col">
-          <h3 class="footer__title skeleton-text skeleton-text--footer-title" id="footer-help-title" aria-hidden="true"></h3>
+          <h3 class="footer__title skeleton-text skeleton-text--footer-title" id="footer-help-title" aria-hidden="true">خدمات مشتریان</h3>
           <ul class="footer__list" id="footer-help-list"></ul>
         </div>
         <div class="footer__col">
-          <h3 class="footer__title skeleton-text skeleton-text--footer-title" id="footer-contact-title" aria-hidden="true"></h3>
+          <h3 class="footer__title skeleton-text skeleton-text--footer-title" id="footer-contact-title" aria-hidden="true">تماس با ما</h3>
           <ul class="footer__list" id="footer-contact-list"></ul>
-          <h3 class="footer__title footer__title--mt skeleton-text skeleton-text--footer-title" id="footer-schedule-title" aria-hidden="true"></h3>
+          <h3 class="footer__title footer__title--mt skeleton-text skeleton-text--footer-title" id="footer-schedule-title" aria-hidden="true">ساعت کاری</h3>
           <p class="footer__hours" id="footer-schedule"></p>
         </div>
       </div>
