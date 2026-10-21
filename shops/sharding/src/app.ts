@@ -25,6 +25,7 @@ import {
   setupCarouselControls, renderBannerSkeletons, renderShellSkeletons,
 } from './ui';
 import { setupSearch } from './search';
+import { fireConfetti } from './confetti';
 
 const MIN_SKELETON_MS = 300;
 
@@ -45,8 +46,13 @@ function setupCartEvents(): void {
     const qty = changeQty(id, delta);
     renderCartButton(actions, id, name);
 
-    if (delta > 0) notyf.success(`${name} به سبد اضافه شد`);
-    else if (qty === 0) notyf.error(`${name} از سبد حذف شد`);
+    if (delta > 0) {
+      notyf.success(`${name} به سبد اضافه شد`);
+      fireConfetti(); 
+    } else if (qty === 0) {
+      notyf.error(`${name} از سبد حذف شد`);
+    }
+
 
     const card = actions.closest<HTMLElement>('.product');
     if (card) {
