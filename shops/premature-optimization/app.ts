@@ -78,7 +78,8 @@ function readCart(): Types.Cart {
         entry[1] > 0
     )
     return Object.fromEntries(validEntries)
-  } catch {
+  } catch (error: unknown) {
+    console.error("خطا در خواندن سبد خرید ",error)
     return {}
   }
 }
