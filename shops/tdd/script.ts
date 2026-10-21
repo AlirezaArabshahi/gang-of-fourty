@@ -11,6 +11,13 @@ const CART_KEY = "tdd:w2:cart-count";
 let cartCount = 0;
 const brandStory = {"paragraphs": ["سام مارکت، سوپرمارکت سام در پروژه بوتکمپ است؛ با یک سبد برای نیازهای روزمره و یک داستان از دنیای برنامه‌نویسی. نام پروژه، TDD، یادآور هدف سام است: تسلط بر توسعه آزمون‌محور تا پایان بوتکمپ.", "در توسعه آزمون‌محور، اول یک تست ناموفق می‌نویسیم، بعد کد لازم برای پاس‌شدن آن را می‌سازیم و در پایان ساختار کد را بهبود می‌دهیم. سام از این نگاه برای ایده ارزیابی تازگی الهام گرفته: اول معیار مشخص، بعد بررسی محصول و در ادامه بهبود شیوه انتخاب. این فرایند، طرح پیشنهادی برند در پروژه بوتکمپ فرانت اند است؛ چرخه نرم‌افزاری TDD الهام آن است."], "steps": [{"title": "قرمز؛ اول معیار، بعد انتخاب", "text": "در TDD، تست پیش از راه‌حل نوشته می‌شود. در ایده سام، معیار تازگی را پیش از انتخاب مشخص می‌کنیم؛ محصولی که با معیار هماهنگ نیست، نیاز به بررسی دارد."}, {"title": "سبز؛ انتخاب پس از ارزیابی", "text": "همان‌طور که کد باید تست را پاس کند، در فرایند پیشنهادی سام هم انتخاب محصول باید با معیارهای تعریف‌شده هماهنگ باشد؛ تازگی، پشتوانه انتخاب است."}, {"title": "آبی؛ بهترشدن فرایند", "text": "در بازآرایی، ساختار کد بهتر می‌شود و تست‌ها همچنان موفق می‌مانند. در ایده فروشگاه هم بازخوردها به بهترشدن ارزیابی و نگهداری کمک می‌کنند؛ با حفظ معیار تازگی."}]};
 
+type CarouselElements = {
+    prefix: string;
+    track: HTMLElement;
+    controls: HTMLElement;
+    status: HTMLParagraphElement;
+};
+
 async function loadJSON(url) {
     const response = await fetch(url)
 
@@ -21,7 +28,7 @@ async function loadJSON(url) {
 }
 
 
-function showStatus(carousel, message, isError = false) {
+function showStatus(carousel: CarouselElements, message: string, isError = false) {
     carousel.status.textContent = message;
     carousel.status.classList.toggle("is-error", isError);
 }
@@ -136,7 +143,7 @@ function createProductCard(product, cardId, quantity, offer) {
     return card
 }
 
-function renderProducts(carousel, products, stock, offers) {
+function renderProducts(carousel: CarouselElements, products, stock, offers) {
     carousel.track.replaceChildren()
     carousel.controls.hidden = true
 
@@ -168,10 +175,12 @@ function renderProducts(carousel, products, stock, offers) {
     })
 
     const firstLink =
-        carousel.controls.querySelector("a:first-child");
+        carousel.controls.querySelector<HTMLAnchorElement>("a:first-child");
 
     const lastLink =
-        carousel.controls.querySelector("a:last-child");
+        carousel.controls.querySelector<HTMLAnchorElement>("a:last-child");
+
+    if (!firstLink || !lastLink) throw new Error("Missing carousel links");
 
     firstLink.setAttribute(
         "href",
@@ -190,7 +199,9 @@ function renderProducts(carousel, products, stock, offers) {
 }
 
 // Level 3: one category dataset supplies all navigation and destinations.
-function createTextElement(tag, text, className) {
+function createTextElement<K extends keyof HTMLElementTagNameMap>(
+    tag: K, text: string, className?: string
+): HTMLElementTagNameMap[K] {
     const element = document.createElement(tag);
     element.textContent = text;
     if (className) element.className = className;
@@ -203,14 +214,17 @@ function createLink(label, href) {
     return link;
 }
 
-function renderCategories(categories, products = []) {
-    const grid = document.querySelector("#category-grid");
-    const sections = document.querySelector("#category-sections");
-    const menus = [
-        document.querySelector("#desktop-categories"),
-        document.querySelector("#mobile-categories"),
-        document.querySelector("#footer-categories")
-    ];
+function renderCategories(categories, products: { categoryId: number; name: string }[] = []) {
+    const grid = document.querySelector<HTMLDivElement>("#category-grid");
+    const sections = document.querySelector<HTMLElement>("#category-sections");
+    const desktopMenu = document.querySelector<HTMLDivElement>("#desktop-categories");
+    const mobileMenu = document.querySelector<HTMLDivElement>("#mobile-categories");
+    const footerMenu = document.querySelector<HTMLElement>("#footer-categories");
+
+    if (!grid || !sections || !desktopMenu || !mobileMenu || !footerMenu) {
+        throw new Error("Missing category elements");
+    }
+    const menus = [desktopMenu, mobileMenu, footerMenu];
 
     grid.replaceChildren();
     sections.replaceChildren();
@@ -254,12 +268,19 @@ function shopHref(href) {
 }
 
 function renderShop(shop) {
-    document.querySelector("#shop-notice").textContent = shop.notice;
-    document.querySelector("#shop-slogan").textContent = shop.slogan;
-    renderAbout(shop.about);
-    document.querySelector("#footer-about-text").textContent = shop.about;
+    const notice = document.querySelector<HTMLParagraphElement>("#shop-notice");
+    const slogan = document.querySelector<HTMLElement>("#shop-slogan");
+    const footerAbout = document.querySelector<HTMLParagraphElement>("#footer-about-text");
+    const address = document.querySelector<HTMLElement>("#shop-address");
+    if (!notice || !slogan || !footerAbout || !address) {
+        throw new Error("Missing shop elements");
+    }
 
-    const address = document.querySelector("#shop-address");
+    notice.textContent = shop.notice;
+    slogan.textContent = shop.slogan;
+    renderAbout(shop.about);
+    footerAbout.textContent = shop.about;
+
     const phone = createLink(shop.phone, `tel:${shop.phone.replace(/[^+0-9]/g, "")}`);
     phone.dir = "ltr";
     address.replaceChildren(
@@ -268,20 +289,23 @@ function renderShop(shop) {
         phone
     );
 
-    const schedule = document.querySelector("#shop-schedule");
+    const schedule = document.querySelector<HTMLDivElement>("#shop-schedule");
+    if (!schedule) throw new Error("Missing shop schedule");
     schedule.replaceChildren(createTextElement("h3", "ساعت کاری"));
     shop.schedule.forEach(entry => {
         schedule.append(createTextElement("p", `${entry.days}: ${entry.time}`));
     });
 
     // Keep our own brand while using the API's copyright text.
-    const shopName = document.querySelector(".brand strong").textContent;
-    document.querySelector("#shop-copyright").textContent =
-        shop.copyright.replaceAll(shop.name, shopName);
+    const brandName = document.querySelector<HTMLElement>(".brand strong");
+    const copyright = document.querySelector<HTMLParagraphElement>("#shop-copyright");
+    if (!brandName || !copyright) throw new Error("Missing shop footer elements");
+    copyright.textContent = shop.copyright.replaceAll(shop.name, brandName.textContent);
 
     [".desktop-navigation", ".mobile-navigation"].forEach(selector => {
-        const menu = document.querySelector(selector);
-        menu.querySelectorAll("[data-shop-link]").forEach(link => link.remove());
+        const menu = document.querySelector<HTMLElement>(selector);
+        if (!menu) throw new Error(`Missing navigation: ${selector}`);
+        menu.querySelectorAll<HTMLAnchorElement>("[data-shop-link]").forEach(link => link.remove());
         shop.menu.forEach(item => {
             const link = createLink(item.label, shopHref(item.href));
             link.dataset.shopLink = "";
@@ -312,16 +336,18 @@ function fragmentTarget(hash) {
 
 function scrollToFragment(animate = true) {
     const target = fragmentTarget(location.hash);
-    document.querySelectorAll(".is-fragment-target").forEach(element => {
+    document.querySelectorAll<HTMLElement>(".is-fragment-target").forEach(element => {
         element.classList.remove("is-fragment-target");
     });
     if (!target) return;
     target.classList.add("is-fragment-target");
     const behavior = animate && !matchMedia("(prefers-reduced-motion: reduce)").matches
         ? "smooth" : "instant";
-    const headerHeight = document.querySelector(".site-header").getBoundingClientRect().height;
-    const track = target.closest(".product-track");
-    const section = track ? target.closest(".product-carousel") : target;
+    const header = document.querySelector<HTMLElement>(".site-header");
+    if (!header) throw new Error("Missing site header");
+    const headerHeight = header.getBoundingClientRect().height;
+    const track = target.closest<HTMLElement>(".product-track");
+    const section = (track && target.closest<HTMLElement>(".product-carousel")) || target;
 
     if (track) {
         // Move the RTL track horizontally without letting it move the page vertically.
@@ -338,17 +364,20 @@ function scrollToFragment(animate = true) {
     });
 }
 
-document.addEventListener("click", event => {
+document.addEventListener("click", (event: MouseEvent) => {
     if (event.defaultPrevented || event.button !== 0 ||
         event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    const link = event.target.closest("a[href]");
+    if (!(event.target instanceof Element)) return;
+    const link = event.target.closest<HTMLAnchorElement>("a[href]");
     if (!link || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
     const url = new URL(link.href, location.href);
     if (url.origin !== location.origin || url.pathname !== location.pathname ||
         url.search !== location.search || !url.hash || !fragmentTarget(url.hash)) return;
 
     event.preventDefault();
-    document.querySelector(".mobile-menu").open = false;
+    const mobileMenu = document.querySelector<HTMLDetailsElement>(".mobile-menu");
+    if (!mobileMenu) throw new Error("Missing mobile menu");
+    mobileMenu.open = false;
     if (location.hash !== url.hash) history.pushState(null, "", url.hash);
     requestAnimationFrame(() => scrollToFragment());
 });
@@ -356,16 +385,21 @@ document.addEventListener("click", event => {
 window.addEventListener("hashchange", () => scrollToFragment());
 
 // Keep native fragment offsets correct too, including when the viewport changes.
+const siteHeader = document.querySelector<HTMLElement>(".site-header");
+if (!siteHeader) throw new Error("Missing site header");
 const headerObserver = new ResizeObserver(() => {
-    const height = document.querySelector(".site-header").getBoundingClientRect().height;
+    const height = siteHeader.getBoundingClientRect().height;
     document.documentElement.style.setProperty("--header-offset", `${height + 12}px`);
 });
-headerObserver.observe(document.querySelector(".site-header"));
+headerObserver.observe(siteHeader);
 
 function renderCartCount() {
     const formatted = priceFormatter.format(cartCount);
-    document.querySelector("#cart-count").textContent = formatted;
-    document.querySelector(".cart").setAttribute("aria-label", `سبد خرید، ${formatted} کالا`);
+    const count = document.querySelector<HTMLElement>("#cart-count");
+    const cart = document.querySelector<HTMLAnchorElement>(".cart");
+    if (!count || !cart) throw new Error("Missing cart elements");
+    count.textContent = formatted;
+    cart.setAttribute("aria-label", `سبد خرید، ${formatted} کالا`);
 }
 
 function restoreCart() {
@@ -382,7 +416,8 @@ function addToCart() {
     if (cartCount >= Number.MAX_SAFE_INTEGER) return;
     cartCount += 1;
     renderCartCount();
-    const status = document.querySelector("#cart-status");
+    const status = document.querySelector<HTMLParagraphElement>("#cart-status");
+    if (!status) throw new Error("Missing cart status");
     try {
         localStorage.setItem(CART_KEY, String(cartCount));
         status.textContent = "";
@@ -391,12 +426,13 @@ function addToCart() {
     }
 }
 
-window.addEventListener("storage", event => {
+window.addEventListener("storage", (event: StorageEvent) => {
     if (event.key === CART_KEY || event.key === null) restoreCart();
 });
 
 function renderAbout(about) {
-    const section = document.querySelector("#about");
+    const section = document.querySelector<HTMLElement>("#about");
+    if (!section) throw new Error("Missing about section");
     const heading = createTextElement("h2", "داستان سام مارکت");
     heading.id = "about-title";
     const prose = document.createElement("div");
@@ -427,7 +463,8 @@ function renderAbout(about) {
 }
 
 function renderBanners(home) {
-    const banners = document.querySelector("#home-banners");
+    const banners = document.querySelector<HTMLDivElement>("#home-banners");
+    if (!banners) throw new Error("Missing home banners");
     const hero = document.createElement("section");
     hero.className = "hero";
     hero.setAttribute("aria-labelledby", "hero-title");
@@ -473,7 +510,8 @@ function renderBanners(home) {
     hero.append(copy, visual);
     banners.replaceChildren(hero);
 
-    const promos = document.querySelector("#home-promos");
+    const promos = document.querySelector<HTMLElement>("#home-promos");
+    if (!promos) throw new Error("Missing home promos");
     promos.replaceChildren();
     home.promos.forEach((promo, index) => {
         const article = document.createElement("article");
@@ -490,7 +528,8 @@ function renderBanners(home) {
     });
 
     // The second API banner uses the original photographic story design.
-    const story = document.querySelector("#home-side");
+    const story = document.querySelector<HTMLElement>("#home-side");
+    if (!story) throw new Error("Missing home side section");
     story.setAttribute("aria-labelledby", "side-title");
     const photo = document.createElement("div");
     photo.className = "story-image";
@@ -510,7 +549,8 @@ function renderBanners(home) {
 }
 
 function renderHomeCarousels(configurations, products, stock, offers) {
-    const container = document.querySelector("#home-carousels");
+    const container = document.querySelector<HTMLDivElement>("#home-carousels");
+    if (!container) throw new Error("Missing home carousels");
     container.replaceChildren();
     configurations.forEach(config => {
         const section = document.createElement("section");
@@ -551,8 +591,9 @@ function renderHomeCarousels(configurations, products, stock, offers) {
 
 async function initPage() {
     restoreCart();
-    const main = document.querySelector("main");
-    const status = document.querySelector("#page-status");
+    const main = document.querySelector<HTMLElement>("main");
+    const status = document.querySelector<HTMLParagraphElement>("#page-status");
+    if (!main || !status) throw new Error("Missing page elements");
     main.setAttribute("aria-busy", "true");
     status.textContent = "در حال بارگذاری فروشگاه...";
 
@@ -576,8 +617,9 @@ async function initPage() {
         renderHomeCarousels(home.carousels, products, stock, offers);
         renderCategories(categories, products);
         renderShop(shop);
-        document.querySelector("#site-search").placeholder =
-            `جست‌وجو در میان ${priceFormatter.format(products.length)} کالا...`;
+        const search = document.querySelector<HTMLInputElement>("#site-search");
+        if (!search) throw new Error("Missing search input");
+        search.placeholder = `جست‌وجو در میان ${priceFormatter.format(products.length)} کالا...`;
         status.textContent = "";
         // Images and fonts can move the section after API rendering finishes.
         await document.fonts.ready;
@@ -588,7 +630,9 @@ async function initPage() {
     } catch {
         ["home-banners", "home-side", "home-promos", "home-carousels", "category-grid",
             "category-sections", "about"].forEach(id => {
-            document.getElementById(id).replaceChildren();
+            const element = document.querySelector<HTMLElement>(`#${id}`);
+            if (!element) throw new Error(`Missing section: ${id}`);
+            element.replaceChildren();
         });
         status.textContent = "بارگذاری فروشگاه انجام نشد. اتصال را بررسی کنید و صفحه را دوباره بارگذاری کنید.";
         status.classList.add("is-error");
