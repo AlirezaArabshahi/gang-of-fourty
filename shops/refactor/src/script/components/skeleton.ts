@@ -1,46 +1,7 @@
 
 import { el } from '../utils/utils.js';
 
-// const showError = (
-//   track: HTMLElement,
-//   msg: string
-// ): void => {
-//   track.textContent = '';
 
-//   const errorItem = el('li', 'error-msg', msg);
-//   errorItem.setAttribute('role', 'alert');
-
-//   track.append(errorItem);
-// };
-
-// const makeSkeleton = (): HTMLLIElement => {
-//   const li = el('li', 'card skeleton');
-//   li.setAttribute('aria-hidden', 'true');
-
-//   const top = el('div', 'card-top');
-//   const media = el('div', 'sk-media');
-//   const body = el('div', 'card-body');
-//   const line1 = el('div', 'sk-line');
-//   const line2 = el('div', 'sk-line sk-line--short');
-
-//   body.append(line1, line2);
-//   li.append(top, media, body);
-
-//   return li;
-// };
-
-// const renderSkeletons = (container:HTMLElement, count:number = 4):void =>
-//     container.append(
-//         ...Array.from({ length: count }, () => makeSkeleton())
-//         setBusy(container, true);
-//     );
-
-
-// const setBusy = (container: HTMLElement, busy: boolean): void => {
-//     container.setAttribute('aria-busy', String(busy));
-// };
-
-// export { showError, renderSkeletons,setBusy };
 
 type MessageRole = 'status' | 'alert';
 
@@ -66,7 +27,6 @@ const fillContainer = (container: HTMLElement, nodes: Node[]): void => {
     }
 };
 
-// قبلاً showError بود ولی برای پیام «در حال بارگیری» هم استفاده می‌شد
 const showError = (
     container: HTMLElement,
     msg: string,
@@ -100,8 +60,7 @@ const makeSkeleton = (): HTMLLIElement => {
     return li;
 };
 
-// اسکلتون‌ها تا رسیدن داده دیده می‌شوند (قبلاً هیچ‌وقت صدا زده نمی‌شد یا فوراً پاک می‌شد)
-const renderSkeletons = (container: HTMLElement, count: number = 4): void => {
+const renderSkeletons = (container: HTMLElement, count: number = 8): void => {
     fillContainer(container, Array.from({ length: count }, makeSkeleton));
     setBusy(container, true);
 };

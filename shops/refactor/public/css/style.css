@@ -308,8 +308,22 @@ main>section+section {
 }
 
 .card-weight {
-    font-size: 0.8rem;
-    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    width: fit-content;
+    max-width: 100%;
+    min-height: 27px;
+    margin-top: 3px;
+    padding: 3px 10px;
+    border: 1px solid #dcece4;
+    border-radius: 999px;
+    background: #f0f8f3;
+    color: #38634f;
+    font-size: .75rem;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: normal;
 }
 
 

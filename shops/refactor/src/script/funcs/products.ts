@@ -1,50 +1,30 @@
-import { BASEURL } from '../config.js';
-import { showError, renderSkeletons, setBusy } from '../components/skeleton.js';
+import { showError, setBusy, fillContainer } from '../components/skeleton.js';
 import { formatPrice } from '../utils/format.js';
 import { makeCard } from '../components/productcard.js';
 import initSwiper from "../vender/swiper/swiper.js"
-import initScrollAnimation from "../vender/motion/motion.js"
+import showAddToCartToast from "../vender/sweetAlert/sweetAlert.js"
 import {
     el,
     saveToLocalStorage,
     getCountBasketFromLocalStorage
 } from '../utils/utils.js';
 
-import type { Home, Shop, MainCardProps,PromoItem,ProductView
-,Schedule} from '.././type.js';
+import type { Home, Shop, MainCardProps, PromoItem, ProductView, Schedule, FooterLink } from '.././type.js';
 
-const toFa = (n: number):string => String(n).replace(/[0-9]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+const toFa = (n: number): string => n.toLocaleString('fa-IR');
 
-
-const startApp = async (): Promise<void> => {
-    try {
-        const products = await getProductsWithDetails();
-        getAndShowAllProducts(products);
-        getAndShowProducts('.products-track-off', 2, products);
-        getAndShowProducts('.product-fruit', 1, products);
-
-        updateSearchPlaceholders(products.length);
-
-        await Promise.all([
-            getAndShowHeroBanner(),
-            getndShowFooterInfos()
-        ]);
-    } catch (err: unknown) {
-        console.error('خطا در بارگیری اطلاعات برنامه:', err);
-    }
-};
 
 const createHeroSlider = (slide: MainCardProps): HTMLElement => {
-    const swiper = el('div', 'swiper');
+     const swiper = el('div', 'swiper');
+    swiper.setAttribute('role', 'region');
+    swiper.setAttribute('aria-label', 'پیشنهاد ویژه فروشگاه');
+
     const wrapper = el('div', 'swiper-wrapper');
+    const item = el('div', 'swiper-slide');
+    item.append(createMainCard(slide));
+    wrapper.append(item);
 
-    for (let index = 0; index < 4; index += 1) {
-        const item = el('div', 'swiper-slide');
-        item.append(createMainCard(slide));
-        wrapper.append(item);
-    }
-
-    swiper.append(wrapper, el('div', 'swiper-pagination'));
+    swiper.append(wrapper);
 
     return swiper;
 };
@@ -118,66 +98,6 @@ const renderHero = (home: Home): void => {
     }
 };
 
-// const getAndShowHeroBanner = async (): Promise<boolean> => {
-//     const heroGrid = document.querySelector<HTMLDivElement>('.hero-grid');
-
-//     if (heroGrid) {
-//         showError(heroGrid, 'در حال بارگیری ...');
-
-//         try {
-//             const response = await fetch(`${BASEURL}/home.json`);
-
-//             if (!response.ok) {
-//                 throw new Error(`HTTP ${response.status}`);
-//             }
-
-//             const data = await response.json();
-//             renderHero(data);
-
-//             return true;
-//         } catch (err: unknown) {
-//             showError(heroGrid, 'خطا در بارگیری بنرها. لطفاً دوباره تلاش کنید.');
-
-//             if (err instanceof Error) {
-//                 console.error('خطا در دریافت اطلاعات بنرها:', err.message);
-//             }
-//         }
-//     }
-//     return false;
-// };
-
-// const getProductsWithDetails = async (): Promise<ProductView[]> => {
-//     const [productsRes, stocksRes, offersRes] = await Promise.all([
-//         fetch(`${BASEURL}/products.json`),
-//         fetch(`${BASEURL}/stock.json`),
-//         fetch(`${BASEURL}/offers.json`),
-//     ]);
-
-//     if (!productsRes.ok || !stocksRes.ok || !offersRes.ok) {
-//         throw new Error('خطا در دریافت اطلاعات محصولات.');
-//     }
-
-//     const products: ApiProduct[] = await productsRes.json();
-//     const stock: Stock = await stocksRes.json();
-//     const offers: Offer[] = await offersRes.json();
-
-
-//     return products.map((product) => {
-//         const offer = offers.find(
-//             (item) => item.productId === product.id
-//         );
-//         return {
-//             ...product,
-//             stock: stock.items[product.id] ?? 0,
-//             off: offer?.percent,
-//             oldPrice: offer ? product.price : undefined,
-//             price: offer
-//                 ? Math.round(product.price * (1 - offer.percent / 100))
-//                 : product.price,
-//         };
-//     });
-// };
-
 const getAndShowProducts = (
     trackSelector: string,
     categoryId: number,
@@ -193,15 +113,11 @@ const getAndShowProducts = (
 
     if (filtered.length === 0) {
         showError(track, 'محصولی برای نمایش وجود ندارد.');
-        return;
+    } else {
+        fillContainer(track, filtered.map(makeCard));
+        setBusy(track, false);
     }
-
-    track.textContent = '';
-    track.append(...filtered.map(makeCard));
-
-    initScrollAnimation();
 };
-
 
 const getAndShowAllProducts = (products: ProductView[]): void => {
     const track = document.querySelector<HTMLUListElement>(
@@ -218,14 +134,78 @@ const getAndShowAllProducts = (products: ProductView[]): void => {
                 track,
                 'محصول تخفیف‌داری برای نمایش وجود ندارد.'
             );
-            return;
+        } else {
+
+            fillContainer(track, filteredProducts.map(makeCard));
+            setBusy(track, false);
         }
-
-        track.textContent = '';
-        track.append(...filteredProducts.map(makeCard));
-
-        initScrollAnimation();
     }
+};
+
+const setupCarousel = (carousel: HTMLElement): void => {
+    const track = carousel.querySelector<HTMLElement>('.track');
+    const prev = carousel.querySelector<HTMLButtonElement>('[data-carousel="prev"]');
+    const next = carousel.querySelector<HTMLButtonElement>('[data-carousel="next"]');
+
+    if (track && prev && next) {
+        prev.hidden = false;
+        next.hidden = false;
+
+        const getStep = (): number => {
+            const card = track.querySelector<HTMLElement>('.card');
+            const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+
+            if (!card) {
+                return track.clientWidth;
+            }
+
+            const cardWidth = card.offsetWidth + gap;
+
+            return Math.max(1, Math.floor(track.clientWidth / cardWidth)) * cardWidth;
+        };
+
+        const direction = (): number => (getComputedStyle(track).direction === 'rtl' ? -1 : 1);
+
+        const update = (): void => {
+            const max = track.scrollWidth - track.clientWidth;
+            const position = Math.abs(track.scrollLeft);
+
+            const scrollable = max > 1;
+
+            prev.hidden = !scrollable;
+            next.hidden = !scrollable;
+            prev.disabled = position <= 1;
+            next.disabled = position >= max - 1;
+        };
+
+        const scrollByStep = (sign: number): void => {
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            track.scrollBy({
+                left: sign * direction() * getStep(),
+                behavior: reduceMotion ? 'auto' : 'smooth',
+            });
+        };
+
+        prev.addEventListener('click', () => scrollByStep(-1));
+        next.addEventListener('click', () => scrollByStep(1));
+
+        let frame = 0;
+        const scheduleUpdate = (): void => {
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(update);
+        };
+
+        track.addEventListener('scroll', scheduleUpdate, { passive: true });
+        new ResizeObserver(scheduleUpdate).observe(track);
+        new MutationObserver(scheduleUpdate).observe(track, { childList: true });
+
+        update();
+    }
+};
+
+const initCarousels = (): void => {
+    document.querySelectorAll<HTMLElement>('.carousel').forEach(setupCarousel);
 };
 
 
@@ -338,40 +318,12 @@ const renderFooter = (shop: Shop): void => {
     }
 };
 
-// const getndShowFooterInfos = async (): Promise<boolean> => {
-//     const footerCols = document.querySelector<HTMLElement>('.footer-cols');
-
-//     try {
-//         const response = await fetch(`${BASEURL}/shop.json`);
-//         if (!response.ok) {
-//             throw new Error(`HTTP ${response.status}`);
-//         }
-
-//         const data: Shop = await response.json();
-//         renderFooter(data);
-
-//         return true;
-//     } catch (err: unknown) {
-//         if (footerCols) {
-//             showError(footerCols, 'خطا در بارگیری اطلاعات فروشگاه.');
-//         }
-
-//         if (err instanceof Error) {
-//             console.error('خطا در دریافت اطلاعات فوتر:', err.message);
-//         }
-
-//         return false;
-//     }
-// };
-
-
 
 const updateBadge = (): void => {
     const count = getCountBasketFromLocalStorage();
-    const badge = document.querySelectorAll(".bage-basket");
     document.querySelectorAll<HTMLElement>('.cart-badge').forEach((badge) => {
         badge.textContent = toFa(count);
-        badge.closest('a')?.setAttribute('aria-label', `سبد خرید، ${formatNumber(count)} کالا`);
+        badge.closest('a')?.setAttribute('aria-label', `سبد خرید، ${toFa(count)} کالا`);
     });
 };
 
@@ -384,15 +336,18 @@ const initAddToCart = (): void => {
         if (button && !button.disabled) {
             saveToLocalStorage(getCountBasketFromLocalStorage() + 1)
             updateBadge();
+            showAddToCartToast()
         }
     });
 }
 
 export {
-    getAndShowHeroBanner,
-    getndShowFooterInfos,
+    renderHero,
+    renderFooter,
+    getAndShowProducts,
+    getAndShowAllProducts,
     updateSearchPlaceholders,
     initAddToCart,
-    startApp
+    initCarousels,
 
 };

@@ -154,6 +154,13 @@
     .cat-list> :last-child:nth-child(3n + 1) {
         grid-column: span 6;
     }
+    .car-nav {
+        gap: 4px;
+    }
+    .car-btn {
+        width: 40px;
+        height: 40px;
+    }
 }
 
 @media (min-width: 768px) {
@@ -204,14 +211,20 @@
         min-height: 16rem;
     }
     .hero-main .hero-emoji {
-        position: absolute;
+        /* position: absolute;
         inset-inline-end: 1.5rem;
         bottom: -.5rem;
         z-index: -1;
         margin: 0;
         font-size: clamp(6rem, 14vw, 10rem);
         opacity: .9;
-        transform: rotate(-8deg);
+        transform: rotate(-8deg); */
+        position: relative;
+        inset: auto;
+        z-index: 1;
+        margin-bottom: .5rem;
+        font-size: 2rem;
+        transform: none;
     }
     .hero-main .hero-title,
     .hero-main .hero-text {
@@ -439,6 +452,30 @@
     }
     .footer-bottom {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .swiper,
+    .swiper-slide {
+        height: 280px;
+    }
+    .hero-main {
+        padding: 1.25rem;
+    }
+    .hero-shade {
+        background: linear-gradient(90deg, rgba(5, 40, 27, .88), rgba(5, 40, 27, .55));
+    }
+    .cat {
+        min-height: 124px;
+        padding: 10px 6px;
+    }
+    .cat-img {
+        width: 64px;
+        border-radius: 18px;
+    }
+    .cat strong {
+        font-size: .85rem;
     }
 }
 

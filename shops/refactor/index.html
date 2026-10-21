@@ -78,6 +78,12 @@
         <symbol id="i-arrow-left" viewBox="0 0 24 24">
             <path d="M19 12H5M11 6l-6 6 6 6" />
         </symbol>
+        <symbol id="i-chevrons-right" viewBox="0 0 24 24">
+            <path d="M6 6l6 6-6 6M13 6l6 6-6 6" />
+        </symbol>
+        <symbol id="i-chevrons-left" viewBox="0 0 24 24">
+            <path d="M18 6l-6 6 6 6M11 6l-6 6 6 6" />
+        </symbol>
         <symbol id="i-arrow-up" viewBox="0 0 24 24">
             <path d="M12 19V5M6 11l6-6 6 6" />
         </symbol>
@@ -253,9 +259,14 @@
                 <div class="section-head">
                     <h2 class="section-title" id="offer-title">پیشنهاد شگفت‌انگیز</h2>
                     <a class="section-link" href="#products">مشاهده همه محصولات</a>
+                    <nav class="car-nav" aria-label="پیمایش پیشنهادهای شگفت‌انگیز">
+                        <a class="car-btn" href="#offer-start" aria-label="رفتن به ابتدای پیشنهادهای شگفت‌انگیز"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevrons-right" /></svg></a>
+                        <a class="car-btn" href="#offer-end" aria-label="رفتن به انتهای پیشنهادهای شگفت‌انگیز"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevrons-left" /></svg></a>
+                    </nav>
                 </div>
-                <ul class="track products-track products-track-off" tabindex="0" aria-label="پیشنهادهای شگفت‌انگیز">
-                    <!-- data loded ftom js -->
+                <ul class="track products-track products-track-off" id="offer-track" tabindex="0" aria-label="پیشنهادهای شگفت‌انگیز">
+                    <li class="track-edge" id="offer-start" data-edge="start" aria-hidden="true"></li>
+                    <li class="track-edge" id="offer-end" data-edge="end" aria-hidden="true"></li>
                 </ul>
             </div>
         </section>
@@ -266,9 +277,14 @@
                 <div class="section-head">
                     <h2 class="section-title" id="latest-title">جدیدترین محصولات</h2>
                     <a class="section-link" href="#products">مشاهده همه محصولات</a>
+                    <nav class="car-nav" aria-label="پیمایش جدیدترین محصولات">
+                        <a class="car-btn" href="#latest-start" aria-label="رفتن به ابتدای جدیدترین محصولات"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevrons-right" /></svg></a>
+                        <a class="car-btn" href="#latest-end" aria-label="رفتن به انتهای جدیدترین محصولات"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevrons-left" /></svg></a>
+                    </nav>
                 </div>
-                <ul class="track products-track products-track-latest" tabindex="0" aria-label="جدیدترین محصولات">
-                    <!-- data loded from js -->
+                <ul class="track products-track products-track-latest" id="latest-track" tabindex="0" aria-label="جدیدترین محصولات">
+                    <li class="track-edge" id="latest-start" data-edge="start" aria-hidden="true"></li>
+                    <li class="track-edge" id="latest-end" data-edge="end" aria-hidden="true"></li>
                 </ul>
             </div>
         </section>
@@ -286,10 +302,14 @@
                 <div class="season-box carousel">
                     <div class="section-head">
                         <h3 class="section-title">محصولات فصل</h3>
-                        <a class="section-link" href="#products">مشاهده همه</a>
+                        <nav class="car-nav" aria-label="پیمایش محصولات تازه فصل">
+                            <a class="car-btn" href="#season-start" aria-label="رفتن به ابتدای محصولات تازه فصل"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevrons-right" /></svg></a>
+                            <a class="car-btn" href="#season-end" aria-label="رفتن به انتهای محصولات تازه فصل"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevrons-left" /></svg></a>
+                        </nav>
                     </div>
-                    <ul class="track products-track product-fruit" tabindex="0" aria-label="محصولات تازه فصل">
-                        <!-- data loded from js -->
+                    <ul class="track products-track product-fruit" id="season-track" tabindex="0" aria-label="محصولات تازه فصل">
+                        <li class="track-edge" id="season-start" data-edge="start" aria-hidden="true"></li>
+                        <li class="track-edge" id="season-end" data-edge="end" aria-hidden="true"></li>
                     </ul>
                 </div>
             </div>
@@ -300,8 +320,13 @@
             <div class="carousel">
                 <div class="section-head">
                     <h2 class="section-title" id="brands-title">محبوب‌ترین برندها</h2>
+                    <nav class="car-nav" aria-label="پیمایش محبوب‌ترین برندها">
+                        <a class="car-btn" href="#brands-start" aria-label="رفتن به ابتدای محبوب‌ترین برندها"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevrons-right" /></svg></a>
+                        <a class="car-btn" href="#brands-end" aria-label="رفتن به انتهای محبوب‌ترین برندها"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-chevrons-left" /></svg></a>
+                    </nav>
                 </div>
-                <ul class="track products-track products-track-brand" tabindex="0" aria-label="محبوب‌ترین برندها">
+                <ul class="track products-track products-track-brand" id="brands-track" tabindex="0" aria-label="محبوب‌ترین برندها">
+                    <li class="track-edge" id="brands-start" data-edge="start" aria-hidden="true"></li>
                     <li class="card brand-card">
                         <a href="#products" class="card-link">
                             <span class="brand-logo"><img src="./public/img/brand.webp" alt="لوگوی برند تک دانه"
@@ -350,6 +375,7 @@
                             <span class="brand-count">۲ محصول</span>
                         </a>
                     </li>
+                    <li class="track-edge" id="brands-end" data-edge="end" aria-hidden="true"></li>
                 </ul>
             </div>
         </section>
@@ -462,11 +488,11 @@
             </div>
             <div class="footer-copy">
                 <div class="footer-copy-left">
-                    <a id="terms" href="#terms">شرایط و قوانین</a>
+                    <a href="#about">شرایط و قوانین</a>
                     <span aria-hidden="true">|</span>
-                    <a id="privacy" href="#privacy">حریم خصوصی</a>
+                    <a href="#about">حریم خصوصی</a>
                     <span aria-hidden="true">|</span>
-                    <a id="faq" href="#faq">سوالات متداول</a>
+                    <a href="#contact">سوالات متداول</a>
                 </div>
                 <p class="footer-copy-right">© ۱۴۰۵ سوپرمارکت ریفکتور؛ کلیه حقوق مادی و معنوی این سایت محفوظ می‌باشد. طراحی و توسعه: زهرا گلابی</p>
             </div>
@@ -481,7 +507,7 @@
     </footer>
 
 
-    <script src="./public/script/app.js" type="module"></script>
+    <script src="./src/script/script.ts" type="module"></script>
 </body>
 
 </html>

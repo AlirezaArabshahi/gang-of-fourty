@@ -79,3 +79,9 @@ export type Offer = {
     label: string;
 };
 
+export type AppData = {
+    products: ProductView[];
+    categories: Category[];
+    home: Home;
+    shop: Shop;
+};

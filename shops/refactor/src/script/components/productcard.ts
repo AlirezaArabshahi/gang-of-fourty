@@ -1,7 +1,7 @@
 import { el, makeButton } from '../utils/utils.js';
 import { formatPrice } from '../utils/format.js';
 
-import type {ProductView}from '.././type.js';
+import type { ProductView } from '../type.js';
 
 const makeCard = (product: ProductView): HTMLLIElement => {
     const card = el('li', 'card');
@@ -25,8 +25,10 @@ const makeCard = (product: ProductView): HTMLLIElement => {
     const body = el('div', 'card-body');
     body.append(title);
 
-      if (product.unit) {
-        body.append(el('p', 'card-weight', product.unit));
+    if (product.unit) {
+        const unit = el('p', 'card-weight', product.unit);
+        unit.setAttribute('aria-label', `واحد محصول: ${product.unit}`);
+        body.append(unit);
     }
 
     const price = el('p', 'price');
@@ -39,6 +41,7 @@ const makeCard = (product: ProductView): HTMLLIElement => {
         );
         price.append(del);
     }
+
 
     const strong = el('strong', null, formatPrice(product.price));
     strong.append(el('small', null, 'تومان'));
@@ -66,6 +69,7 @@ const makeCard = (product: ProductView): HTMLLIElement => {
     pair.append(favButton, cartButton);
 
     const actions = el('div', 'card-actions');
+
     actions.append(price, pair);
 
     card.append(media, body, actions);

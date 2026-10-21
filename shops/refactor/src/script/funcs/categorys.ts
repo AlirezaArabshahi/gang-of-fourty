@@ -1,4 +1,3 @@
-import { BASEURL } from '../config.js';
 import { el } from '../utils/utils.js';
 import { showError, setBusy } from '../components/skeleton.js';
 import { makeCard } from '../components/productcard.js';
@@ -114,7 +113,7 @@ const initModalControls = (): void => {
 
 
 const bindCategoryLink = (link: HTMLAnchorElement, category: Category): void => {
-    link.href = `?cat=${encodeURIComponent(category.slug)}`;
+    link.href = `?cat=${(category.slug)}`;
 
     link.addEventListener('click', (event: MouseEvent) => {
         const isPlainClick =
@@ -177,51 +176,6 @@ const initCategories = (categories: Category[], products: ProductView[]): void =
     initModalControls();
     syncModalWithUrl();
 };
-const fetchJSON = async (endpoint: string) => {
-    const response = await fetch(`${BASEURL}${endpoint}`);
 
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
 
-    return response.json();
-};
-
-const loadCategoriesAndProducts = async (): Promise<void> => {
-    const catList = document.querySelector<HTMLUListElement>('.cat-list');
-
-    let timerId;
-    const timeoutPromise = new Promise<never>((_, reject) => {
-        timerId = setTimeout(() => {
-            reject(new Error('SLOW_CONNECTION'));
-        }, 3000);
-    });
-
-    try {
-        const [products, categories] = await Promise.race([
-            Promise.all([
-                fetchProducts(),
-                fetchCategories()
-            ]),
-            timeoutPromise
-        ]);
-
-        initCategories(categories, products);
-
-    } catch (err: unknown) {
-        if (err instanceof Error && err.message === 'SLOW_CONNECTION') {
-            if (catList) {
-                showError(catList, 'اتصال کند است. دوباره تلاش کنید.');
-            }
-        } else {
-            console.error('خطا در بارگیری اطلاعات:', err);
-        }
-    } finally {
-        clearTimeout(timerId);
-    }
-};
-
-const fetchProducts = () => fetchJSON('/products.json');
-const fetchCategories = () => fetchJSON('/categories.json');
-
-export { loadCategoriesAndProducts };
+export { initCategories};
