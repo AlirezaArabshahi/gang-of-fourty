@@ -6,10 +6,7 @@
   <script>
     (function () {
       try {
-        var parts = location.pathname.split('/').filter(Boolean);
-        var i = parts.indexOf('shops');
-        var slug = (i !== -1 && parts[i + 1]) ? parts[i + 1] : 'default';
-        var key = 'shop:' + slug + ':v1:theme';
+        var key = 'sharding:v1:theme';
         var t = localStorage.getItem(key);
         if (t !== 'light' && t !== 'dark' && t !== 'auto') t = 'auto';
         document.documentElement.dataset.theme = t;
@@ -20,7 +17,7 @@
   </script>
   <title>فروشگاه آنلاین</title>
   <meta name="description" content="خرید آنلاین مواد غذایی و اقلام سوپرمارکتی">
-  <link rel="icon" type="image/svg+xml" href="./favicon.ico">
+  <link rel="icon" href="./favicon.ico">
   <link rel="stylesheet" href="/styles/main.css">
 </head>
 <body>
@@ -36,175 +33,174 @@
   <div class="topbar">
     <div class="container topbar__inner">
       <p class="topbar__note">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M1 3h15v13H1V3zm16 5h4l3 3v5h-7V8zM5.5 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm13 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-        </svg>
-        <span id="topbar-notice" class="skeleton-text skeleton-text--topbar" aria-hidden="true"></span>
+        <span id="topbar-notice" class="skeleton skeleton--topbar" data-skeleton aria-hidden="true"></span>
       </p>
-      <nav class="topbar__links" id="topbar-links" aria-label="لینک‌های کمکی" aria-busy="true"></nav>
+      <nav class="topbar__links" aria-label="لینک‌های کمکی">
+        <a href="#">پیگیری سفارش</a>
+        <a href="#">سؤالات متداول</a>
+        <a href="#">تماس با پشتیبانی</a>
+      </nav>
     </div>
   </div>
 
   <!-- Header -->
   <header class="header">
     <div class="container header__inner">
-      <button type="button" class="menu-btn" data-menu-open aria-expanded="false" aria-controls="mobile-menu" aria-label="باز کردن منو">
-        <span class="visually-hidden">باز کردن منو</span>
-        <svg class="menu-btn__icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
-        </svg>
+      <button type="button" class="icon-btn header__menu-btn" data-menu-open
+              aria-expanded="false" aria-controls="mobile-menu" aria-label="باز کردن منو">
+        <svg class="icon-btn__icon" aria-hidden="true"><use href="/icons.svg#menu"/></svg>
       </button>
 
-      <a href="#main-content" class="brand" id="header-brand" aria-label="بازگشت به بالای صفحه">
-        <span class="brand__mark" aria-hidden="true">
-          <img class="logo-img" src="assets/images/logo/kiwi-logo.webp" alt="" width="276" height="242">
+      <a href="#" class="identity" id="header-identity" aria-label="بازگشت به بالای صفحه">
+        <span class="identity__logo" aria-hidden="true">
+          <img class="logo-img" src="/assets/images/logo/kiwi-fruit.svg" alt="" width="48" height="48">
         </span>
-        <span class="brand__text">
-          <span class="brand__name skeleton-text skeleton-text--brand" id="brand-name" aria-hidden="true"></span>
-          <span class="brand__tagline skeleton-text skeleton-text--tagline" id="brand-tagline" aria-hidden="true"></span>
+        <span class="identity__text">
+          <span class="identity__name skeleton skeleton--brand" id="brand-name" data-skeleton aria-hidden="true"></span>
+          <span class="identity__tagline skeleton skeleton--tagline" id="brand-tagline" data-skeleton aria-hidden="true"></span>
         </span>
       </a>
 
-      <form class="search" role="search">
+      <form class="search" role="search" autocomplete="off">
         <label for="search-input" class="visually-hidden">جستجو در محصولات</label>
         <span class="search__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
-          </svg>
+          <svg><use href="/icons.svg#search"/></svg>
         </span>
-        <input id="search-input" class="search__input" type="search" placeholder="" autocomplete="off">
-        <div id="search-results" class="search-results" hidden></div>
-        <button type="submit" class="visually-hidden" aria-label="جستجو">جستجو</button>
+        <input id="search-input" class="search__input" type="search" placeholder="">
+        <div id="search-results" class="search-results" role="list" hidden></div>
+        <button type="submit" class="visually-hidden">جستجو</button>
       </form>
 
-      <div class="actions">
+      <div class="header__actions">
         <a href="#" class="action action--location" aria-label="موقعیت مکانی">
-          <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 14.5 9 2.5 2.5 0 0 1 12 11.5z"/>
-          </svg>
-          <span class="action__label skeleton-text skeleton-text--action" id="label-location" aria-hidden="true"></span>
+          <svg class="action__icon" aria-hidden="true"><use href="/icons.svg#location"/></svg>
+          <span class="action__label">موقعیت</span>
         </a>
         <a href="#" class="action action--account" aria-label="حساب کاربری">
-          <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-          </svg>
-          <span class="action__label skeleton-text skeleton-text--action" id="label-account" aria-hidden="true"></span>
+          <svg class="action__icon" aria-hidden="true"><use href="/icons.svg#account"/></svg>
+          <span class="action__label">حساب من</span>
         </a>
-        <a href="#" class="action action--cart" aria-describedby="cart-status" aria-label="سبد خرید">
-          <svg class="action__icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 18a2 2 0 1 0 2 2 2 2 0 0 0-2-2zM1 2v2h2l3.6 7.59-1.35 2.45A1.96 1.96 0 0 0 5 15a2 2 0 0 0 2 2h12v-2H7.42a.25.25 0 0 1-.25-.25l.03-.12.9-1.63h7.45a2 2 0 0 0 1.75-1.03l3.58-6.49A1 1 0 0 0 19.88 4H5.21l-.94-2H1zm16 16a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/>
-          </svg>
-          <span class="action__label skeleton-text skeleton-text--action" id="label-cart" aria-hidden="true"></span>
+        <a href="#" class="action action--cart" aria-label="سبد خرید" aria-describedby="cart-status">
+          <svg class="action__icon" aria-hidden="true"><use href="/icons.svg#cart"/></svg>
+          <span class="action__label">سبد خرید</span>
           <span class="badge" id="cart-badge" hidden>۰</span>
         </a>
-        <span class="visually-hidden" id="cart-status"></span>
+        <span class="visually-hidden" id="cart-status" aria-live="polite"></span>
       </div>
 
       <div class="theme-switch" role="radiogroup" aria-label="انتخاب پوسته">
-        <input type="radio" id="theme-header-auto" name="theme-header" value="auto" data-theme-set class="theme-switch__radio" checked>
+        <input type="radio" name="theme-header" id="theme-header-auto" value="auto"
+               class="theme-switch__input" data-theme-set >
         <label for="theme-header-auto" class="theme-switch__label" title="پیروی از سیستم">
           <span class="visually-hidden">پیروی از تنظیمات سیستم</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 20h8M12 18v2"/></svg>
+          <svg class="theme-switch__icon" aria-hidden="true"><use href="/icons.svg#themeAuto"/></svg>
         </label>
-        <input type="radio" id="theme-header-light" name="theme-header" value="light" data-theme-set class="theme-switch__radio">
+        <input type="radio" name="theme-header" id="theme-header-light" value="light"
+               class="theme-switch__input" data-theme-set>
         <label for="theme-header-light" class="theme-switch__label" title="حالت روشن">
           <span class="visually-hidden">حالت روشن</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"/></svg>
+          <svg class="theme-switch__icon" aria-hidden="true"><use href="/icons.svg#themeLight"/></svg>
         </label>
-        <input type="radio" id="theme-header-dark" name="theme-header" value="dark" data-theme-set class="theme-switch__radio">
+        <input type="radio" name="theme-header" id="theme-header-dark" value="dark"
+               class="theme-switch__input" data-theme-set>
         <label for="theme-header-dark" class="theme-switch__label" title="حالت تاریک">
           <span class="visually-hidden">حالت تاریک</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+          <svg class="theme-switch__icon" aria-hidden="true"><use href="/icons.svg#themeDark"/></svg>
         </label>
       </div>
     </div>
 
     <nav class="header-nav" aria-label="ناوبری اصلی">
       <div class="container header-nav__inner">
-        <div class="dept">
-          <button type="button" class="dept-btn" aria-expanded="false" aria-haspopup="true" aria-controls="dept-panel" aria-label="همه دسته‌بندی‌ها">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-            </svg>
-            <span id="dept-btn-label" class="skeleton-text skeleton-text--dept" aria-hidden="true"></span>
+        <div class="mega-menu">
+          <button type="button" class="mega-menu__trigger" aria-expanded="false"
+                  aria-haspopup="true" aria-controls="mega-menu-panel">
+            <svg class="mega-menu__trigger-icon" aria-hidden="true"><use href="/icons.svg#grid"/></svg>
+            <span>همه دسته‌بندی‌ها</span>
           </button>
-          <div class="dept-panel" id="dept-panel">
-            <ul class="dept-menu" id="dept-menu"></ul>
+          <div class="mega-menu__panel" id="mega-menu-panel">
+            <ul class="mega-menu__categories" id="mega-menu-categories"></ul>
           </div>
         </div>
-        <ul class="nav" id="nav-list" aria-busy="true"></ul>
+        <ul class="nav" id="nav-list" aria-busy="true">
+          <li aria-hidden="true"><span class="skeleton skeleton--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton skeleton--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton skeleton--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton skeleton--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton skeleton--nav"></span></li>
+          <li aria-hidden="true"><span class="skeleton skeleton--nav"></span></li>
+        </ul>
       </div>
     </nav>
   </header>
 
   <!-- Mobile menu -->
-  <div class="mobile-menu__overlay"></div>
   <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="منوی موبایل">
-    <div class="mobile-menu__head">
-      <button type="button" class="mobile-menu__close" data-menu-close aria-label="بستن منو">
-        <span class="visually-hidden">بستن منو</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-        </svg>
-      </button>
-      <span class="mobile-menu__title skeleton-text skeleton-text--mobile-title" id="mobile-menu-title" aria-hidden="true"></span>
-      <div class="mobile-menu__theme theme-switch" role="radiogroup" aria-label="انتخاب پوسته">
-        <input type="radio" id="theme-mobile-auto" name="theme-mobile" value="auto" data-theme-set class="theme-switch__radio" checked>
-        <label for="theme-mobile-auto" class="theme-switch__label" title="پیروی از سیستم">
-          <span class="visually-hidden">پیروی از تنظیمات سیستم</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 20h8M12 18v2"/></svg>
-        </label>
-        <input type="radio" id="theme-mobile-light" name="theme-mobile" value="light" data-theme-set class="theme-switch__radio">
-        <label for="theme-mobile-light" class="theme-switch__label" title="حالت روشن">
-          <span class="visually-hidden">حالت روشن</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"/></svg>
-        </label>
-        <input type="radio" id="theme-mobile-dark" name="theme-mobile" value="dark" data-theme-set class="theme-switch__radio">
-        <label for="theme-mobile-dark" class="theme-switch__label" title="حالت تاریک">
-          <span class="visually-hidden">حالت تاریک</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
-        </label>
+    <div class="mobile-menu__overlay" data-menu-close></div>
+    <div class="mobile-menu__panel">
+      <div class="mobile-menu__head">
+        <button type="button" class="icon-btn" data-menu-close aria-label="بستن منو">
+          <svg class="icon-btn__icon" aria-hidden="true"><use href="/icons.svg#close"/></svg>
+        </button>
+        <span class="mobile-menu__title">منو</span>
+        <div class="theme-switch" role="radiogroup" aria-label="انتخاب پوسته">
+          <input type="radio" name="theme-mobile" id="theme-mobile-auto" value="auto"
+                 class="theme-switch__input" data-theme-set checked>
+          <label for="theme-mobile-auto" class="theme-switch__label" title="پیروی از سیستم">
+            <span class="visually-hidden">پیروی از تنظیمات سیستم</span>
+            <svg class="theme-switch__icon" aria-hidden="true"><use href="/icons.svg#themeAuto"/></svg>
+          </label>
+          <input type="radio" name="theme-mobile" id="theme-mobile-light" value="light"
+                 class="theme-switch__input" data-theme-set>
+          <label for="theme-mobile-light" class="theme-switch__label" title="حالت روشن">
+            <span class="visually-hidden">حالت روشن</span>
+            <svg class="theme-switch__icon" aria-hidden="true"><use href="/icons.svg#themeLight"/></svg>
+          </label>
+          <input type="radio" name="theme-mobile" id="theme-mobile-dark" value="dark"
+                 class="theme-switch__input" data-theme-set>
+          <label for="theme-mobile-dark" class="theme-switch__label" title="حالت تاریک">
+            <span class="visually-hidden">حالت تاریک</span>
+            <svg class="theme-switch__icon" aria-hidden="true"><use href="/icons.svg#themeDark"/></svg>
+          </label>
+        </div>
       </div>
-    </div>
-    <div class="mobile-menu__body">
-      <ul class="mobile-menu__list" id="mobile-menu-list" aria-busy="true"></ul>
+      <div class="mobile-menu__body">
+        <ul class="mobile-menu__list" id="mobile-menu-list" aria-busy="true"></ul>
+      </div>
     </div>
   </div>
 
   <!-- Hero -->
-  <section class="hero">
+  <section class="hero" aria-labelledby="hero-title">
     <div class="container">
       <div class="hero-video hero-video--skeleton" id="hero-video">
-        <!-- dont remove this 2 lines. base on documents its muted video, so autoplay is fine. needed to pass validation. -->
+        <!-- dont remove this 2 lines. base on docs its muted video, so autoplay is fine. needed to pass validation. -->
         <!-- [html-validate-disable-next no-autoplay] -->
-        <video class="hero-video__media" autoplay loop muted playsinline preload="auto" aria-hidden="true">
-          <source src="assets/video/hero.mp4" type="video/mp4">
-        </video>
+        <video class="hero-video__media" muted loop playsinline preload="none"
+               poster="/assets/video/hero-poster.webp" aria-hidden="true"></video>
         <div class="hero-video__overlay">
           <h1 class="hero-video__title" id="hero-title">فروشگاه آنلاین</h1>
           <p class="hero-video__desc" id="hero-desc"></p>
           <a href="#fruits" class="hero-video__cta" id="hero-cta" aria-hidden="true" tabindex="-1">
             <span id="hero-cta-label"></span>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
-            </svg>
+            <svg class="hero-video__cta-icon" aria-hidden="true"><use href="/icons.svg#arrowForward"/></svg>
           </a>
         </div>
       </div>
 
       <div class="hero-carousel">
-        <ul
-          class="hero-carousel__track"
-          id="banner-track"
-          tabindex="0"
-          aria-label="کاروسل پیشنهادهای ویژه"
-          aria-busy="true"
-        ></ul>
+        <ul class="hero-carousel__track" id="banner-track" tabindex="0"
+            aria-label="کاروسل پیشنهادهای ویژه" aria-busy="true">
+          <li class="hero-carousel__slide" data-skeleton><span class="hero-banner"></span></li>
+          <li class="hero-carousel__slide" data-skeleton><span class="hero-banner"></span></li>
+          <li class="hero-carousel__slide" data-skeleton><span class="hero-banner"></span></li>
+          <li class="hero-carousel__slide" data-skeleton><span class="hero-banner"></span></li>
+        </ul>
       </div>
     </div>
   </section>
 
-  <div id="slow-connection" class="slow-connection" hidden role="status" aria-live="polite">
+  <div id="slow-connection" class="slow-connection" role="status">
     اتصال کند است؛ لطفاً کمی صبر کنید…
   </div>
 
@@ -213,93 +209,120 @@
     <section class="categories" aria-labelledby="categories-title">
       <div class="container">
         <div class="categories__head">
-          <h2 id="categories-title" class="categories__title skeleton-text skeleton-text--section-title" aria-hidden="true">دسته‌بندی محصولات</h2>
+          <h2 id="categories-title" class="categories__title">دسته‌بندی محصولات</h2>
           <nav class="carousel-nav" aria-label="ناوبری دسته‌بندی‌ها">
-            <a href="#cat-start" class="carousel-nav__btn carousel-nav__btn--start" aria-label="رفتن به ابتدای دسته‌بندی‌ها">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+            <a href="#cat-start" class="carousel-nav__btn" aria-label="رفتن به ابتدای دسته‌بندی‌ها" data-carousel-start>
+              <svg aria-hidden="true"><use href="/icons.svg#arrowRight"/></svg>
             </a>
-            <a href="#cat-end" class="carousel-nav__btn carousel-nav__btn--end" aria-label="رفتن به انتهای دسته‌بندی‌ها">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.41 16.59 10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+            <a href="#cat-end" class="carousel-nav__btn" aria-label="رفتن به انتهای دسته‌بندی‌ها" data-carousel-end>
+              <svg aria-hidden="true"><use href="/icons.svg#arrowLeft"/></svg>
             </a>
           </nav>
         </div>
-        <ul class="categories__list" id="categories-list" tabindex="0" aria-label="دسته‌بندی محصولات" aria-busy="true"></ul>
+        <ul class="categories__list" id="categories-list" aria-busy="true" tabindex="0" aria-label="دسته‌بندی محصولات">
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+          <li><span class="category" data-skeleton aria-hidden="true"><span class="category__img"></span><span class="category__name"></span></span></li>
+        </ul>
       </div>
     </section>
 
-    <div id="carousels-root"></div>
+    <div id="product-shelves">
+      <section class="product-shelf" id="skeleton" aria-labelledby="skeleton-title">
+        <div class="container"><div class="product-shelf__inner"><div class="product-shelf__main">
+          <div class="product-shelf__head">
+            <h2 class="product-shelf__title" id="skeleton-title">در حال بارگذاری…</h2>
+          </div>
+          <div class="product-shelf__status" id="skeleton-status" role="status" aria-live="polite" hidden></div>
+          <ul class="product-shelf__grid" id="skeleton-grid" aria-busy="true">
+            <li class="product-item"><article class="product" data-skeleton>
+              <div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div>
+              <div class="product__footer">
+                <span class="product__price"><span class="product__current">—</span></span>
+                <span class="product__add"></span>
+              </div>
+            </article></li>
+            <li class="product-item"><article class="product" data-skeleton>
+              <div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div>
+              <div class="product__footer">
+                <span class="product__price"><span class="product__current">—</span></span>
+                <span class="product__add"></span>
+              </div>
+            </article></li>
+            <li class="product-item"><article class="product" data-skeleton>
+              <div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div>
+              <div class="product__footer">
+                <span class="product__price"><span class="product__current">—</span></span>
+                <span class="product__add"></span>
+              </div>
+            </article></li>
+            <li class="product-item"><article class="product" data-skeleton>
+              <div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div>
+              <div class="product__footer">
+                <span class="product__price"><span class="product__current">—</span></span>
+                <span class="product__add"></span>
+              </div>
+            </article></li>
+            <li class="product-item"><article class="product" data-skeleton>
+              <div class="product__link"><span class="product__img"></span><h3 class="product__name">—</h3></div>
+              <div class="product__footer">
+                <span class="product__price"><span class="product__current">—</span></span>
+                <span class="product__add"></span>
+              </div>
+            </article></li>
+          </ul>
+        </div></div></div>
+      </section>
+    </div>
   </main>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="container">
       <div class="footer__main">
-        <div class="footer__brand">
-          <a href="#main-content" class="brand" id="footer-brand" aria-label="بازگشت به بالای صفحه">
-            <span class="brand__mark" aria-hidden="true">
-              <img class="logo-img" src="assets/images/logo/kiwi-logo.webp" alt="" width="276" height="242">
+        <div class="footer__identity">
+          <a href="#" class="identity" id="footer-identity" aria-label="بازگشت به بالای صفحه">
+            <span class="identity__logo" aria-hidden="true">
+              <img class="logo-img" src="/assets/images/logo/kiwi-fruit.svg" alt="" width="48" height="48">
             </span>
-            <span class="brand__text">
-              <span class="brand__name skeleton-text skeleton-text--brand" id="footer-brand-name" aria-hidden="true"></span>
-              <span class="brand__tagline skeleton-text skeleton-text--tagline" id="footer-brand-tagline" aria-hidden="true"></span>
+            <span class="identity__text">
+              <span class="identity__name skeleton skeleton--brand" id="footer-brand-name" data-skeleton aria-hidden="true"></span>
+              <span class="identity__tagline skeleton skeleton--tagline" id="footer-brand-tagline" data-skeleton aria-hidden="true"></span>
             </span>
           </a>
-          <p class="footer__about skeleton-text skeleton-text--about" id="footer-about" aria-hidden="true"></p>
+          <p class="footer__about skeleton skeleton--about" id="footer-about" data-skeleton aria-hidden="true"></p>
         </div>
         <div class="footer__col footer__col--cats">
-          <h3 class="footer__title skeleton-text skeleton-text--footer-title" id="footer-categories-title" aria-hidden="true">دسته‌بندی‌ها</h3>
+          <h3 class="footer__title">دسته‌بندی‌ها</h3>
           <ul class="footer__list footer__list--cats" id="footer-categories-list"></ul>
         </div>
         <div class="footer__col">
-          <h3 class="footer__title skeleton-text skeleton-text--footer-title" id="footer-help-title" aria-hidden="true">خدمات مشتریان</h3>
+          <h3 class="footer__title">خدمات مشتریان</h3>
           <ul class="footer__list" id="footer-help-list"></ul>
         </div>
         <div class="footer__col">
-          <h3 class="footer__title skeleton-text skeleton-text--footer-title" id="footer-contact-title" aria-hidden="true">تماس با ما</h3>
+          <h3 class="footer__title">تماس با ما</h3>
           <ul class="footer__list" id="footer-contact-list"></ul>
-          <h3 class="footer__title footer__title--mt skeleton-text skeleton-text--footer-title" id="footer-schedule-title" aria-hidden="true">ساعت کاری</h3>
+          <h3 class="footer__title footer__title--mt">ساعت کاری</h3>
           <p class="footer__hours" id="footer-schedule"></p>
         </div>
       </div>
       <div class="footer__bottom">
-        <p class="footer__copy skeleton-text skeleton-text--copy" id="footer-copyright" aria-hidden="true"></p>
+        <p class="footer__copy skeleton skeleton--copy" id="footer-copyright" data-skeleton aria-hidden="true"></p>
         <a href="#main-content" class="footer__top" aria-label="بازگشت به بالای صفحه">
-          <span id="footer-top-label" class="skeleton-text skeleton-text--footer-top" aria-hidden="true"></span>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 4l7 7-1.41 1.41L13 7.83V20h-2V7.83l-4.59 4.58L5 11l7-7z"/>
-          </svg>
+          <span>بازگشت به بالا</span>
+          <svg class="footer__top-icon" aria-hidden="true"><use href="/icons.svg#arrowUp"/></svg>
         </a>
       </div>
     </div>
   </footer>
-
-  <!-- Templates -->
-  <template id="tpl-icon-plus">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-    </svg>
-  </template>
-
-  <template id="tpl-skeleton-nav-item">
-    <li aria-hidden="true"><span class="skeleton-text skeleton-text--nav"></span></li>
-  </template>
-
-  <template id="tpl-skeleton-mobile-item">
-    <li aria-hidden="true"><span class="skeleton-text skeleton-text--mobile"></span></li>
-  </template>
-
-  <template id="tpl-skeleton-category">
-    <li>
-      <span class="category category--skeleton" aria-hidden="true">
-        <span class="category__img"></span>
-        <span class="category__name"></span>
-      </span>
-    </li>
-  </template>
-
-  <template id="tpl-skeleton-topbar-link">
-    <span class="skeleton-text skeleton-text--link" aria-hidden="true"></span>
-  </template>
 
   <script type="module" src="./src/app.ts"></script>
 </body>

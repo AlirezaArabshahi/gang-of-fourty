@@ -1,45 +1,60 @@
 import type { Product } from './types';
-import { state, changeQty } from './state';
-import { h, renderCartButton, notyf } from './ui';
-import { renderImageOrEmoji } from './dom';
-import { priceFmt, applyOffer } from './utils';
+import type FuseType from 'fuse.js';
+import { state, inStock } from './state';
+import { updateCartItem } from './cart-actions';
+import { h, renderImageOrEmoji, closestTarget } from './dom';
+import { renderCartButton } from './product-card';
+import { priceFmt, getFinalPrice } from './format';
 
-export function setupSearch(): void {
-  const search = document.querySelector<HTMLInputElement>('#search-input');
+export function setupSearch(products: Product[]): void {
+  const input = document.querySelector<HTMLInputElement>('#search-input');
   const box = document.getElementById('search-results');
-  if (!search || !box) return;
+  if (!input || !box) return;
 
-  const close = () => {
+  let fusePromise: Promise<FuseType<Product>> | null = null;
+
+  const getFuse = (): Promise<FuseType<Product>> => {
+    if (!fusePromise) {
+      fusePromise = import('fuse.js').then(({ default: Fuse }) =>
+        new Fuse(products, {
+          keys: ['name', 'tags'],
+          threshold: 0.4,
+          ignoreLocation: true,
+        }),
+      );
+    }
+    return fusePromise;
+  };
+
+  input.addEventListener('focus', () => void getFuse(), { once: true });
+
+  const close = (): void => {
     box.hidden = true;
     box.replaceChildren();
   };
 
-  const offerFor = (p: Product) => state.offers.find((o) => o.productId === p.id);
-
-  search.addEventListener('input', () => {
-    const fuse = state.fuse;
-    if (!fuse) return;
-
-    const q = search.value.trim();
+  input.addEventListener('input', async () => {
+    const q = input.value.trim();
     if (!q) return close();
+
+    const fuse = await getFuse();
+    if (input.value.trim() !== q) return; 
 
     const hits = fuse.search(q).map((r) => r.item).slice(0, 8);
     box.replaceChildren();
 
     if (hits.length === 0) {
-      box.appendChild(
-        h('p', {
-          className: 'search-results__empty',
-          textContent: 'نتیجه‌ای یافت نشد',
-        }),
-      );
+      const empty = h('p', { className: 'search-results__empty', textContent: 'نتیجه‌ای یافت نشد' });
+      empty.setAttribute('role', 'status');
+      box.appendChild(empty);
       box.hidden = false;
       return;
     }
 
     for (const p of hits) {
-      const offer = offerFor(p);
-      const finalPrice = applyOffer(p.price, offer);
+      const offer = state.offerMap.get(p.id);
+      const final = getFinalPrice(p.price, offer);
+      const available = inStock(p.id);
 
       const imgWrap = h('div', { className: 'search-results__img' });
       renderImageOrEmoji(imgWrap, p.image, p.name, p.emoji);
@@ -48,7 +63,7 @@ export function setupSearch(): void {
         h('span', { className: 'search-results__name', textContent: p.name }),
         h('span', {
           className: 'search-results__price',
-          textContent: `${priceFmt.format(finalPrice)} تومان`,
+          textContent: `${priceFmt.format(final)} تومان`,
         }),
       );
 
@@ -56,10 +71,18 @@ export function setupSearch(): void {
         className: 'product__actions search-results__actions',
         dataset: { productId: String(p.id), productName: p.name },
       });
-      renderCartButton(actions, p.id, p.name);
+
+      if (available) {
+        renderCartButton(actions, p.id, p.name);
+      } else {
+        actions.appendChild(
+          h('span', { className: 'search-results__out', textContent: 'ناموجود' }),
+        );
+      }
 
       const item = h('div', { className: 'search-results__item', role: 'listitem' });
       item.dataset.productId = String(p.id);
+      item.dataset.stock = available ? 'in' : 'out';
       item.append(imgWrap, info, actions);
       box.appendChild(item);
     }
@@ -68,28 +91,25 @@ export function setupSearch(): void {
   });
 
   box.addEventListener('click', (e) => {
-    if (!(e.target instanceof Element)) return;
-    const item = e.target.closest<HTMLElement>('.search-results__item');
-    if (!item || e.target.closest('.search-results__actions')) return;
+    const item = closestTarget<HTMLElement>(e, '.search-results__item');
+    if (!item) return;
+    if (item.dataset.stock === 'out') return;
+    if (closestTarget(e, '.search-results__actions')) return;
     const pid = item.dataset.productId;
     if (!pid) return;
 
-    changeQty(pid, 1);
     const name = item.querySelector('.search-results__name')?.textContent || 'کالا';
-    notyf.success(`${name} به سبد اضافه شد`);
-
     const actions = item.querySelector<HTMLElement>('.search-results__actions');
-    if (actions) renderCartButton(actions, pid, name);
+    if (!actions) return;
 
-    item.style.backgroundColor = 'var(--lime-soft)';
-    setTimeout(() => {
-      item.style.backgroundColor = '';
-    }, 300);
+    updateCartItem(actions, pid, name, 1);
+
+    item.dataset.state = 'added';
+    setTimeout(() => delete item.dataset.state, 300);
   });
 
   document.addEventListener('click', (e) => {
-    if (!(e.target instanceof Node)) return;
-    if (!box.contains(e.target) && e.target !== search) close();
+    if (!e.composedPath().includes(box) && e.target !== input) close();
   });
 
   document.addEventListener('keydown', (e) => {

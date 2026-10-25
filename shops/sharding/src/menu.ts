@@ -1,57 +1,56 @@
-const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
-const menuClose = document.querySelector<HTMLButtonElement>('[data-menu-close]');
-const menu = document.getElementById('mobile-menu');
-const menuOverlay = document.querySelector<HTMLElement>('.mobile-menu__overlay');
+import { closestTarget } from './dom';
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-if (menuBtn && menu && menuOverlay) {
-  const menuLinks = menu.querySelectorAll<HTMLAnchorElement>('a');
+export function setupMenu(): void {
+  setupMobileMenu();
+  setupMegaMenu();
+}
+
+function setupMobileMenu(): void {
+  const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const menu = document.getElementById('mobile-menu');
+  if (!menuBtn || !menu) return;
 
   const setOpen = (open: boolean): void => {
-    menu.classList.toggle('is-open', open);
-    menuOverlay.classList.toggle('is-open', open);
+    menu.dataset.state = open ? 'open' : 'closed';
     menuBtn.setAttribute('aria-expanded', String(open));
     document.body.style.overflow = open ? 'hidden' : '';
 
-    if (open && menuClose) {
-      menuClose.focus();
-    } else if (!open) {
+    if (open) {
+      const first = menu.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+      first?.focus();
+    } else {
       menuBtn.focus();
     }
   };
 
+  menu.dataset.state = 'closed';
+
   menuBtn.addEventListener('click', () => {
-    const isOpen = menuBtn.getAttribute('aria-expanded') === 'true';
-    setOpen(!isOpen);
+    setOpen(menu.dataset.state !== 'open');
   });
 
-  if (menuClose) {
-    menuClose.addEventListener('click', () => setOpen(false));
-  }
-
-  menuOverlay.addEventListener('click', () => setOpen(false));
-
-  menuLinks.forEach((link) => {
-    link.addEventListener('click', () => setOpen(false));
+  menu.addEventListener('click', (e) => {
+    if (closestTarget(e, 'a, [data-menu-close]')) setOpen(false);
   });
 
   document.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (!menu.classList.contains('is-open')) return;
+    if (menu.dataset.state !== 'open') return;
 
     if (e.key === 'Escape') {
+      e.preventDefault();
       setOpen(false);
       return;
     }
 
     if (e.key === 'Tab') {
       const focusables = Array.from(
-        menu.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+        menu.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
       ).filter((el) => el.offsetParent !== null);
 
       if (!focusables.length) return;
-
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
 
@@ -67,49 +66,78 @@ if (menuBtn && menu && menuOverlay) {
 
   const mq = window.matchMedia('(min-width: 768px)');
   mq.addEventListener('change', (e: MediaQueryListEvent) => {
-    if (e.matches && menu.classList.contains('is-open')) {
-      setOpen(false);
-    }
+    if (e.matches && menu.dataset.state === 'open') setOpen(false);
   });
 }
 
-const deptBtn = document.querySelector<HTMLButtonElement>(
-  '.dept-btn[aria-expanded]'
-);
-const dept = deptBtn ? deptBtn.closest<HTMLElement>('.dept') : null;
+function setupMegaMenu(): void {
+  const trigger = document.querySelector<HTMLButtonElement>('.mega-menu__trigger');
+  const menu = trigger?.closest<HTMLElement>('.mega-menu');
+  if (!trigger || !menu) return;
 
-if (deptBtn && dept) {
-  const setDeptOpen = (open: boolean): void => {
-    dept.classList.toggle('is-open', open);
-    deptBtn.setAttribute('aria-expanded', String(open));
+  const setExpanded = (open: boolean): void => {
+    trigger.setAttribute('aria-expanded', String(open));
   };
 
-  deptBtn.addEventListener('click', () => {
-    const isOpen = deptBtn.getAttribute('aria-expanded') === 'true';
-    setDeptOpen(!isOpen);
-  });
-
-  dept.addEventListener('focusout', (e: FocusEvent) => {
-    if (
-      !(e.relatedTarget instanceof Node) ||
-      !dept.contains(e.relatedTarget)
-    ) {
-      setDeptOpen(false);
+  menu.addEventListener('pointerenter', () => setExpanded(true));
+  menu.addEventListener('pointerleave', () => {
+    if (menu.dataset.state !== 'open') {
+      setExpanded(menu.matches(':focus-within'));
     }
   });
 
-  document.addEventListener('click', (e: MouseEvent) => {
+  menu.addEventListener('focusin', () => setExpanded(true));
+  menu.addEventListener('focusout', (e) => {
+    if (!(e.relatedTarget instanceof Node) || !menu.contains(e.relatedTarget)) {
+      if (menu.dataset.state !== 'open') {
+        setExpanded(menu.matches(':hover'));
+      }
+    }
+  });
+
+  trigger.addEventListener('click', () => {
+    if (menu.matches(':hover') && menu.dataset.state !== 'open') {
+      menu.dataset.state = 'open';
+      setExpanded(true);
+      return;
+    }
+
+    if (menu.dataset.state === 'open') {
+      delete menu.dataset.state;
+      setExpanded(menu.matches(':hover, :focus-within'));
+    } else {
+      menu.dataset.state = 'open';
+      setExpanded(true);
+    }
+  });
+
+  document.addEventListener('click', (e) => {
     if (!(e.target instanceof Node)) return;
-    if (!dept.contains(e.target)) {
-      setDeptOpen(false);
+    if (!menu.contains(e.target)) {
+      delete menu.dataset.state;
+      setExpanded(false);
     }
   });
 
   document.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && dept.classList.contains('is-open')) {
-      setDeptOpen(false);
-      deptBtn.focus();
+    if (e.key === 'Escape' && menu.dataset.state === 'open') {
+      delete menu.dataset.state;
+      setExpanded(false);
+      trigger.focus();
     }
   });
+
+  const list = menu.querySelector<HTMLElement>('.mega-menu__categories');
+  if (!list) return;
+
+  const activate = (e: Event): void => {
+    const item = closestTarget<HTMLElement>(e, '.mega-menu__item');
+    if (!item) return;
+    list.querySelectorAll<HTMLElement>('.mega-menu__item[data-state="active"]')
+      .forEach((el) => delete el.dataset.state);
+    item.dataset.state = 'active';
+  };
+
+  list.addEventListener('mouseover', activate);
+  list.addEventListener('focusin', activate);
 }
-export { };

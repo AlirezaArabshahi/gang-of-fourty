@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "postbuild": "cp -r assets/images dist/assets/",
     "preview": "vite preview",
     "check": "tsc --noEmit"
   },

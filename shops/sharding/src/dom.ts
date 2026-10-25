@@ -1,9 +1,8 @@
-export type ElementProps<K extends keyof HTMLElementTagNameMap> =
-  Partial<HTMLElementTagNameMap[K]> & { dataset?: Record<string, string> };
+import type { Link } from './types';
 
 export function h<K extends keyof HTMLElementTagNameMap>(
   tag: K,
-  props: ElementProps<K> = {},
+  props: Partial<HTMLElementTagNameMap[K]> & { dataset?: Record<string, string> } = {},
   ...children: (Node | string)[]
 ): HTMLElementTagNameMap[K] {
   const el = document.createElement(tag);
@@ -16,91 +15,39 @@ export function h<K extends keyof HTMLElementTagNameMap>(
   return el;
 }
 
+export function closestTarget<T extends Element>(e: Event, selector: string): T | null {
+  return e.target instanceof Element ? e.target.closest<T>(selector) : null;
+}
+
 export function setText(id: string, text: string): void {
   const el = document.getElementById(id);
   if (!el) return;
   el.textContent = text;
-  el.classList.remove(
-    'skeleton-text',
-    'skeleton-text--brand',
-    'skeleton-text--tagline',
-    'skeleton-text--action',
-    'skeleton-text--dept',
-    'skeleton-text--mobile-title',
-    'skeleton-text--section-title',
-    'skeleton-text--footer-title',
-    'skeleton-text--about',
-    'skeleton-text--copy',
-    'skeleton-text--footer-top',
-    'skeleton-text--topbar',
-  );
+  el.className = Array.from(el.classList)
+    .filter((c) => !c.startsWith('skeleton'))
+    .join(' ');
+  el.removeAttribute('data-skeleton');
   el.removeAttribute('aria-hidden');
 }
 
-export function mkBtn(
-  className: string,
-  label: string,
-  action?: 'inc' | 'dec',
-  text?: string,
-): HTMLButtonElement {
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = className;
-  if (action) btn.dataset.action = action;
-  btn.setAttribute('aria-label', label);
-  if (text !== undefined) btn.textContent = text;
-  return btn;
+export function renderLinks(el: HTMLElement, links: Link[], activeIndex = -1): void {
+  const wrap = el instanceof HTMLUListElement;
+  el.replaceChildren(
+    ...links.map((link, i) => {
+      const a = h('a', { href: link.href, textContent: link.label });
+      if (i === activeIndex) a.setAttribute('aria-current', 'page');
+      if (!wrap) return a;
+      const li = h('li', {}, a);
+      li.style.setProperty('--i', String(i));
+      return li;
+    }),
+  );
 }
 
-export function makeEmoji(emoji: string, extraClass?: string): HTMLSpanElement {
-  const span = h('span', {
-    className: extraClass ? `product__emoji ${extraClass}` : 'product__emoji',
-    textContent: emoji || '🛒',
-  });
+function makeEmoji(emoji: string, className: string): HTMLSpanElement {
+  const span = h('span', { className, textContent: emoji || '🛒' });
   span.setAttribute('aria-hidden', 'true');
   return span;
-}
-
-export function createSvgIcon(pathD: string): SVGSVGElement {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('aria-hidden', 'true');
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', pathD);
-  svg.appendChild(path);
-  return svg;
-}
-
-export function cloneIcon(templateId: string): Node | null {
-  const tpl = document.querySelector<HTMLTemplateElement>(`#${templateId}`);
-  return tpl ? tpl.content.cloneNode(true) : null;
-}
-
-export function cloneTemplate(id: string): DocumentFragment | null {
-  const tpl = document.querySelector<HTMLTemplateElement>(`#${id}`);
-  if (!tpl) return null;
-  const node = tpl.content.cloneNode(true);
-  return node instanceof DocumentFragment ? node : null;
-}
-
-export function fillFromTemplate(
-  containerId: string,
-  templateId: string,
-  count: number,
-): void {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  el.replaceChildren();
-  for (let i = 0; i < count; i++) {
-    const frag = cloneTemplate(templateId);
-    if (!frag) continue;
-    for (const node of Array.from(frag.children)) {
-      if (node instanceof HTMLElement) {
-        node.style.setProperty('--i', String(i));
-      }
-    }
-    el.appendChild(frag);
-  }
 }
 
 export function renderImageOrEmoji(
@@ -115,6 +62,7 @@ export function renderImageOrEmoji(
     height?: number;
   } = {},
 ): void {
+  const emojiClassName = opts.emojiClass ?? 'product__emoji';
   wrap.replaceChildren();
   if (src) {
     const img = h('img', {
@@ -128,11 +76,11 @@ export function renderImageOrEmoji(
     img.onerror = () => {
       img.remove();
       if (opts.plateClass) wrap.classList.add(opts.plateClass);
-      wrap.appendChild(makeEmoji(emoji, opts.emojiClass));
+      wrap.appendChild(makeEmoji(emoji, emojiClassName));
     };
     wrap.appendChild(img);
     return;
   }
   if (opts.plateClass) wrap.classList.add(opts.plateClass);
-  wrap.appendChild(makeEmoji(emoji, opts.emojiClass));
+  wrap.appendChild(makeEmoji(emoji, emojiClassName));
 }

@@ -1,130 +1,76 @@
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+import { closestTarget } from './dom';
 
-function getTrack(btn: HTMLElement): HTMLElement | null {
-  if (!(btn instanceof Element)) return null;
-  const hero = btn.closest<HTMLElement>('.hero-carousel');
-  if (hero) return hero.querySelector<HTMLElement>('.hero-carousel__track');
-
-  const cats = btn.closest<HTMLElement>('.categories');
-  if (cats) return cats.querySelector<HTMLElement>('.categories__list');
-
-  const prod = btn.closest<HTMLElement>('.products');
-  if (prod) return prod.querySelector<HTMLElement>('.products__grid');
-
-  return null;
-}
+const TRACK_SELECTOR = '.hero-carousel__track, .categories__list, .product-shelf__grid';
 
 function updateNavState(track: HTMLElement): void {
-  const container = track.closest<HTMLElement>('.hero-carousel, .categories, .products');
-  if (!container) return;
+  const parent = track.closest<HTMLElement>('.hero-carousel, .categories, .product-shelf');
+  if (!parent) return;
 
-  const startBtn = container.querySelector<HTMLElement>('.carousel-nav__btn--start');
-  const endBtn = container.querySelector<HTMLElement>('.carousel-nav__btn--end');
-  if (!startBtn && !endBtn) return;
+  const start = parent.querySelector<HTMLElement>('[data-carousel-start]');
+  const end = parent.querySelector<HTMLElement>('[data-carousel-end]');
+  if (!start && !end) return;
 
-  const items = track.children;
-  if (!items.length) {
-    startBtn?.classList.add('is-disabled');
-    endBtn?.classList.add('is-disabled');
-    return;
-  }
+  const max = Math.max(0, track.scrollWidth - track.clientWidth);
+  const pos = Math.abs(track.scrollLeft);
+  const scrollable = max > 2;
 
-  const first = items[0];
-  const last = items[items.length - 1];
-
-  const realBox = (el: Element): DOMRect => {
-    const r = el.getBoundingClientRect();
-    if (r.width > 0 || r.height > 0) return r;
-    const child = el.firstElementChild;
-    return child ? child.getBoundingClientRect() : r;
+  const setDisabled = (el: HTMLElement | null, disabled: boolean): void => {
+    if (!el) return;
+    if (disabled) el.setAttribute('aria-disabled', 'true');
+    else el.removeAttribute('aria-disabled');
   };
 
-  const trackRect = track.getBoundingClientRect();
-  const firstRect = realBox(first);
-  const lastRect = realBox(last);
-
-  const scrollable = track.scrollWidth - track.clientWidth > 2;
-
-  const firstVisibleFromStart =
-    firstRect.right <= trackRect.right + 2 && firstRect.left >= trackRect.left - 2;
-
-  const lastVisibleFromEnd =
-    lastRect.left >= trackRect.left - 2 && lastRect.right <= trackRect.right + 2;
-
-  startBtn?.classList.toggle('is-disabled', !scrollable || firstVisibleFromStart);
-  endBtn?.classList.toggle('is-disabled', !scrollable || lastVisibleFromEnd);
+  setDisabled(start, !scrollable || pos <= 2);
+  setDisabled(end, !scrollable || pos >= max - 2);
 }
 
-function scrollTrack(track: HTMLElement, toEnd: boolean): void {
-  const items = track.children;
-  if (!items.length) return;
-
-  const target = toEnd ? items[items.length - 1] : items[0];
-  if (!target) return;
-
-  target.scrollIntoView({
-    behavior: prefersReducedMotion.matches ? 'auto' : 'smooth',
-    block: 'nearest',
-    inline: toEnd ? 'end' : 'start',
-  });
+function updateAll(): void {
+  document.querySelectorAll<HTMLElement>(TRACK_SELECTOR).forEach(updateNavState);
 }
 
 export function setupCarouselControls(): void {
   document.addEventListener('click', (e: MouseEvent) => {
-    if (!(e.target instanceof Element)) return;
-    const btn = e.target.closest<HTMLElement>('.carousel-nav__btn');
-    if (!btn) return;
-    if (btn.classList.contains('is-disabled')) return;
-
-    const track = getTrack(btn);
-    if (!track) return;
-
-    scrollTrack(track, btn.classList.contains('carousel-nav__btn--end'));
+    const btn = closestTarget<HTMLElement>(e, '[data-carousel-start], [data-carousel-end]');
+    if (btn?.getAttribute('aria-disabled') === 'true') {
+      e.preventDefault();
+    }
   });
 
   document.addEventListener(
     'scroll',
     (e) => {
-      const track = e.target;
-      if (!(track instanceof HTMLElement)) return;
-      if (
-        track.classList.contains('products__grid') ||
-        track.classList.contains('categories__list') ||
-        track.classList.contains('hero-carousel__track')
-      ) {
-        updateNavState(track);
+      if (e.target instanceof HTMLElement && e.target.matches(TRACK_SELECTOR)) {
+        updateNavState(e.target);
       }
     },
     { capture: true, passive: true },
   );
 
-  const root = document.getElementById('carousels-root');
+  document.querySelectorAll<HTMLElement>(TRACK_SELECTOR).forEach(updateNavState);
+
+  const root = document.getElementById('product-shelves');
   if (root) {
     new MutationObserver(() => {
-      root.querySelectorAll<HTMLElement>('.products__grid').forEach(updateNavState);
+      root.querySelectorAll<HTMLElement>('.product-shelf__grid').forEach(updateNavState);
     }).observe(root, { childList: true, subtree: true });
   }
 
-  document
-    .querySelectorAll<HTMLElement>(
-      '.hero-carousel__track, .categories__list, .products__grid',
-    )
-    .forEach(updateNavState);
+  window.addEventListener('resize', updateAll, { passive: true });
 
   const heroTrack = document.querySelector<HTMLElement>('.hero-carousel__track');
   if (heroTrack && 'IntersectionObserver' in window) {
-    const slides = heroTrack.querySelectorAll<HTMLElement>('.hero-carousel__slide');
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          entry.target.classList.toggle(
-            'is-active',
-            entry.intersectionRatio > 0.6,
-          );
+          if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+            entry.target.setAttribute('data-state', 'active');
+          } else {
+            entry.target.removeAttribute('data-state');
+          }
         });
       },
       { root: heroTrack, threshold: [0, 0.6, 1] },
     );
-    slides.forEach((slide) => observer.observe(slide));
+    heroTrack.querySelectorAll('.hero-carousel__slide').forEach((s) => observer.observe(s));
   }
 }
