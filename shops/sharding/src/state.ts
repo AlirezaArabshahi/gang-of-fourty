@@ -1,7 +1,7 @@
 import type { Product, Offer, Stock, Shop, Category, Home } from './types';
 
 export interface AppState {
-  shop: Shop | null;
+  shop: Readonly<Shop> | null;
   home: Home | null;
   categories: Category[];
   products: Product[];

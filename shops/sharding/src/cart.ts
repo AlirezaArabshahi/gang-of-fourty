@@ -1,17 +1,18 @@
+import type { Cart } from './types';
 import { isRecord } from './validators';
 import { STORAGE_KEYS } from './storage';
 import { priceFmt } from './format';
 import { state, inStock } from './state';
 
-let cachedCart: Record<string, number> | null = null;
+let cachedCart: Cart | null = null;
 
-function readFromStorage(): Record<string, number> {
+function readFromStorage(): Cart {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.cart);
     if (!raw) return {};
     const data: unknown = JSON.parse(raw);
     if (!isRecord(data)) return {};
-    const out: Record<string, number> = {};
+    const out: Cart = {};
     for (const [id, qty] of Object.entries(data)) {
       const n = Number(qty);
       if (Number.isFinite(n) && n > 0) out[id] = Math.floor(n);
@@ -22,12 +23,12 @@ function readFromStorage(): Record<string, number> {
   }
 }
 
-function loadCart(): Record<string, number> {
+function loadCart(): Cart {
   if (!cachedCart) cachedCart = readFromStorage();
   return cachedCart;
 }
 
-function saveCart(cart: Record<string, number>): void {
+function saveCart(cart: Cart): void {
   cachedCart = cart;
   try {
     localStorage.setItem(STORAGE_KEYS.cart, JSON.stringify(cart));
@@ -59,7 +60,7 @@ export function changeQty(id: string | number, delta: number): number {
   saveCart(cart);
   return next;
 }
-
+// TODO(step 4): rename to cartCount and stop using priceFmt. this is a count, not a price.
 function cartTotal(): number {
   return Object.values(loadCart()).reduce((sum, n) => sum + n, 0);
 }

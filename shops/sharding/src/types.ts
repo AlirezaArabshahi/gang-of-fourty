@@ -18,21 +18,10 @@ export type Category = {
   image?: string;
 };
 
-export type Offer = {
-  productId: number;
-  percent: number;
-  label: string;
-};
-
-export type Stock = {
-  items: Record<string, number>;
-  updatedAt?: string;
-};
-
-export type Link = {
-  label: string;
-  href: string;
-};
+export type Offer = { productId: number; percent: number; label: string };
+export type Stock = { items: Record<string, number>; updatedAt?: string };
+export type Link = { label: string; href: string };
+export type Shelf = { id: string; title: string; source?: 'offers'; categoryId?: number };
 
 export type Shop = {
   name: string;
@@ -47,13 +36,6 @@ export type Shop = {
   copyright: string;
 };
 
-export type Shelf = {
-  id: string;
-  title: string;
-  source?: 'offers';
-  categoryId?: number;
-};
-
 export type Home = {
   hero?: {
     title?: string;
@@ -62,3 +44,9 @@ export type Home = {
   };
   carousels?: Shelf[];
 };
+
+export type Cart = Record<string, number>;
+export type CartLine = Pick<Product, 'id'> & { quantity: number };
+
+export const SORTS = ['default', 'price-asc', 'price-desc', 'discount'] as const;
+export type Sort = (typeof SORTS)[number];
