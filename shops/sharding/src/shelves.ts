@@ -1,6 +1,6 @@
-import type { Product, Offer, Shelf, Home, Category } from './types';
+import type { Product, Offer, Shelf, Home, Category, LoadState } from './types';
 import { state } from './state';
-import { h, setText } from './dom';
+import { h } from './dom';
 import { createIcon } from './icons';
 import { renderProductCard } from './product-card';
 
@@ -74,7 +74,7 @@ function fillGrid(
   if (!grid || !status) return;
 
   if (list.length === 0) {
-    renderStatus(id, 'در حال حاضر محصولی برای نمایش نیست.', false);
+    renderStatus(id, 'فعلاً محصولی در این بخش موجود نیست.', false);
     return;
   }
 
@@ -95,7 +95,7 @@ function fillGrid(
   grid.appendChild(frag);
 }
 
-function renderStatus(id: string, message: string, isError: boolean): void {
+function renderStatus(id: string, message: string, isError: boolean, customTitle?: string): void {
   const grid = document.getElementById(`${id}-grid`);
   const status = document.getElementById(`${id}-status`);
   if (!grid || !status) return;
@@ -106,8 +106,7 @@ function renderStatus(id: string, message: string, isError: boolean): void {
 
   status.hidden = false;
   status.className = 'product-shelf__status';
-  if (isError) status.dataset.variant = 'error';
-  else delete status.dataset.variant;
+  status.dataset.variant = isError ? 'error' : 'empty';
   status.replaceChildren();
 
   const iconWrap = h('span', { className: 'product-shelf__status-icon' });
@@ -118,7 +117,7 @@ function renderStatus(id: string, message: string, isError: boolean): void {
     iconWrap,
     h('p', {
       className: 'product-shelf__status-title',
-      textContent: isError ? 'بارگذاری ناموفق' : 'چیزی برای نمایش نیست',
+      textContent: customTitle || (isError ? 'بارگذاری محصولات ناموفق بود' : 'هنوز محصولی برای نمایش نداریم'),
     }),
     h('p', { className: 'product-shelf__status-text', textContent: message }),
   );
@@ -134,8 +133,8 @@ function renderStatus(id: string, message: string, isError: boolean): void {
   }
 }
 
-function shelvesFor(home: Home, categories: Category[]): Shelf[] {
-  const fromHome = home.carousels ?? [];
+function shelvesFor(home: Home | null, categories: Category[]): Shelf[] {
+  const fromHome = home?.carousels ?? [];
   const known = new Set(fromHome.map((s) => s.id));
   const extra = categories
     .filter((c) => !known.has(c.slug))
@@ -146,18 +145,59 @@ function shelvesFor(home: Home, categories: Category[]): Shelf[] {
 export function renderShelves(): void {
   const { home, stock, products, categories, offerMap } = state;
   const root = document.getElementById('product-shelves');
-  if (!root || !home || !stock) return;
+  if (!root || !stock) return;
+
+  const shelves = shelvesFor(home, categories);
+  
+  if (shelves.length === 0) {
+    root.replaceChildren();
+    const cfg: Shelf = { id: 'skeleton', title: 'محصولات' };
+    root.appendChild(buildShelf(cfg));
+    root.querySelector('.carousel-nav')?.remove();
+    renderStatus(cfg.id, 'دسته‌بندی‌ها در دسترس نیستند.', true);
+    return;
+  }
 
   const stockMap = new Map(products.map((p) => [p.id, stock.items[p.id] ?? 0]));
   root.replaceChildren();
-  for (const cfg of shelvesFor(home, categories)) {
+  for (const cfg of shelves) {
     root.appendChild(buildShelf(cfg));
     fillGrid(cfg.id, itemsForShelf(cfg, products, offerMap), offerMap, stockMap);
   }
 }
 
-export function showShelvesError(message: string): void {
-  setText('skeleton-title', 'محصولات');
-  renderStatus('skeleton', message, true);
+function assertNever(x: never): never {
+  throw new Error(`Unhandled state: ${JSON.stringify(x)}`);
 }
 
+export function renderProducts(s: LoadState): void {
+  switch (s.status) {
+    case 'loading':
+      return;
+    case 'success':
+      return renderShelves();
+      
+    case 'empty':
+      renderSinglePlaceholder('هنوز محصولی برای نمایش نداریم', 'به‌زودی محصولات تازه به فروشگاه اضافه می‌شوند.', false);
+      return;
+      
+    case 'error':
+      renderSinglePlaceholder('بارگذاری محصولات ناموفق بود', s.message, true);
+      return;
+      
+    default:
+      return assertNever(s);
+  }
+}
+
+function renderSinglePlaceholder(title: string, message: string, isError: boolean): void {
+  const root = document.getElementById('product-shelves');
+  if (!root) return;
+  root.replaceChildren();
+  
+  const cfg: Shelf = { id: 'skeleton', title: 'محصولات' };
+  root.appendChild(buildShelf(cfg));
+  root.querySelector('.carousel-nav')?.remove();
+  
+  renderStatus(cfg.id, message, isError, title);
+}

@@ -79,7 +79,8 @@
   text-align: center;
 }
 
-.product-shelf__status[data-variant="error"] {
+.product-shelf__status[data-variant="error"],
+.product-shelf__status[data-variant="empty"] {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -110,7 +111,6 @@
 .product-shelf__status-text {
   font-size: var(--text-xs);
   line-height: 1.6;
-  max-width: 32ch;
   color: var(--muted);
 }
 

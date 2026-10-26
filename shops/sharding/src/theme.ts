@@ -5,7 +5,7 @@ const THEMES = ['auto', 'light', 'dark'] as const;
 type Theme = (typeof THEMES)[number];
 
 function isTheme(value: string | null): value is Theme {
-  return (THEMES as readonly string[]).includes(value ?? '');
+  return THEMES.some((t) => t === value);
 }
 
 function getStoredTheme(): Theme {

@@ -103,7 +103,7 @@ Imports only go down:
 
 Other rules: max 70 lines per file, no utils.ts or helpers.ts, a function with two jobs becomes two functions, no `any`, `as`, `!` or `@ts-ignore`.
 
-Extra credit: after this works I move the code to `features/products` (was catalog/ + shelves, product card and search UI), `features/cart` (was cart/ + cart panel UI) and `shared` (types, api/getJSON, dom helpers). The two features never import each other, only main.ts connects them. ...
+Extra credit: after this works I move the code to `features/products` (was catalog/ + shelves, product card and search UI), `features/cart` (was cart/ + cart panel UI) and `shared` (types, api/getJSON, dom helpers). The two features never import each other, only main.ts connects them. 
 
 ## 7. Security and deploy
 

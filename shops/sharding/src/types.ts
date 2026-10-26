@@ -50,3 +50,9 @@ export type CartLine = Pick<Product, 'id'> & { quantity: number };
 
 export const SORTS = ['default', 'price-asc', 'price-desc', 'discount'] as const;
 export type Sort = (typeof SORTS)[number];
+
+export type LoadState =
+  | { status: 'loading' }
+  | { status: 'success'; products: Product[] }
+  | { status: 'empty' }
+  | { status: 'error'; message: string };

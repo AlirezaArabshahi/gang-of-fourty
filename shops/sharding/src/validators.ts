@@ -9,7 +9,7 @@ function isLink(v: unknown): v is Link {
   return typeof v.label === 'string' && typeof v.href === 'string';
 }
 
-function isProduct(v: unknown): v is Product {
+export function isProduct(v: unknown): v is Product {
   if (!isRecord(v)) return false;
   return (
     typeof v.id === 'number' &&
@@ -23,7 +23,7 @@ function isProduct(v: unknown): v is Product {
   );
 }
 
-function isCategory(v: unknown): v is Category {
+export function isCategory(v: unknown): v is Category {
   if (!isRecord(v)) return false;
   return (
     typeof v.id === 'number' &&
@@ -33,7 +33,7 @@ function isCategory(v: unknown): v is Category {
   );
 }
 
-function isOffer(v: unknown): v is Offer {
+export function isOffer(v: unknown): v is Offer {
   if (!isRecord(v)) return false;
   return (
     typeof v.productId === 'number' &&
@@ -75,10 +75,6 @@ export function isHome(v: unknown): v is Home {
   if (v.hero !== undefined && !isRecord(v.hero)) return false;
   if (v.carousels !== undefined && !Array.isArray(v.carousels)) return false;
   return true;
-}
-
-export function isProductArray(v: unknown): v is Product[] {
-  return Array.isArray(v) && v.every(isProduct);
 }
 
 export function isCategoryArray(v: unknown): v is Category[] {

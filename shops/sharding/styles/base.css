@@ -110,11 +110,3 @@ input:focus-visible, textarea:focus-visible { outline: none; }
 /* Stop shimmer on error */
 body[data-state="error"] .skeleton { animation: none; }
 body[data-state="error"] .category[data-skeleton] .category__img { animation: none; }
-
-
-
-
-
-body[data-state="error"] .skeleton {
-  animation: none;
-}
