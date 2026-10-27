@@ -535,3 +535,10 @@
 .product-shelf[data-variant="offers"] .product-shelf__status-icon svg {
   fill: rgba(255, 255, 255, 0.7);
 }
+
+.product__qty-btn:disabled,
+.product__add:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none; 
+}
