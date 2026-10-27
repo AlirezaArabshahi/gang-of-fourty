@@ -1,4 +1,12 @@
-// Type definitions
+import { Notyf } from "notyf";
+import "notyf/notyf.min.css";
+import {
+  Search,
+  ShoppingCart,
+  Check,
+  X,
+  AlertCircle,
+} from "lucide-static";
 interface Product {
   id: number;
   name: string;
@@ -28,14 +36,86 @@ const API_PRODUCTS_URL = "../../api/products.json";
 const API_OFFERS_URL = "../../api/offers.json";
 const API_STOCK_URL = "../../api/stock.json";
 
+const icons = {
+  search: Search,
+  cart: ShoppingCart,
+  check: Check,
+  x: X,
+  alertCircle: AlertCircle,
+};
+
+
+let notyf: Notyf;
+
+let cartCount = 0;
+
+function updateCartCount(): void {
+  const cartCountElement =
+    document.querySelector<HTMLElement>("#cart-count");
+
+  if (!cartCountElement) {
+    console.error("Cart count element was not found.");
+  } else {
+    cartCountElement.textContent = String(cartCount);
+  }
+}
+
+function initializeNotyf(): void {
+  notyf = new Notyf({
+    duration: 3000,
+    position: {
+      x: "left",
+      y: "bottom",
+    },
+    types: [
+      {
+        type: "success",
+        background: "#4CAF50",
+        icon: icons.check,
+      },
+      {
+        type: "error",
+        background: "#F44336",
+        icon: icons.x,
+      },
+      {
+        type: "warning",
+        background: "#FF9800",
+        icon: icons.alertCircle,
+      },
+    ],
+  });
+}
+
+// Initialize Lucide icons
+function initializeIcons(): void {
+  const searchIconEl = document.querySelector("#search-icon");
+  const cartIconEl = document.querySelector("#cart-icon");
+
+  if (searchIconEl) {
+    searchIconEl.innerHTML = icons.search;
+  }
+
+  if (cartIconEl) {
+    cartIconEl.innerHTML = icons.cart;
+  }
+}
+
 // Load dairy products
 async function loadDairyProducts(): Promise<void> {
   const container = document.querySelector<HTMLElement>("#dairy-products");
+
+ 
 
   if (!container) {
     console.error("Container #dairy-products not found");
     return;
   }
+    const loadingMessage = document.createElement("p");
+    loadingMessage.textContent = "در حال بارگذاری محصولات...";
+    loadingMessage.setAttribute("role", "status");
+
+    container.appendChild(loadingMessage);
 
   try {
     const response = await fetch(API_PRODUCTS_URL);
@@ -45,10 +125,10 @@ async function loadDairyProducts(): Promise<void> {
     }
 
     const products: Product[] = await response.json();
-
     const dairyProducts = products.filter((product: Product): boolean => {
       return product.categoryId === 2;
     });
+    loadingMessage.remove();
 
     const template = container.querySelector<HTMLElement>("#dairy-template");
 
@@ -88,17 +168,33 @@ async function loadDairyProducts(): Promise<void> {
 
       if (button) {
         button.setAttribute("aria-label", `افزودن ${product.name} به سبد خرید`);
+
+      button.addEventListener("click", (): void => {
+        cartCount += 1;
+        updateCartCount();
+
+        notyf.success(`${product.name} به سبد خرید اضافه شد`);
+      });
       }
 
       container.appendChild(card);
     });
-  } catch (error) {
-    console.error("خطا در دریافت محصولات لبنی:", error);
 
-    const message = document.createElement("p") as HTMLParagraphElement;
-    message.textContent = "دریافت محصولات با مشکل مواجه شد. لطفاً دوباره تلاش کنید.";
-    container.replaceChildren(message);
-  }
+  } 
+
+catch (error) {
+  console.error("خطا در دریافت محصولات لبنی:", error);
+
+  const message = document.createElement("p");
+  message.textContent =
+    "دریافت محصولات با مشکل مواجه شد. لطفاً دوباره تلاش کنید.";
+  message.setAttribute("role", "alert");
+
+  container.replaceChildren(message);
+
+  notyf.error("دریافت محصولات با مشکل مواجه شد. لطفاً دوباره تلاش کنید.");
+}
+
 }
 
 // Load daily offers
@@ -109,6 +205,11 @@ async function loadDailyOffers(): Promise<void> {
     console.error("Container #dailyOffers not found");
     return;
   }
+  const loadingMessage = document.createElement("p");
+  loadingMessage.textContent = "در حال بارگذاری پیشنهادهای روزانه...";
+  loadingMessage.setAttribute("role", "status");
+
+  container.appendChild(loadingMessage);
 
   try {
     const [productsResponse, offersResponse, stockResponse] = await Promise.all([
@@ -126,6 +227,7 @@ async function loadDailyOffers(): Promise<void> {
       offersResponse.json(),
       stockResponse.json()
     ]);
+    loadingMessage.remove();
 
     // Filter products that have offers
     const offerProducts: OfferProduct[] = products
@@ -209,7 +311,16 @@ async function loadDailyOffers(): Promise<void> {
         if (button) button.disabled = true;
       } else {
         if (unavailableBadge) unavailableBadge.hidden = true;
-        if (button) button.disabled = false;
+        if (button) {
+          button.disabled = false;
+
+        button.addEventListener("click", (): void => {
+          cartCount += 1;
+          updateCartCount();
+
+          notyf.success(`${product.name} به سبد خرید اضافه شد`);
+        });
+        }
       }
 
       container.appendChild(card);
@@ -220,15 +331,24 @@ async function loadDailyOffers(): Promise<void> {
       message.textContent = "فعلاً پیشنهادی برای نمایش وجود ندارد.";
       container.appendChild(message);
     }
-  } catch (error) {
-    console.error("خطا در دریافت محصولات پیشنهادی:", error);
 
-    const message = document.createElement("p") as HTMLParagraphElement;
-    message.textContent = "دریافت محصولات با مشکل مواجه شد. لطفاً دوباره تلاش کنید.";
-    container.replaceChildren(message);
-  }
+  } 
+    catch (error) {
+      console.error("خطا در دریافت محصولات پیشنهادی:", error);
+      const message = document.createElement("p");
+      message.textContent =
+        "دریافت محصولات با مشکل مواجه شد. لطفاً دوباره تلاش کنید.";
+      message.setAttribute("role", "alert");
+      container.replaceChildren(message);
+      notyf.error("دریافت محصولات با مشکل مواجه شد. لطفاً دوباره تلاش کنید.");
+    }
+
 }
 
 // Initialize
-loadDairyProducts();
-loadDailyOffers();
+document.addEventListener("DOMContentLoaded", (): void => {
+  initializeNotyf();
+  initializeIcons();
+  loadDairyProducts();
+  loadDailyOffers();
+});

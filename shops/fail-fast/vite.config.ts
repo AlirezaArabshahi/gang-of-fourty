@@ -14,5 +14,6 @@ export default defineConfig({
   },
   preview: {
     proxy: api
-  }
+  },
+  assetsInclude: ['**/*.svg']
 })
