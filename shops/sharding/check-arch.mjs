@@ -1,10 +1,14 @@
-// Week 4 · Lesson 5 — checks how you split shop.ts.
+// Usage:
+//   node check-arch.mjs src                (Standard layer-based architecture)
+//   node check-arch.mjs src --feature-based (Feature-based architecture)
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, dirname, normalize } from 'node:path'
 
 const root = process.argv[2]
+const isFeatureBased = process.argv.includes('--feature-based')
+
 if (!root) {
-  console.log('Usage: node check-arch.mjs src')
+  console.log('Usage: node check-arch.mjs src [--feature-based]')
   process.exit(1)
 }
 
@@ -55,16 +59,17 @@ const layerOf = (file) => {
   if (file === 'main.ts') return 'main'
   if (file === 'types.ts' || file === 'shared/types.ts' || first === 'types') return 'types'
 
-  if (first === 'features') {
-    if (parts[2] === 'ui') return 'ui'
-    if (['api', 'storage', 'data'].includes(parts[2])) return 'data'
-    return 'logic'
-  }
-
-  if (first === 'shared') {
-    if (['api', 'storage', 'data'].includes(parts[1])) return 'data'
-    if (parts[1] === 'ui') return 'ui'
-    return 'logic'
+  if (isFeatureBased) {
+    if (first === 'features') {
+      if (parts[2] === 'ui') return 'ui'
+      if (['api', 'storage', 'data'].includes(parts[2])) return 'data'
+      return 'logic'
+    }
+    if (first === 'shared') {
+      if (['api', 'storage', 'data'].includes(parts[1])) return 'data'
+      if (parts[1] === 'ui') return 'ui'
+      return 'logic'
+    }
   }
 
   if (['api', 'storage', 'data'].includes(first)) return 'data'
@@ -97,22 +102,28 @@ for (const file of files) {
     }
     graph[file].push(target)
     
-    const sourceFeature = featureOf(file)
-    const targetFeature = featureOf(target)
+    if (isFeatureBased) {
+      const sourceFeature = featureOf(file)
+      const targetFeature = featureOf(target)
 
-    if (sourceFeature && targetFeature && sourceFeature !== targetFeature) {
-      problems.push(`${file} → ${target}: features must not import each other`)
-    }
+      if (sourceFeature && targetFeature && sourceFeature !== targetFeature) {
+        problems.push(`${file} → ${target}: features must not import each other`)
+      }
 
-    if (targetFeature && !sourceFeature && file !== 'main.ts') {
-      problems.push(`${file} → ${target}: shared code must not import features`)
-    }
+      if (targetFeature && !sourceFeature && file !== 'main.ts') {
+        problems.push(`${file} → ${target}: shared code must not import features`)
+      }
 
-    const sameFeature = sourceFeature !== null && sourceFeature === targetFeature
-    const sameFeatureUiToLogic = sameFeature && layer === 'ui' && layerOf(target) === 'logic'
+      const sameFeature = sourceFeature !== null && sourceFeature === targetFeature
+      const sameFeatureUiToLogic = sameFeature && layer === 'ui' && layerOf(target) === 'logic'
 
-    if (!ALLOWED[layer].includes(layerOf(target)) && !sameFeatureUiToLogic) {
-      problems.push(`${file} → ${target}: ${layer} must not import ${layerOf(target)}`)
+      if (!ALLOWED[layer].includes(layerOf(target)) && !sameFeatureUiToLogic) {
+        problems.push(`${file} → ${target}: ${layer} must not import ${layerOf(target)}`)
+      }
+    } else {
+      if (!ALLOWED[layer].includes(layerOf(target))) {
+        problems.push(`${file} → ${target}: ${layer} must not import ${layerOf(target)}`)
+      }
     }
   }
 }
