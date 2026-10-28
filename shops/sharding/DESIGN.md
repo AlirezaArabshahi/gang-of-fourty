@@ -9,7 +9,7 @@ What the user can do:
 - Add a product to the cart, change the quantity, remove it. Quantity can't be more than stock.
 - See the cart count in the header and open a small cart panel with items and an estimated total.
 - Keep the cart after refresh (localStorage).
-- Keep the selected category in the URL (`?cat=dairy`), so refresh or sharing the link doesn't lose it.
+- Keep the selected category and search text in the URL (`?category=dairy&q=milk`), so refresh or sharing the link doesn't lose them.
 - Choose light / dark / system theme.
 
 Out of scope:
@@ -39,7 +39,7 @@ Out of scope:
 | shop info | shop.json | server |
 | hero and shelves config | home.json | server |
 | cart (id and quantity only) | state + localStorage | browser |
-| selected category | state + URL | URL |
+| selected category and search text | state + URL | URL |
 | theme | localStorage | browser |
 | API address | .env files | build config |
 
@@ -50,11 +50,11 @@ API data is not trusted until a type guard checks it, because TypeScript types d
 
 The API is read only, I don't change it. The base address is `VITE_API_URL`.
 
-shop.json, home.json, products.json, categories.json, offers.json and stock.json are all loaded once at start with `Promise.allSettled`, so if one fails the others still work.
+All JSON files are loaded once at start with `Promise.allSettled`, so if one fails the others still work.
 
 Relations: `Product.categoryId` = `Category.id`, `Offer.productId` = `Product.id`, `Stock.items` is keyed by product id.
 
-`getJSON(path)` returns `Promise<unknown>` and throws `HTTPError` on bad status or `AbortError` on timeout. After that each data type has its own guard (`isProduct`, `isCategory`, `isOffer`, `isStock`, `isShop`, `isHome`). A bad product is removed and counted in the console, the other products still show. If `products.json` fails entirely, `loadAllData` returns `LoadState` with `status: 'error'` and a friendly Persian message depending on the error type (timeout / network / invalid data).
+`getJSON(path)` returns `Promise<unknown>` and throws `HTTPError` on bad status or `AbortError` on timeout. After that each data type has its own guard. A bad product is removed and counted in the console, the other products still show. A bad link inside `shop.json` or `home.json` is filtered out to save the rest of the UI. If `products.json` fails entirely, `loadAllData` returns `LoadState` with `status: 'error'` and a friendly Persian message depending on the error type (timeout / network / invalid data).
 
 ## 5. States
 
@@ -81,98 +81,48 @@ type LoadState =
 
 Empty is not the same as error. I test with `broken.json` and `missing.json` and the page must show a message, not a white page.
 
+Note: If `stock.json` fails, we assume items are in stock to avoid breaking the UI, because the stock limit is a soft constraint.
+
 ## 6. Folders
 
 ```text
 src/
-  types.ts                 types, imports nothing
-  content.ts               static image maps (products, categories, banners, promos)
+  main.ts               Entry point: wires features and shared, no business logic.
+  
+  shared/               Code used by more than one feature.
+    types.ts            Global types, imports nothing.
+    content.ts          Static image maps.
+    api/                Data layer: fetch + type guards. One file per JSON.
+    storage/            Data layer: localStorage and URL management.
+    state/              AppState type + createState.
+    logic/              Pure functions: pricing, stock, content helpers.
+    ui/                 Reusable DOM components: dom, icons, theme, toast, etc.
 
-  api/                     data: fetch + type guards (one file per data type)
-    get-json.ts            fetch with timeout + HTTPError
-    is-record.ts           shared type guard
-    products.ts            loadProducts + isProduct
-    categories.ts          loadCategories + isCategory
-    offers.ts              loadOffers + isOffer
-    stock.ts               loadStock + isStock
-    shop.ts                loadShop + isShop
-    home.ts                loadHome + isHome
-    load-all.ts            loads all files with Promise.allSettled, builds LoadState
-
-  storage/                 data: localStorage + URL
-    keys.ts                STORAGE_KEYS
-    cart-storage.ts        loadCart, saveCart (supports old & new format)
-    theme-storage.ts       loadTheme, saveTheme
-    url.ts                 getCatParam, setCatParam, clearCatParam
-
-  cart/                    logic: cart rules, pure functions
-    cart.ts                addToCart, removeFromCart, removeLine, updateCart, cartCount
-
-  catalog/                 logic: pricing, stock, filters, shelves, view models
-    pricing.ts             finalPrice, hasDiscount, formatPrice
-    stock.ts               inStock, stockOf
-    filters.ts             visibleProducts, shelfProducts
-    shelves.ts             buildShelves: turns AppState into ShelfView[]
-    to-card.ts             toCard (pure) + cardOf (needs AppState)
-    cart-rows.ts           cartRows, cartTotal, buildCartView, pruneCart
-    app-state.ts           AppState type + createState
-
-  ui/                      ui: builds the DOM from parameters
-    dom.ts                 h, closestTarget, setText
-    icons.ts               createIcon
-    price-format.ts        priceFmt (UI copy, to avoid importing logic)
-    assert-never.ts        assertNever for exhaustive checks
-    skeleton.ts            hideSkeletons
-    carousel-nav.ts        createCarouselNav
-    carousel-controls.ts   setupCarouselControls (scroll + IntersectionObserver)
-    header.ts              renderHeaderParts
-    mega-menu-view.ts      renderMegaMenu
-    mega-menu-events.ts    setupMegaMenu (hover, click, focus, Escape)
-    mobile-menu.ts         setupMobileMenu (focus trap)
-    hero.ts                renderHero (video text + banners + basket slide)
-    hero-video.ts          startHeroVideo
-    categories.ts          renderCategories
-    category-filter.ts     setupCatFilter + showCategory
-    footer.ts              renderFooter
-    product-card.ts        renderProductCard
-    products-section.ts    renderProducts (switch + never)
-    shelf-builder.ts       buildShelf
-    shelf-status.ts        renderStatus
-    shelves.ts             fillShelf, renderPlaceholder
-    cart-badge.ts          updateCartBadge
-    cart-button.ts         renderCartButton, refreshCartButtons
-    cart-events.ts         setupCartClicks
-    cart-feedback.ts       showCartFeedback (toast + confetti)
-    cart-panel.ts          renderCart
-    cart-panel-toggle.ts   setupCartPanelToggle (open/close, Escape)
-    cart-total.ts          renderTotal
-    cart-view.ts           renderCartView (badge + rows + total)
-    search.ts              setupSearch (Fuse.js)
-    search-results.ts      renderSearchResults
-    theme.ts               applyTheme, setupTheme
-    toast.ts               notyf
-    confetti.ts            fireConfetti
-    slow-notice.ts         hideSlowNotice
-    events.ts              setupStaticEvents, setupDataEvents
-    render-page.ts         renderPage (one-shot after load)
-
-  main.ts                  main: state, wiring, start
+  features/             Isolated business domains.
+    cart/               Cart logic, UI panel, and cart rows.
+      logic/            Pure cart state functions (add, remove, count).
+      ui/               DOM rendering for the cart panel and buttons.
+      
+    products/           Product shelves, categories, search, and header.
+      logic/            Pure product filtering and card mapping.
+      ui/               DOM rendering for products, search, and header.
 ```
 
 Imports only go down:
 - `main` can use `ui`, `logic`, `data`, `types`
 - `ui` can use only `ui` and `types`
-- `logic` (`cart/`, `catalog/`) can use only `logic` and `types`
-- `data` (`api/`, `storage/`) can use only `data` and `types`
+- `logic` can use only `logic` and `types`
+- `data` can use only `data` and `types`
+- Features only use `shared` and their own code. They do not import each other. `main.ts` connects them.
 
 Other rules: max 70 lines per file, no `utils.ts` or `helpers.ts`, a function with two jobs becomes two functions, no `any`, `as`, `!` or `@ts-ignore`.
-
 
 ## 7. Security and deploy
 
 - Everything in the browser is public, also the `VITE_*` variables. No secrets or keys in the code or .env.
 - A user can change prices, stock and totals in DevTools. So the cart total here is only an estimate. If I add checkout later, the server must calculate the final total from real prices, discounts and stock.
 - Text from the API is added with `textContent`, not `innerHTML`.
+- `href` attributes from the API are validated with `isLink` to prevent `javascript:` XSS.
 - `base: './'` and relative asset paths, so `dist/` works under `/shops/<slug>/`.
 - `.env.development`: `VITE_API_URL=/api`. `.env.production`: `VITE_API_URL=../../api`.
-- Before PR: `npm run check`, `node check-arch.mjs src --shop`, `npm run build` and `npm run preview` with no errors in Console and all files 200 in Network.
+- Before PR: `npm run check`, `node check-arch.mjs src --shop`, `npm run build` and `npm run preview` with no errors in Console and all files 200 in Network. To test the subfolder, serve the `dist` folder under a subpath.
