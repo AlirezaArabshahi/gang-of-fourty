@@ -1,6 +1,11 @@
 import { closestTarget } from './dom';
 
-export function setupCatFilter(h: { onSelect: (s: string) => void; onPop: () => void; onHiddenShelf: () => void }): void {
+export function setupCatFilter(h: {
+  onSelect: (s: string) => void;
+  onPop: () => void;
+  onHiddenShelf: () => void;
+  getHash: () => string;
+}): void {
   document.addEventListener('click', (e) => {
     const slug = closestTarget<HTMLAnchorElement>(e, 'a[data-cat-slug]')?.dataset.catSlug;
     if (slug === undefined) return;
@@ -12,7 +17,8 @@ export function setupCatFilter(h: { onSelect: (s: string) => void; onPop: () => 
   window.addEventListener('popstate', h.onPop);
   
   window.addEventListener('hashchange', () => {
-    const shelf = document.getElementById(location.hash.slice(1));
+    const hash = h.getHash();
+    const shelf = document.getElementById(hash.slice(1));
     if (!shelf?.classList.contains('product-shelf') || !shelf.hidden) return;
     h.onHiddenShelf();
     shelf.scrollIntoView({ behavior: 'smooth', block: 'start' });

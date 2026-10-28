@@ -1,22 +1,50 @@
-export function getCatParam(): string {
-  return new URLSearchParams(location.search).get('cat') || '';
+export type UrlFilters = {
+  category: string;
+  query: string;
+};
+
+export function readUrlFilters(): UrlFilters {
+  const params = new URLSearchParams(location.search);
+  return {
+    category: params.get('category') ?? params.get('cat') ?? '',
+    query: params.get('q') ?? '',
+  };
 }
 
-export function setCatParam(slug: string): void {
+export function readUrlHash(): string {
+  return location.hash;
+}
+
+export function writeUrlFilters(
+  filters: UrlFilters,
+  mode: 'push' | 'replace' = 'replace',
+): void {
   const url = new URL(location.href);
-  if (slug) {
-    url.searchParams.set('cat', slug);
-    url.hash = slug;
+  const category = filters.category.trim();
+  const query = filters.query.trim();
+
+  if (category) {
+    url.searchParams.set('category', category);
   } else {
-    url.searchParams.delete('cat');
-    url.hash = '';
+    url.searchParams.delete('category');
   }
-  history.pushState({ cat: slug }, '', url);
-}
 
-export function clearCatParam(): void {
-  const url = new URL(location.href);
   url.searchParams.delete('cat');
-  url.hash = ''; 
-  history.replaceState({}, '', url);
+
+  if (query) {
+    url.searchParams.set('q', query);
+  } else {
+    url.searchParams.delete('q');
+  }
+
+  url.hash = category;
+
+  const href = `${url.pathname}${url.search}${url.hash}`;
+  const state = { category, query };
+
+  if (mode === 'push') {
+    history.pushState(state, '', href);
+  } else {
+    history.replaceState(state, '', href);
+  }
 }

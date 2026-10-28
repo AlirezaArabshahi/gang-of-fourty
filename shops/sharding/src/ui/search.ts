@@ -1,39 +1,34 @@
 import type { Product, Card } from '../types';
 import { closestTarget } from './dom';
-import { renderSearchResults } from './search-results';
+import { createSearchFor } from './search-render';
 
 type SearchDeps = {
   products: Product[];
   toCard: (p: Product) => Card;
+  initialQuery: string;
+  onQueryChange: (query: string) => void;
 };
 
-export function setupSearch(deps: SearchDeps): void {
+export function setupSearch(deps: SearchDeps): (query: string) => void {
   const input = document.querySelector<HTMLInputElement>('#search-input');
   const box = document.getElementById('search-results');
-  if (!input || !box) return;
+  if (!input || !box) return () => {};
 
-  let fusePromise: Promise<import('fuse.js').default<Product>> | null = null;
-  const getFuse = () => {
-    if (!fusePromise) {
-      fusePromise = import('fuse.js').then(({ default: Fuse }) =>
-        new Fuse(deps.products, { keys: ['name', 'tags'], threshold: 0.4, ignoreLocation: true }),
-      );
-    }
-    return fusePromise;
-  };
+  const { searchFor, close } = createSearchFor(deps.products, deps.toCard, input, box);
 
-  input.addEventListener('focus', () => void getFuse(), { once: true });
+  input.addEventListener('focus', () => void searchFor(input.value), { once: true });
 
-  const close = () => { box.hidden = true; box.replaceChildren(); };
+  input.value = deps.initialQuery;
 
-  input.addEventListener('input', async () => {
-    const q = input.value.trim();
-    if (!q) return close();
-    const fuse = await getFuse();
-    if (input.value.trim() !== q) return;
-    const hits = fuse.search(q).map(r => r.item).slice(0, 8);
-    renderSearchResults(box, hits, deps.toCard);
+  input.addEventListener('input', () => {
+    const query = input.value.trim();
+    deps.onQueryChange(query);
+    void searchFor(query);
   });
+
+  if (deps.initialQuery.trim()) {
+    void searchFor(deps.initialQuery);
+  }
 
   box.addEventListener('click', (e) => {
     const item = closestTarget<HTMLElement>(e, '.search-results__item');
@@ -51,4 +46,9 @@ export function setupSearch(deps: SearchDeps): void {
     if (!e.composedPath().includes(box) && e.target !== input) close();
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+  return (query: string) => {
+    input.value = query;
+    void searchFor(query);
+  };
 }

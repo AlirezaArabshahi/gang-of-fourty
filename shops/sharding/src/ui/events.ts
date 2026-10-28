@@ -20,11 +20,22 @@ export function setupStaticEvents(h: {
 }
 
 export function setupDataEvents(h: {
+  getHash: () => string;
   onCategory: (slug: string) => void;
   onPop: () => void;
   onHiddenShelf: () => void;
-  search: { products: Product[]; toCard: (p: Product) => Card };
-}): void {
-  setupCatFilter({ onSelect: h.onCategory, onPop: h.onPop, onHiddenShelf: h.onHiddenShelf });
-  setupSearch(h.search);
+  search: {
+    products: Product[];
+    toCard: (p: Product) => Card;
+    initialQuery: string;
+    onQueryChange: (query: string) => void;
+  };
+}): (query: string) => void {
+  setupCatFilter({
+    onSelect: h.onCategory,
+    onPop: h.onPop,
+    onHiddenShelf: h.onHiddenShelf,
+    getHash: h.getHash,
+  });
+  return setupSearch(h.search);
 }

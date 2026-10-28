@@ -50,3 +50,7 @@ export function pruneCart(s: AppState): Cart {
   }
   return next;
 }
+
+export function getCartUI(s: AppState): CartView {
+  return buildCartView(s);
+}
