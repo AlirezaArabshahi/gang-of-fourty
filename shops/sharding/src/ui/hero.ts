@@ -2,6 +2,8 @@ import type { Home } from '../types';
 import { h, setText } from './dom';
 import { createCarouselNav } from './carousel-nav';
 
+const ASSET_BASE = `${import.meta.env.BASE_URL}assets/`;
+
 function buildBasketSlide(): HTMLLIElement {
   const li = h('li', { className: 'hero-carousel__slide', id: 'banner-start', dataset: { variant: 'basket', state: 'active' } });
   const link = h('a', { className: 'hero-banner hero-banner--basket', href: '#fruits' });
@@ -9,8 +11,8 @@ function buildBasketSlide(): HTMLLIElement {
   const wrap = h('div', { className: 'hero-carousel__basket-wrap' });
   wrap.setAttribute('aria-hidden', 'true');
   wrap.append(
-    h('img', { className: 'hero-carousel__fruits', src: '/assets/images/promos/fruits.webp', alt: '', loading: 'eager' }), 
-    h('img', { className: 'hero-carousel__basket', src: '/assets/images/promos/basket.webp', alt: '', loading: 'eager' })
+    h('img', { className: 'hero-carousel__fruits', src: `${ASSET_BASE}images/promos/fruits.webp`, alt: '', loading: 'eager' }), 
+    h('img', { className: 'hero-carousel__basket', src: `${ASSET_BASE}images/promos/basket.webp`, alt: '', loading: 'eager' })
   );
   
   const content = h('div', { className: 'hero-carousel__basket-content' });
