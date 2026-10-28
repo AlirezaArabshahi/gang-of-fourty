@@ -1,6 +1,5 @@
 export type IconName = 'plus' | 'grid' | 'arrowRight' | 'arrowLeft' | 'arrowUp' | 'arrowForward' | 'warning' | 'empty';
 const SVG_NS = 'http://www.w3.org/2000/svg';
-// deploy test
 export function createIcon(name: IconName, className = ''): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, 'svg');
   if (className) svg.setAttribute('class', className);
