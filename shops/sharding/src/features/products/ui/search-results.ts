@@ -38,7 +38,7 @@ export function renderSearchResults(
       actions.appendChild(h('span', { className: 'search-results__out', textContent: 'ناموجود' }));
     }
 
-    const item = h('div', { className: 'search-results__item', role: 'listitem' });
+    const item = h('li', { className: 'search-results__item' });
     item.dataset.productId = String(card.id);
     item.dataset.stock = card.inStock ? 'in' : 'out';
     item.append(imgWrap, info, actions);

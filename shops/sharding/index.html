@@ -67,7 +67,7 @@
           <svg><use href="/icons.svg#search"/></svg>
         </span>
         <input id="search-input" class="search__input" type="search" placeholder="">
-        <div id="search-results" class="search-results" role="list" hidden></div>
+        <ul id="search-results" class="search-results" hidden></ul>
         <button type="submit" class="visually-hidden">جستجو</button>
       </form>
 
@@ -174,8 +174,6 @@
   <section class="hero" aria-labelledby="hero-title">
     <div class="container">
       <div class="hero-video hero-video--skeleton" id="hero-video">
-        <!-- dont remove this 2 lines. base on docs its muted video, so autoplay is fine. needed to pass validation. -->
-        <!-- [html-validate-disable-next no-autoplay] -->
         <video class="hero-video__media" muted loop playsinline preload="none"
                poster="/assets/video/hero-poster.webp" aria-hidden="true"></video>
         <div class="hero-video__overlay">
