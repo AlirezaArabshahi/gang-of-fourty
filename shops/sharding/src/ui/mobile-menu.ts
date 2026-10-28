@@ -36,8 +36,12 @@ export function setupMobileMenu(): void {
     if (e.key === 'Tab') {
       const focusables = Array.from(menu.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((el) => el.offsetParent !== null);
       if (!focusables.length) return;
+      
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
+      
+      if (!first || !last) return;
+      
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }

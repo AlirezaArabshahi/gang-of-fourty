@@ -10,7 +10,14 @@ export function cartRows(cart: Cart, products: Product[], offers: Map<number, Of
     const p = products.find((x) => x.id === Number(id));
     if (!p) continue;
     const unit = finalPrice(p.price, offers.get(p.id));
-    rows.push({ id: p.id, name: p.name, qty, lineTotal: unit * qty, image: p.image, emoji: p.emoji });
+    rows.push({
+      id: p.id,
+      name: p.name,
+      qty,
+      lineTotal: unit * qty,
+      ...(p.image === undefined ? {} : { image: p.image }),
+      emoji: p.emoji,
+    });
   }
   return rows;
 }

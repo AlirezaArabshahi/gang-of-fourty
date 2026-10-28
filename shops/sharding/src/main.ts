@@ -31,10 +31,7 @@ function changeCart(id: number, change: CartChange): void {
   const maxStock = stockOf(id, state.stock);
   const name = state.products.find((p) => p.id === id)?.name ?? 'کالا';
 
-  if (change === 'add' && before >= maxStock) {
-    showCartFeedback(name, before, before, true);
-    return;
-  }
+  if (change === 'add' && before >= maxStock) return showCartFeedback(name, before, before, true);
 
   state.cart = updateCart(state.cart, id, change, maxStock);
   const after = state.cart[id] ?? 0;
@@ -50,13 +47,16 @@ async function start(): Promise<void> {
   setupStaticEvents({ theme: loadTheme(), onTheme: saveTheme, onCartChange: changeCart });
   
   Object.assign(state, await loadAllData());
-  state.categories = state.categories.map((c) => ({ ...c, image: CATEGORY_IMAGES[c.slug] }));
+  state.categories = state.categories.map((c) => {
+    const image = CATEGORY_IMAGES[c.slug];
+    return image === undefined ? c : { ...c, image };
+  });
   state.cart = pruneCart(state);
   saveCart(state.cart);
-  
+
   render();
   syncCategory();
-  
+
   setupDataEvents({
     onCategory: (slug) => { setCatParam(slug); syncCategory(); },
     onPop: syncCategory,

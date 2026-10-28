@@ -9,12 +9,11 @@ export function toCard(product: Product, offer: Offer | undefined, stockQty: num
   return {
     id: product.id,
     name: product.name,
-    image: product.image,
+    ...(product.image === undefined ? {} : { image: product.image }),
     emoji: product.emoji,
     unit: product.unit,
     price: finalPrice(product.price, offer),
-    oldPrice: discounted ? product.price : undefined,
-    discountPercent: discounted && offer ? offer.percent : undefined,
+    ...(discounted && offer ? { oldPrice: product.price, discountPercent: offer.percent } : {}),
     inStock: stockQty > 0,
     qty: cartQty,
     stockQty,
@@ -22,6 +21,7 @@ export function toCard(product: Product, offer: Offer | undefined, stockQty: num
 }
 
 export function cardOf(p: Product, s: AppState): Card {
-  const image = PRODUCT_IMAGES[p.id] ?? p.image;
-  return toCard({ ...p, image }, s.offerMap.get(p.id), stockOf(p.id, s.stock), s.cart[p.id] ?? 0);
+  const image = PRODUCT_IMAGES[p.id];
+  const product = image === undefined ? p : { ...p, image };
+  return toCard(product, s.offerMap.get(p.id), stockOf(p.id, s.stock), s.cart[p.id] ?? 0);
 }
