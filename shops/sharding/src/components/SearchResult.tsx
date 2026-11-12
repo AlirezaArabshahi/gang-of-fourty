@@ -7,6 +7,7 @@ type SearchResultProps = {
   onRemove: (id: number) => void
   onJump: (id: number) => void
 }
+// deploy
 
 export default function SearchResult({ card, onAdd, onRemove, onJump }: SearchResultProps) {
   return (
