@@ -3,7 +3,7 @@ const TIMEOUT = 8000;
 
 export class HTTPError extends Error {
   readonly status: number;
-
+// deploy
   constructor(status: number, path: string) {
     super(`GET ${path}: HTTP ${status}`);
     this.name = 'HTTPError';
